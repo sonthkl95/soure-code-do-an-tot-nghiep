@@ -1,27 +1,9 @@
-# Copy this file to terraform.tfvars and fill in your values
+org_id            = ""
+billing_account_1 = "" # For Hub, Access, Obs
+billing_account_2 = "" # For Dev, Prod
+user_email        = ""
 
-# ── Organization & Billing ─────────────────────────────────────────────────────
-org_id          = "YOUR_ORGANIZATION_ID"       # e.g. "123456789012"
-billing_account = "YOUR_BILLING_ACCOUNT_ID"    # e.g. "012345-6789AB-CDEF01"
-
-# ── Personal account ───────────────────────────────────────────────────────────
-user_email      = "your-account@gmail.com"
-
-# ── Project IDs (created manually in GCP Console or gcloud) ───────────────────
-# Folder structure:
-#   network-hub/
-#     ├── project_id_hub_net
-#     └── project_id_sh_access
-#   shared-vpc/
-#     ├── project_id_sh_vpc_dev
-#     └── project_id_sh_vpc_prd
-#   dev/
-#     └── project_id_dev_env
-#   prod/
-#     └── project_id_prd_env
-#   observability/
-#     └── project_id_obs
-
+# Project IDs
 project_id_hub_net    = "gcp-apse1-prj-hub-net-001"
 project_id_sh_access  = "gcp-apse1-prj-sh-access-001"
 project_id_sh_vpc_dev = "gcp-apse1-prj-sh-vpc-dev-001"
@@ -30,6 +12,10 @@ project_id_dev_env    = "gcp-apse1-prj-dev-env-001"
 project_id_prd_env    = "gcp-apse1-prj-prd-env-001"
 project_id_obs        = "gcp-apse1-prj-obs-001"
 
-# ── HA VPN shared secrets ──────────────────────────────────────────────────────
-vpn_shared_secret_1 = "REPLACE_WITH_STRONG_SECRET_1"
-vpn_shared_secret_2 = "REPLACE_WITH_STRONG_SECRET_2"
+# Secrets
+vpn_shared_secret_1 = ""
+vpn_shared_secret_2 = ""
+
+# On-Premise VPN IPs (Replace with actual IPs or keep as placeholders for now)
+onprem_vpn_public_ip_0 = ""
+onprem_vpn_public_ip_1 = ""

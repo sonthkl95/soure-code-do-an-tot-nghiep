@@ -49,12 +49,12 @@ resource "google_compute_external_vpn_gateway" "gcp-asia-southeast1-vpn-external
 
   interface {
     id         = 0
-    ip_address = "203.0.113.1"
+    ip_address = var.onprem_vpn_public_ip_0
   }
 
   interface {
     id         = 1
-    ip_address = "203.0.113.2"
+    ip_address = var.onprem_vpn_public_ip_1
   }
 }
 

@@ -3,8 +3,13 @@ variable "org_id" {
   type        = string
 }
 
-variable "billing_account" {
-  description = "GCP Billing Account ID"
+variable "billing_account_1" {
+  description = "GCP Billing Account ID 1 (for Hub, Access, Obs)"
+  type        = string
+}
+
+variable "billing_account_2" {
+  description = "GCP Billing Account ID 2 (for Dev, Prod)"
   type        = string
 }
 
@@ -23,6 +28,16 @@ variable "vpn_shared_secret_2" {
   description = "Shared secret for HA VPN Tunnel 2"
   type        = string
   sensitive   = true
+}
+
+variable "onprem_vpn_public_ip_0" {
+  description = "Public IP address of the on-premises VPN gateway (interface 0)"
+  type        = string
+}
+
+variable "onprem_vpn_public_ip_1" {
+  description = "Public IP address of the on-premises VPN gateway (interface 1)"
+  type        = string
 }
 
 # Project IDs - created manually and passed in

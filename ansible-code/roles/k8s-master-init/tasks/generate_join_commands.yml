@@ -1,0 +1,22 @@
+---
+- name: Get certificate key for additional masters
+  command: kubeadm init phase upload-certs --upload-certs
+  register: cert_key_output
+
+- name: Get join command for workers
+  command: kubeadm token create --print-join-command
+  register: worker_join_command
+
+- name: Store worker join command on bastion
+  delegate_to: localhost
+  copy:
+    content: "{{ worker_join_command.stdout }}"
+    dest: /tmp/k8s_worker_join_command.sh
+    mode: '0700'
+
+- name: Store master join command on bastion
+  delegate_to: localhost
+  copy:
+    content: "{{ worker_join_command.stdout }} --control-plane --certificate-key {{ cert_key_output.stdout_lines[-1] }}"
+    dest: /tmp/k8s_master_join_command.sh
+    mode: '0700'

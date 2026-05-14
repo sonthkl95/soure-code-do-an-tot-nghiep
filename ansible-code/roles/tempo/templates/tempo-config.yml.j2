@@ -1,0 +1,57 @@
+stream_over_http_enabled: true
+
+# Chạy single-binary mode (mọi component trong 1 process)
+target: all
+
+server:
+  http_listen_port: {{ tempo_port }}
+  grpc_listen_port: 9095
+  log_level: info
+
+# Distributor nhận trace qua OTLP gRPC từ otel-gateway (đọc từ Kafka trace-topic)
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:{{ tempo_otlp_grpc_port }}
+        http:
+          endpoint: 0.0.0.0:4318
+
+ingester:
+  max_block_duration: 5m
+  lifecycler:
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+
+metrics_generator:
+  registry:
+    external_labels:
+      source: tempo
+  storage:
+    path: {{ tempo_install_dir }}/data/generator/wal
+
+compactor:
+  compaction:
+    block_retention: {{ tempo_retention_period }}
+
+# GCS Storage backend (Cloud-Native per architecture)
+storage:
+  trace:
+    backend: gcs
+    gcs:
+      bucket_name: {{ tempo_gcs_bucket }}
+    wal:
+      path: {{ tempo_install_dir }}/data/wal
+    local:
+      path: {{ tempo_install_dir }}/data/blocks
+
+querier:
+  frontend_worker:
+    frontend_address: localhost:9095
+
+query_frontend:
+  search:
+    default_result_limit: 20

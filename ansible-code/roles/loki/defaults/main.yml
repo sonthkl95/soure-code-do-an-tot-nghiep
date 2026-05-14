@@ -1,0 +1,16 @@
+---
+# vars for loki role
+loki_version: "3.0.0"
+loki_install_dir: "/opt/loki"
+loki_port: 3100
+
+# Storage backend - GCS bucket for chunk storage (Cloud-Native per architecture)
+loki_storage_backend: "gcs"
+loki_gcs_bucket: "gcp-asia-southeast1-loki-storage-001"
+
+# Compactor config (per architecture: merge data chunks)
+loki_compaction_enabled: true
+loki_retention_period: "720h"  # 30 days
+
+# Loki nhận log qua HTTP push từ otel-gateway trên obs-vm.
+# otel-gateway là component đọc từ Kafka log-topic và đổ vào Loki.

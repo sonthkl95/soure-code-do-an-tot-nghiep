@@ -1,0 +1,29 @@
+# Auto-provision Data Sources via IaC (per architecture: Data Provisioning)
+apiVersion: 1
+datasources:
+{% for ds in grafana_datasources %}
+  - name: {{ ds.name }}
+    type: {{ ds.type }}
+    url: {{ ds.url }}
+    access: proxy
+    isDefault: {{ ds.is_default | default(false) }}
+    editable: false
+{% if ds.type == 'tempo' %}
+    jsonData:
+      httpMethod: GET
+      tracesToLogs:
+        datasourceUid: loki
+        spanStartTimeShift: -1h
+        spanEndTimeShift: 1h
+        filterByTraceID: true
+      serviceMap:
+        datasourceUid: prometheus
+{% elif ds.type == 'loki' %}
+    jsonData:
+      derivedFields:
+        - datasourceUid: tempo
+          matcherRegex: '"traceId":"(\w+)"'
+          name: TraceID
+          url: '$${__value.raw}'
+{% endif %}
+{% endfor %}

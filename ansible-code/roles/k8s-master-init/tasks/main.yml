@@ -1,0 +1,5 @@
+---
+# tasks/main.yml - Initialize first K8s master node
+- import_tasks: init_cluster.yml
+- import_tasks: install_cni.yml
+- import_tasks: generate_join_commands.yml

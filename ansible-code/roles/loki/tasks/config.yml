@@ -1,0 +1,8 @@
+---
+- name: Deploy Loki config
+  template:
+    src: loki-config.yml.j2
+    dest: "{{ loki_install_dir }}/loki-config.yml"
+    owner: loki
+    group: loki
+  notify: restart loki

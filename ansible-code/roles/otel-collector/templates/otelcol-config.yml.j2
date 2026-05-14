@@ -1,0 +1,108 @@
+# OTel Collector AGENT Config (chạy trên K8s nodes)
+# 2 pipelines:
+#   - traces: OTLP receiver ← app -> processors -> Kafka trace-topic
+#   - logs:   filelog receiver ← /var/log/pods -> processors -> Kafka log-topic
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:{{ otelcol_otlp_grpc_port }}
+      http:
+        endpoint: 0.0.0.0:{{ otelcol_otlp_http_port }}
+
+  # Filelog receiver - đọc stdout/stderr của K8s pods (per architecture: Promtail role thay bằng OTel)
+  filelog:
+    include:
+{% for path in otelcol_log_paths %}
+      - {{ path }}
+{% endfor %}
+    start_at: end
+    include_file_path: true
+    operators:
+      # Parse path: /var/log/pods/<namespace>_<pod>_<uid>/<container>/0.log
+      - type: regex_parser
+        regex: '^/var/log/pods/(?P<namespace>[^_]+)_(?P<pod>[^_]+)_[^/]+/(?P<container>[^/]+)/.*\.log$'
+        parse_from: attributes["log.file.path"]
+      # Parse JSON body nếu app log JSON
+      - type: json_parser
+        parse_from: body
+        on_error: send
+      # Drop health-check logs (per architecture: Drop Filter)
+      - type: filter
+        expr: 'body matches "GET /(health|ping|readyz|livez)"'
+
+processors:
+  # Attach App Version metadata (per architecture: Tag App Version)
+  attributes/add_version:
+    actions:
+      - key: service.version
+        action: upsert
+        from_attribute: http.request.header.x-app-version
+
+  # Redaction Processor - remove sensitive tokens (per architecture)
+  redaction/remove_tokens:
+    allow_all_keys: true
+    blocked_values:
+      - "(?i)(bearer\\s+)[a-zA-Z0-9\\-._~+/]+=*"
+      - "(?i)(password|passwd|secret|token)=[^&\\s]+"
+
+  # Data masking cho logs (per architecture: Data Masking IP/Password)
+  transform/mask_logs:
+    log_statements:
+      - context: log
+        statements:
+          - replace_pattern(body, "(?i)(password|passwd|secret|token)=([^\\s&]+)", "$$1=***REDACTED***")
+          - replace_pattern(body, "\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b", "[IP_MASKED]")
+
+  # Memory limiter to prevent OOM
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 512
+
+  batch:
+    send_batch_size: 1024
+    timeout: 5s
+
+  # Tail-based sampling: keep only 5% of traces (per architecture)
+  tail_sampling:
+    decision_wait: 10s
+    num_traces: 50000
+    policies:
+      - name: sample-5-percent
+        type: probabilistic
+        probabilistic:
+          sampling_percentage: {{ (otelcol_sampling_rate * 100) | int }}
+      - name: keep-errors
+        type: status_code
+        status_code:
+          status_codes: [ERROR]
+
+exporters:
+  # Push traces vào Kafka trace-topic (per architecture)
+  kafka/traces:
+    brokers:
+      - {{ otelcol_kafka_brokers }}
+    topic: {{ otelcol_kafka_trace_topic }}
+    encoding: otlp_proto
+    producer:
+      max_message_bytes: 1000000
+
+  # Push logs vào Kafka log-topic
+  kafka/logs:
+    brokers:
+      - {{ otelcol_kafka_brokers }}
+    topic: {{ otelcol_kafka_log_topic }}
+    encoding: otlp_proto
+    producer:
+      max_message_bytes: 1000000
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, attributes/add_version, redaction/remove_tokens, tail_sampling, batch]
+      exporters: [kafka/traces]
+    logs:
+      receivers: [filelog]
+      processors: [memory_limiter, transform/mask_logs, batch]
+      exporters: [kafka/logs]

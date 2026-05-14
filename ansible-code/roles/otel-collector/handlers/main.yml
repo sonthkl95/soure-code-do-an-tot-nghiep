@@ -1,0 +1,5 @@
+---
+- name: restart otelcol
+  systemd:
+    name: otelcol
+    state: restarted

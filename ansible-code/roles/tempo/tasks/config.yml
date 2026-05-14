@@ -1,0 +1,8 @@
+---
+- name: Deploy Tempo config
+  template:
+    src: tempo-config.yml.j2
+    dest: "{{ tempo_install_dir }}/tempo-config.yml"
+    owner: tempo
+    group: tempo
+  notify: restart tempo

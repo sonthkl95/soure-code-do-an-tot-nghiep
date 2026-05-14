@@ -1,0 +1,19 @@
+---
+- name: Deploy OTel Gateway systemd unit
+  template:
+    src: otel-gateway.service.j2
+    dest: /etc/systemd/system/otelgw.service
+  notify: restart otelgw
+
+- name: Enable and start OTel Gateway
+  systemd:
+    name: otelgw
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: Wait for OTel Gateway health endpoint
+  wait_for:
+    port: "{{ otelgw_health_port }}"
+    delay: 5
+    timeout: 60

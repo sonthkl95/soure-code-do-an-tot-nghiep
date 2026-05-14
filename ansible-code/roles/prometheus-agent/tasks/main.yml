@@ -1,0 +1,35 @@
+---
+# Chạy trên first master của mỗi cluster (đã có kubeconfig /etc/kubernetes/admin.conf)
+
+- name: Ensure /tmp/prom-agent dir
+  file:
+    path: /tmp/prom-agent
+    state: directory
+    mode: '0755'
+
+- name: Render Prometheus Agent + kube-state-metrics manifests
+  template:
+    src: manifests.yml.j2
+    dest: /tmp/prom-agent/manifests.yml
+    mode: '0644'
+
+- name: Apply manifests vào K8s cluster
+  command: >
+    kubectl --kubeconfig=/etc/kubernetes/admin.conf
+    apply -f /tmp/prom-agent/manifests.yml
+  register: kubectl_apply
+  changed_when: "'created' in kubectl_apply.stdout or 'configured' in kubectl_apply.stdout"
+
+- name: Đợi Prometheus Agent rollout xong
+  command: >
+    kubectl --kubeconfig=/etc/kubernetes/admin.conf
+    -n {{ prom_agent_namespace }}
+    rollout status deploy/prometheus-agent --timeout=180s
+  changed_when: false
+
+- name: Đợi kube-state-metrics rollout xong
+  command: >
+    kubectl --kubeconfig=/etc/kubernetes/admin.conf
+    -n {{ prom_agent_namespace }}
+    rollout status deploy/kube-state-metrics --timeout=180s
+  changed_when: false

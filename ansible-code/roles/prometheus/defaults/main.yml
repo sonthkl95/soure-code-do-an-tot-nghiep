@@ -1,0 +1,15 @@
+---
+# vars for prometheus role
+prometheus_version: "2.51.0"
+prometheus_install_dir: "/opt/prometheus"
+prometheus_data_dir: "/var/prometheus/data"
+prometheus_retention_time: "7d"   # Local TSDB retention 7 days (per architecture)
+prometheus_port: 9090
+
+# This Prometheus instance runs on observability-vm and acts as a RECEIVER.
+# --web.enable-remote-write-receiver is enabled in the service unit.
+# K8s clusters push metrics here via OTel Collector or Prometheus Agent Mode.
+
+# K8s metrics đã được scrape bởi Prometheus Agent Mode trong từng cluster
+# (role prometheus-agent), rồi remote_write về đây. Không scrape trực tiếp.
+prometheus_drop_high_cardinality: true  # Drop metrics per architecture ETL pipeline

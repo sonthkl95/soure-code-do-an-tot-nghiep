@@ -1,0 +1,19 @@
+---
+- name: Create OTel Gateway install dir
+  file:
+    path: "{{ otelgw_install_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Download OTel Collector contrib (gateway role)
+  get_url:
+    url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelgw_version }}/otelcol-contrib_{{ otelgw_version }}_linux_amd64.tar.gz"
+    dest: /tmp/otelgw.tar.gz
+
+- name: Extract OTel Gateway binary
+  unarchive:
+    src: /tmp/otelgw.tar.gz
+    dest: "{{ otelgw_install_dir }}"
+    remote_src: true
+    extra_opts: [--strip-components=0]
+    creates: "{{ otelgw_install_dir }}/otelcol-contrib"

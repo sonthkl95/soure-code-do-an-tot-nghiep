@@ -1,0 +1,13 @@
+---
+- name: Deploy Tempo systemd service
+  template:
+    src: tempo.service.j2
+    dest: /etc/systemd/system/tempo.service
+  notify: restart tempo
+
+- name: Enable and start Tempo
+  systemd:
+    name: tempo
+    enabled: true
+    state: started
+    daemon_reload: true

@@ -1,0 +1,13 @@
+---
+- name: Deploy OTel Collector systemd service
+  template:
+    src: otelcol.service.j2
+    dest: /etc/systemd/system/otelcol.service
+  notify: restart otelcol
+
+- name: Enable and start OTel Collector
+  systemd:
+    name: otelcol
+    enabled: true
+    state: started
+    daemon_reload: true

@@ -1,0 +1,20 @@
+---
+# =============================================================
+# Master Playbook - runs all plays in correct order
+# Run: ansible-playbook site.yml
+# =============================================================
+
+# Step 1: Setup K8s cluster on Dev/Prod VMs
+- import_playbook: playbooks/k8s.yml
+
+# Step 2: Deploy app (microservices) on K8s
+- import_playbook: playbooks/app.yml
+
+# Step 3: Deploy core observability stack on observability-vm
+- import_playbook: playbooks/observability.yml
+
+# Step 4: Deploy data collectors on K8s nodes and VMs (traces + logs)
+- import_playbook: playbooks/collectors.yml
+
+# Step 5: Deploy K8s metrics pipeline (Prometheus Agent + kube-state-metrics)
+- import_playbook: playbooks/metrics-k8s.yml

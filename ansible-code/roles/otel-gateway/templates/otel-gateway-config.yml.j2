@@ -1,0 +1,57 @@
+# OTel Collector GATEWAY (chạy trên observability-vm)
+# Consumer của Kafka. Đọc trace-topic -> Tempo, log-topic -> Loki.
+receivers:
+  kafka/traces:
+    brokers:
+      - {{ otelgw_kafka_brokers }}
+    topic: {{ otelgw_kafka_trace_topic }}
+    group_id: {{ otelgw_kafka_trace_group }}
+    encoding: otlp_proto
+    initial_offset: latest
+
+  kafka/logs:
+    brokers:
+      - {{ otelgw_kafka_brokers }}
+    topic: {{ otelgw_kafka_log_topic }}
+    group_id: {{ otelgw_kafka_log_group }}
+    encoding: otlp_proto
+    initial_offset: latest
+
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 512
+
+  batch:
+    send_batch_size: 1024
+    timeout: 5s
+
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:{{ otelgw_health_port }}
+
+exporters:
+  # Đẩy traces vào Tempo qua OTLP gRPC (local trên obs-vm)
+  otlp/tempo:
+    endpoint: {{ otelgw_tempo_otlp_grpc }}
+    tls:
+      insecure: true
+
+  # Đẩy logs vào Loki qua OTLP HTTP (Loki 3.x hỗ trợ /otlp endpoint).
+  # Lưu ý: exporter `loki` cũ đã bị deprecated/remove khỏi otelcol-contrib.
+  otlphttp/loki:
+    endpoint: {{ otelgw_loki_endpoint }}
+    tls:
+      insecure: true
+
+service:
+  extensions: [health_check]
+  pipelines:
+    traces:
+      receivers: [kafka/traces]
+      processors: [memory_limiter, batch]
+      exporters: [otlp/tempo]
+    logs:
+      receivers: [kafka/logs]
+      processors: [memory_limiter, batch]
+      exporters: [otlphttp/loki]

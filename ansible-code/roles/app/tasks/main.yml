@@ -1,0 +1,7 @@
+---
+# Placeholder cho microservice app deployment.
+# Source code app sẽ được bổ sung sau, hiện tại role này không làm gì
+# để playbook site.yml chạy được end-to-end.
+- name: App role placeholder
+  debug:
+    msg: "App role chưa cài đặt - source code microservices sẽ được bổ sung sau."

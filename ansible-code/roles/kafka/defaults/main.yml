@@ -1,0 +1,17 @@
+---
+# vars for kafka role
+kafka_version: "3.7.0"
+kafka_scala_version: "2.13"
+kafka_install_dir: "/opt/kafka"
+kafka_data_dir: "/var/kafka/data"
+kafka_log_retention_hours: 24
+kafka_heap_opts: "-Xmx2G -Xms2G"
+
+# Topics to create (matching architecture diagram)
+kafka_topics:
+  - name: "trace-topic"
+    partitions: 3
+    replication_factor: 1
+  - name: "log-topic"
+    partitions: 3
+    replication_factor: 1

@@ -1,0 +1,12 @@
+[Unit]
+Description=OpenTelemetry Collector Gateway (Kafka consumer -> Tempo/Loki)
+After=network.target kafka.service tempo.service loki.service
+
+[Service]
+Type=simple
+ExecStart={{ otelgw_install_dir }}/otelcol-contrib --config={{ otelgw_install_dir }}/config.yml
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

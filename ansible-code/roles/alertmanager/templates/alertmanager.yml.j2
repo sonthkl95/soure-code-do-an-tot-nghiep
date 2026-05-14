@@ -1,0 +1,47 @@
+# Alertmanager config - Grouping, Deduplication & Routing (per architecture)
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname', 'job']
+  group_wait: {{ alertmanager_group_wait }}
+  group_interval: {{ alertmanager_group_interval }}
+  repeat_interval: {{ alertmanager_repeat_interval }}
+  receiver: 'telegram'
+  routes:
+    - match:
+        severity: critical
+      receiver: 'telegram'
+    - match:
+        severity: warning
+      receiver: 'slack'
+
+receivers:
+{% for receiver in alertmanager_receivers %}
+{% if receiver.type == 'telegram' %}
+  - name: '{{ receiver.name }}'
+    telegram_configs:
+      - bot_token: '{{ receiver.telegram_bot_token }}'
+        chat_id: {{ receiver.telegram_chat_id }}
+        message: '{% raw %}{{ template "telegram.default.message" . }}{% endraw %}'
+{% elif receiver.type == 'slack' %}
+  - name: '{{ receiver.name }}'
+    slack_configs:
+      - api_url: '{{ receiver.slack_webhook_url }}'
+        channel: '#alerts'
+        text: '{% raw %}{{ range .Alerts }}{{ .Annotations.description }}{{ end }}{% endraw %}'
+{% elif receiver.type == 'email' %}
+  - name: '{{ receiver.name }}'
+    email_configs:
+      - to: '{{ receiver.email_to }}'
+        smarthost: '{{ receiver.email_smarthost }}'
+        require_tls: false
+{% endif %}
+{% endfor %}
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'cluster', 'instance']

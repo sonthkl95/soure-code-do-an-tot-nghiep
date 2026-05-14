@@ -1,0 +1,18 @@
+---
+# vars for otel-gateway role (chạy trên observability-vm)
+# Vai trò: consumer Kafka -> đẩy traces vào Tempo, logs vào Loki
+otelgw_version: "0.99.0"
+otelgw_install_dir: "/opt/otelgw"
+otelgw_health_port: 13133
+
+# Kafka brokers (local trên obs-vm)
+otelgw_kafka_brokers: "127.0.0.1:9092"
+otelgw_kafka_trace_topic: "trace-topic"
+otelgw_kafka_log_topic: "log-topic"
+otelgw_kafka_trace_group: "tempo-consumer"
+otelgw_kafka_log_group: "loki-consumer"
+
+# Downstream destinations (local trên obs-vm)
+otelgw_tempo_otlp_grpc: "127.0.0.1:4317"
+# Loki 3.x OTLP ingest endpoint (otlphttp exporter sẽ tự append /v1/logs)
+otelgw_loki_endpoint: "http://127.0.0.1:3100/otlp"

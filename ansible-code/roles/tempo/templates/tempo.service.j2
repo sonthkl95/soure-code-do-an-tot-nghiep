@@ -1,0 +1,14 @@
+[Unit]
+Description=Grafana Tempo
+After=network.target
+
+[Service]
+Type=simple
+User=tempo
+Group=tempo
+ExecStart={{ tempo_install_dir }}/tempo -config.file={{ tempo_install_dir }}/tempo-config.yml
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

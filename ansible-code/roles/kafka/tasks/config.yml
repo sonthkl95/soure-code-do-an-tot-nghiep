@@ -1,0 +1,23 @@
+---
+# KRaft mode - no Zookeeper needed
+- name: Generate Kafka cluster UUID
+  command: "{{ kafka_install_dir }}/bin/kafka-storage.sh random-uuid"
+  register: kafka_uuid
+  changed_when: false
+
+- name: Deploy Kafka server.properties
+  template:
+    src: server.properties.j2
+    dest: "{{ kafka_install_dir }}/config/kraft/server.properties"
+    owner: kafka
+    group: kafka
+  notify: restart kafka
+
+- name: Format Kafka storage (KRaft)
+  command: >
+    {{ kafka_install_dir }}/bin/kafka-storage.sh format
+    -t {{ kafka_uuid.stdout }}
+    -c {{ kafka_install_dir }}/config/kraft/server.properties
+  args:
+    creates: "{{ kafka_data_dir }}/meta.properties"
+  become_user: kafka

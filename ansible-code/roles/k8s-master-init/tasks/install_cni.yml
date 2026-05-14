@@ -1,0 +1,25 @@
+---
+# Download Calico manifest, render CALICO_IPV4POOL_CIDR theo pod CIDR của kubeadm,
+# rồi mới apply để IPPool khớp với --pod-network-cidr (Dev /17, Prod /17)
+- name: Download Calico manifest
+  get_url:
+    url: https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml
+    dest: /tmp/calico.yaml
+    mode: '0644'
+
+- name: Uncomment CALICO_IPV4POOL_CIDR env var
+  replace:
+    path: /tmp/calico.yaml
+    regexp: '# (- name: CALICO_IPV4POOL_CIDR)'
+    replace: '\1'
+
+- name: Set CALICO_IPV4POOL_CIDR value to kubeadm pod CIDR ({{ k8s_pod_network_cidr }})
+  replace:
+    path: /tmp/calico.yaml
+    regexp: '#   value: "192.168.0.0/16"'
+    replace: '  value: "{{ k8s_pod_network_cidr }}"'
+
+- name: Apply Calico CNI network plugin
+  command: kubectl apply -f /tmp/calico.yaml
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf

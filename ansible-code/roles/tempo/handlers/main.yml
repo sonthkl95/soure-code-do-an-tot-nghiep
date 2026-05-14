@@ -1,0 +1,5 @@
+---
+- name: restart tempo
+  systemd:
+    name: tempo
+    state: restarted

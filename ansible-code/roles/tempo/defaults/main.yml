@@ -1,0 +1,17 @@
+---
+# vars for tempo role
+tempo_version: "2.4.0"
+tempo_install_dir: "/opt/tempo"
+tempo_port: 3200
+tempo_otlp_grpc_port: 4317
+
+# Storage backend - GCS bucket (Cloud-Native per architecture)
+tempo_storage_backend: "gcs"
+tempo_gcs_bucket: "gcp-asia-southeast1-tempo-storage-001"
+
+# Compactor config (per architecture: merge trace chunks)
+tempo_compaction_enabled: true
+tempo_retention_period: "168h"  # 7 days for traces
+
+# Tempo nhận trace qua OTLP gRPC từ otel-gateway trên obs-vm.
+# otel-gateway là component đọc từ Kafka trace-topic và đổ vào Tempo.

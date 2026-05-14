@@ -1,0 +1,6 @@
+---
+- name: Deploy OTel Collector config (ETL Pipeline per architecture)
+  template:
+    src: otelcol-config.yml.j2
+    dest: "{{ otelcol_install_dir }}/config.yml"
+  notify: restart otelcol

@@ -1,0 +1,11 @@
+---
+- name: Set Grafana admin credentials in grafana.ini
+  ini_file:
+    path: /etc/grafana/grafana.ini
+    section: security
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+  loop:
+    - { key: admin_user, value: "{{ grafana_admin_user }}" }
+    - { key: admin_password, value: "{{ grafana_admin_password }}" }
+  notify: restart grafana

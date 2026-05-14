@@ -1,0 +1,17 @@
+[Unit]
+Description=Prometheus Alertmanager
+After=network.target
+
+[Service]
+Type=simple
+User=alertmanager
+Group=alertmanager
+ExecStart={{ alertmanager_install_dir }}/alertmanager \
+  --config.file={{ alertmanager_install_dir }}/alertmanager.yml \
+  --storage.path={{ alertmanager_install_dir }}/data \
+  --web.listen-address=0.0.0.0:{{ alertmanager_port }}
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,42 @@
+---
+# =============================================================
+# Playbook: K8s Cluster Setup (Dev + Prod)
+# 1 Master + 3 Workers per cluster (single control-plane, no HA)
+# Uses kubeadm with the master's own IP as control-plane-endpoint
+# =============================================================
+
+# Step 1: Install prerequisites on ALL K8s nodes (masters + workers)
+- name: Setup K8s prerequisites on all nodes
+  hosts: k8s
+  roles:
+    - k8s-common
+
+# Step 2: Init Dev cluster master
+- name: Initialize Dev K8s control plane
+  hosts: k8s_dev_master
+  vars:
+    k8s_api_vip: "10.10.1.10"     # Dev master IP (single control-plane endpoint)
+    k8s_pod_network_cidr: "192.168.0.0/17"  # Dev pods: 192.168.0.0 - 192.168.127.255
+  roles:
+    - k8s-master-init
+
+# Step 3: Join Dev workers
+- name: Join Dev worker nodes
+  hosts: k8s_dev_worker
+  roles:
+    - k8s-worker-join
+
+# Step 4: Init Prod cluster master
+- name: Initialize Prod K8s control plane
+  hosts: k8s_prod_master
+  vars:
+    k8s_api_vip: "10.20.1.10"     # Prod master IP (single control-plane endpoint)
+    k8s_pod_network_cidr: "192.168.128.0/17"  # Prod pods: 192.168.128.0 - 192.168.255.255
+  roles:
+    - k8s-master-init
+
+# Step 5: Join Prod workers
+- name: Join Prod worker nodes
+  hosts: k8s_prod_worker
+  roles:
+    - k8s-worker-join

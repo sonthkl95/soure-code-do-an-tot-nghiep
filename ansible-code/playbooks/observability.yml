@@ -1,0 +1,46 @@
+---
+# =============================================================
+# Playbook: Observability Stack (theo Untitled Diagram-Page-4)
+# Installs on observability-vm (10.60.1.10):
+#   - Kafka (Message Buffering: Trace Topic + Log Topic)
+#   - Prometheus TSDB (Local Metrics Management)
+#   - Loki + Tempo (Cloud-Native Store Management)
+#   - OTel Gateway (Kafka consumer -> push vào Loki/Tempo)
+#   - Alertmanager (Self-hosted Alerting)
+#   - Grafana (Visualization + Data Provisioning via IaC)
+# =============================================================
+
+- name: Deploy Kafka (Message Buffer for Traces and Logs)
+  hosts: observability
+  roles:
+    - kafka
+
+- name: Deploy Prometheus TSDB (Local Metrics Storage)
+  hosts: observability
+  roles:
+    - prometheus
+
+- name: Deploy Loki (Log Storage - Cloud-Native)
+  hosts: observability
+  roles:
+    - loki
+
+- name: Deploy Tempo (Trace Storage - Cloud-Native)
+  hosts: observability
+  roles:
+    - tempo
+
+- name: Deploy OTel Gateway (Kafka consumer -> Tempo + Loki)
+  hosts: observability
+  roles:
+    - otel-gateway
+
+- name: Deploy Alertmanager (Self-hosted Alerting)
+  hosts: observability
+  roles:
+    - alertmanager
+
+- name: Deploy Grafana (Visualization + auto-provision Data Sources & Dashboards)
+  hosts: observability
+  roles:
+    - grafana

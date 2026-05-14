@@ -1,0 +1,11 @@
+---
+# =============================================================
+# Playbook: App Deployment
+# Deploys microservice application on K8s cluster
+# App source code will be provided later
+# =============================================================
+
+- name: Deploy application on K8s
+  hosts: k8s_master[0]
+  roles:
+    - app

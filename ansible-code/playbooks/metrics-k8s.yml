@@ -1,0 +1,20 @@
+---
+# =============================================================
+# Playbook: K8s Metrics Pipeline
+# Deploy Prometheus Agent Mode + kube-state-metrics vào mỗi K8s cluster.
+# Agent scrape: apiserver, kubelet, cAdvisor, kube-state-metrics, app pods.
+# remote_write -> Prometheus Server (TSDB) trên observability-vm.
+#
+# Lưu ý: chạy SAU khi observability-vm đã có Prometheus (--web.enable-remote-write-receiver)
+# tức sau playbook observability.yml.
+# =============================================================
+
+- name: Deploy Prometheus Agent vào Dev K8s cluster
+  hosts: k8s_dev_master[0]
+  roles:
+    - prometheus-agent
+
+- name: Deploy Prometheus Agent vào Prod K8s cluster
+  hosts: k8s_prod_master[0]
+  roles:
+    - prometheus-agent

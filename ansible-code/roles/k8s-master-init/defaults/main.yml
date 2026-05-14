@@ -1,0 +1,3 @@
+---
+k8s_api_vip: "REPLACE_WITH_INTERNAL_LB_IP"  # Internal LB IP in front of masters
+k8s_pod_network_cidr: "192.168.0.0/17"       # Default Dev pod CIDR (Prod uses 192.168.128.0/17)

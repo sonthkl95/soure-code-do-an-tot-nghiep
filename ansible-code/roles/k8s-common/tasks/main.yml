@@ -1,0 +1,6 @@
+---
+- import_tasks: disable_swap.yml
+- import_tasks: os_configuration.yml
+- import_tasks: package_install.yml
+- import_tasks: containerd_install.yml
+- import_tasks: kubernetes_install.yml

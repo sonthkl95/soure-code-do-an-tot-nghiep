@@ -1,0 +1,36 @@
+---
+- name: Create tempo user
+  user:
+    name: tempo
+    system: true
+    shell: /bin/false
+
+- name: Create Tempo directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: tempo
+    group: tempo
+    mode: '0755'
+  loop:
+    - "{{ tempo_install_dir }}"
+    - "{{ tempo_install_dir }}/data"
+
+- name: Download Tempo binary
+  get_url:
+    url: "https://github.com/grafana/tempo/releases/download/v{{ tempo_version }}/tempo_{{ tempo_version }}_linux_amd64.tar.gz"
+    dest: /tmp/tempo.tar.gz
+
+- name: Extract Tempo
+  unarchive:
+    src: /tmp/tempo.tar.gz
+    dest: "{{ tempo_install_dir }}"
+    remote_src: true
+    creates: "{{ tempo_install_dir }}/tempo"
+
+- name: Fix ownership
+  file:
+    path: "{{ tempo_install_dir }}"
+    owner: tempo
+    group: tempo
+    recurse: true

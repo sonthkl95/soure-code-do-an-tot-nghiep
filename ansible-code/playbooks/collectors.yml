@@ -1,0 +1,20 @@
+---
+# =============================================================
+# Playbook: Data Collectors (theo Collection & ETL trong kiến trúc)
+# Installs lightweight agents on K8s nodes and VMs:
+#   - OTel Collector (agent): pipeline TRACES + LOGS
+#       * Traces: nhận OTLP từ app -> Kafka trace-topic
+#       * Logs:   filelog đọc /var/log/pods -> Kafka log-topic
+#       * Tail-based sampling 5%, redaction, masking IP/password
+#   - Node Exporter: pipeline METRICS hạ tầng (CPU/RAM/Disk/Net)
+# =============================================================
+
+- name: Deploy OTel Collector agent on K8s nodes (Trace + Log pipeline)
+  hosts: k8s
+  roles:
+    - otel-collector
+
+- name: Deploy Node Exporter on all VMs (Metrics pipeline)
+  hosts: all
+  roles:
+    - node-exporter

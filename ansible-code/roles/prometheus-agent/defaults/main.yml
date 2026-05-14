@@ -1,0 +1,24 @@
+---
+# =============================================================
+# Prometheus Agent Mode - chạy trong K8s cluster
+# Scrape: apiserver, kubelet, cAdvisor, kube-state-metrics, pods
+# remote_write -> Prometheus Server trên observability-vm
+# =============================================================
+prom_agent_namespace: "monitoring"
+prom_agent_version: "v2.51.0"
+prom_agent_ksm_version: "v2.12.0"      # kube-state-metrics
+
+# Tên cluster -> dùng làm external_label (để phân biệt dev/prod khi xem ở Grafana)
+prom_agent_cluster_name: "{{ 'dev' if 'k8s_dev' in group_names else 'prod' }}"
+
+# Endpoint Prometheus Server (TSDB trung tâm trên observability-vm)
+prom_agent_remote_write_url: "http://{{ hostvars[groups['observability'][0]]['ansible_host'] }}:9090/api/v1/write"
+
+# Resource limits cho Prometheus Agent pod
+prom_agent_cpu_request: "100m"
+prom_agent_mem_request: "256Mi"
+prom_agent_cpu_limit: "500m"
+prom_agent_mem_limit: "1Gi"
+
+# Drop high-cardinality labels/metrics ngay tại agent (giảm bandwidth + chi phí TSDB)
+prom_agent_drop_high_cardinality: true

@@ -1,0 +1,11 @@
+---
+- name: Read worker join command from bastion
+  delegate_to: localhost
+  slurp:
+    src: /tmp/k8s_worker_join_command.sh
+  register: worker_join_cmd
+
+- name: Join worker node to cluster
+  command: "{{ worker_join_cmd.content | b64decode | trim }}"
+  args:
+    creates: /etc/kubernetes/kubelet.conf

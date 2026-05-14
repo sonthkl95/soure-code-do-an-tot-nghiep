@@ -1,0 +1,6 @@
+---
+- name: Deploy OTel Gateway config (Kafka -> Tempo/Loki)
+  template:
+    src: otel-gateway-config.yml.j2
+    dest: "{{ otelgw_install_dir }}/config.yml"
+  notify: restart otelgw

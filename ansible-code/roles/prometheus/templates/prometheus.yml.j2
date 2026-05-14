@@ -1,0 +1,56 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    source: central
+    site: observability-vm
+
+# Alertmanager integration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["localhost:9093"]
+
+# Alert rules (WAL config - prevent data loss)
+rule_files:
+  - "{{ prometheus_install_dir }}/rules/*.yml"
+
+scrape_configs:
+  # Scrape Prometheus itself
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Scrape Node Exporter on all VMs (Infra metrics: CPU/RAM/Disk/Net của host)
+  - job_name: "node-exporter"
+    static_configs:
+      - targets:
+{% for host in groups['all'] %}
+{% if hostvars[host]['ansible_host'] is defined %}
+          - "{{ hostvars[host]['ansible_host'] }}:9100"
+{% endif %}
+{% endfor %}
+{% if prometheus_drop_high_cardinality %}
+    metric_relabel_configs:
+      # Drop một số metrics ít dùng nhưng nặng từ node_exporter
+      - source_labels: [__name__]
+        regex: 'node_(scrape_collector_.*|filesystem_device_error|textfile_.*)'
+        action: drop
+{% endif %}
+
+# =============================================================
+# Centralized Metrics Receiver
+# Prometheus Server này chạy với --web.enable-remote-write-receiver.
+# Hai K8s clusters (Dev + Prod) deploy "Prometheus Agent Mode"
+# (role prometheus-agent) và remote_write metrics về đây qua port 9090.
+#  - Mỗi cluster gắn external_label cluster=dev / cluster=prod
+#  - Metrics K8s (apiserver, kubelet, cAdvisor, kube-state-metrics, app pods)
+#    sẽ tự động xuất hiện trong Grafana, có thể filter bằng label `cluster`.
+# =============================================================
+
+# Storage config - 7 days retention (per architecture: Retention Time 7d)
+storage:
+  tsdb:
+    path: "{{ prometheus_data_dir }}"
+    retention.time: "{{ prometheus_retention_time }}"
+    wal-compression: true

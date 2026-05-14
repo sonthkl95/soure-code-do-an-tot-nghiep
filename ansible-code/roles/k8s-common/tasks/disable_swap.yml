@@ -1,0 +1,10 @@
+---
+# tasks/main.yml - K8s Common prerequisites for all nodes
+- name: Disable swap (required by K8s)
+  command: swapoff -a
+
+- name: Disable swap permanently in fstab
+  replace:
+    path: /etc/fstab
+    regexp: '^([^#].*\sswap\s.*)$'
+    replace: '# \1'

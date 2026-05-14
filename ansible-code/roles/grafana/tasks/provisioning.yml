@@ -1,0 +1,56 @@
+---
+- name: Create Grafana provisioning directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: grafana
+    group: grafana
+    mode: '0755'
+  loop:
+    - /etc/grafana/provisioning/datasources
+    - /etc/grafana/provisioning/dashboards
+    - /var/lib/grafana/dashboards
+
+- name: Deploy datasources provisioning config
+  template:
+    src: datasources.yml.j2
+    dest: /etc/grafana/provisioning/datasources/datasources.yml
+    owner: grafana
+    group: grafana
+  notify: restart grafana
+
+- name: Deploy dashboard provider config
+  template:
+    src: dashboard-provider.yml.j2
+    dest: /etc/grafana/provisioning/dashboards/provider.yml
+    owner: grafana
+    group: grafana
+  notify: restart grafana
+
+- name: Download K8s Cluster dashboard (CPU/RAM/Network per architecture)
+  get_url:
+    url: "https://grafana.com/api/dashboards/315/revisions/3/download"
+    dest: /var/lib/grafana/dashboards/k8s-cluster.json
+    owner: grafana
+    group: grafana
+
+- name: Download App Performance / Nginx dashboard
+  get_url:
+    url: "https://grafana.com/api/dashboards/9614/revisions/1/download"
+    dest: /var/lib/grafana/dashboards/app-nginx.json
+    owner: grafana
+    group: grafana
+
+- name: Download Loki Log Aggregation dashboard
+  get_url:
+    url: "https://grafana.com/api/dashboards/13639/revisions/2/download"
+    dest: /var/lib/grafana/dashboards/loki-logs.json
+    owner: grafana
+    group: grafana
+
+- name: Download Tempo Trace Waterfall dashboard
+  get_url:
+    url: "https://grafana.com/api/dashboards/16077/revisions/1/download"
+    dest: /var/lib/grafana/dashboards/tempo-traces.json
+    owner: grafana
+    group: grafana

@@ -1,0 +1,12 @@
+---
+- name: Create Kafka topics
+  command: >
+    {{ kafka_install_dir }}/bin/kafka-topics.sh
+    --create
+    --if-not-exists
+    --bootstrap-server localhost:9092
+    --topic {{ item.name }}
+    --partitions {{ item.partitions }}
+    --replication-factor {{ item.replication_factor }}
+  loop: "{{ kafka_topics }}"
+  become_user: kafka

@@ -103,7 +103,10 @@ resource "google_compute_firewall" "gcp-asia-southeast1-fw-allow-vpn-hub-001" {
   network       = google_compute_network.gcp-asia-southeast1-vpc-network-hub-001.name
   description   = "Allow VPN tunnel IKE and ESP traffic to the hub"
   source_ranges = ["0.0.0.0/0"]
-  allow { protocol = "udp"; ports = ["500", "4500"] }
+  allow {
+    protocol = "udp"
+    ports    = ["500", "4500"]
+  }
   allow { protocol = "esp" }
 }
 

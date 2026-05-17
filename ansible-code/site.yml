@@ -4,6 +4,22 @@
 # Run: ansible-playbook site.yml
 # =============================================================
 
+# Step 0: Ensure baseline utilities (Vim, curl, etc.) are installed on all servers
+- name: Ensure baseline packages are installed on all servers
+  hosts: k8s, observability
+  become: true
+  tasks:
+    - name: Install standard developer utilities
+      apt:
+        name:
+          - vim
+          - curl
+          - htop
+          - dnsutils
+          - net-tools
+        state: present
+        update_cache: true
+
 # Step 1: Setup K8s cluster on Dev/Prod VMs
 - import_playbook: playbooks/k8s.yml
 

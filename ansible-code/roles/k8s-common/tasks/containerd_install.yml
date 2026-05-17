@@ -20,12 +20,18 @@
   shell: |
     mkdir -p /etc/containerd
     containerd config default > /etc/containerd/config.toml
-    sed -i 's/SystemdCgroup = false/SystemdCgroup = true/' /etc/containerd/config.toml
-  args:
-    creates: /etc/containerd/config.toml
+    sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
+    sed -i 's/disabled_plugins = \[ "cri" \]/disabled_plugins = \[\]/g' /etc/containerd/config.toml
+  register: containerd_config
 
 - name: Enable and start containerd
   systemd:
     name: containerd
     enabled: true
     state: started
+
+- name: Restart containerd to apply configuration changes
+  systemd:
+    name: containerd
+    state: restarted
+  when: containerd_config.changed

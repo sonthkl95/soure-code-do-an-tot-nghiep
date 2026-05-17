@@ -1,6 +1,6 @@
 # GCS bucket: long-term log archive (deletes after 90 days)
 resource "google_storage_bucket" "gcp-asia-southeast1-log-archive-001" {
-  name          = "gcp-asia-southeast1-log-archive-001"
+  name          = "gcp-apse1-log-archive-${var.org_id}-003"
   location      = "asia-southeast1"
   project       = data.google_project.gcp-apse1-prj-hub-net-001.project_id
   force_destroy = false
@@ -19,7 +19,7 @@ resource "google_storage_bucket" "gcp-asia-southeast1-log-archive-001" {
 
 # GCS bucket: Loki chunk storage
 resource "google_storage_bucket" "gcp-asia-southeast1-loki-storage-001" {
-  name                        = "gcp-asia-southeast1-loki-storage-001"
+  name                        = "gcp-apse1-loki-storage-${var.org_id}-003"
   location                    = "asia-southeast1"
   project                     = data.google_project.gcp-apse1-prj-obs-001.project_id
   force_destroy               = false
@@ -28,7 +28,7 @@ resource "google_storage_bucket" "gcp-asia-southeast1-loki-storage-001" {
 
 # GCS bucket: Tempo trace storage
 resource "google_storage_bucket" "gcp-asia-southeast1-tempo-storage-001" {
-  name                        = "gcp-asia-southeast1-tempo-storage-001"
+  name                        = "gcp-apse1-tempo-storage-${var.org_id}-003"
   location                    = "asia-southeast1"
   project                     = data.google_project.gcp-apse1-prj-obs-001.project_id
   force_destroy               = false

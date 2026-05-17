@@ -46,6 +46,7 @@ resource "google_compute_external_vpn_gateway" "gcp-asia-southeast1-vpn-external
   project         = data.google_project.gcp-apse1-prj-hub-net-001.project_id
   redundancy_type = "TWO_IPS_REDUNDANCY"
   description     = "External on-premises VPN peer gateway"
+  depends_on      = [google_project_service.gcp-apse1-apis-hub-net-001]
 
   interface {
     id         = 0

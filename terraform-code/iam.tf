@@ -1,19 +1,16 @@
 locals {
   sa_hub_net_roles = [
     "roles/compute.networkAdmin",
-    "roles/compute.xpnAdmin",
     "roles/compute.securityAdmin",
   ]
 
   sa_sh_vpc_dev_roles = [
     "roles/compute.networkAdmin",
-    "roles/compute.xpnAdmin",
     "roles/compute.networkUser",
   ]
 
   sa_sh_vpc_prd_roles = [
     "roles/compute.networkAdmin",
-    "roles/compute.xpnAdmin",
     "roles/compute.networkUser",
   ]
 
@@ -183,6 +180,25 @@ resource "google_organization_iam_member" "user_org_roles" {
   org_id   = var.org_id
   role     = each.value
   member   = "user:${var.user_email}"
+}
+
+# Assign roles/compute.xpnAdmin at the Organization level for Service Accounts
+resource "google_organization_iam_member" "sa-hub-net-xpnAdmin" {
+  org_id = var.org_id
+  role   = "roles/compute.xpnAdmin"
+  member = "serviceAccount:${google_service_account.sa-hub-net.email}"
+}
+
+resource "google_organization_iam_member" "sa-sh-vpc-dev-xpnAdmin" {
+  org_id = var.org_id
+  role   = "roles/compute.xpnAdmin"
+  member = "serviceAccount:${google_service_account.sa-sh-vpc-dev.email}"
+}
+
+resource "google_organization_iam_member" "sa-sh-vpc-prd-xpnAdmin" {
+  org_id = var.org_id
+  role   = "roles/compute.xpnAdmin"
+  member = "serviceAccount:${google_service_account.sa-sh-vpc-prd.email}"
 }
 
 # Grant loadBalancerServiceUser on obs project so sh-access LB can use obs instance group

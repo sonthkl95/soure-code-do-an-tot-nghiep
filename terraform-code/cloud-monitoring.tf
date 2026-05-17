@@ -189,7 +189,7 @@ resource "google_monitoring_alert_policy" "gcp-asia-southeast1-alert-vpn-tunnel-
   conditions {
     display_name = "VPN Tunnel is down"
     condition_threshold {
-      filter          = "resource.type = \"vpn_tunnel\" AND metric.type = \"vpn.googleapis.com/tunnel_established\""
+      filter          = "resource.type = \"vpn_gateway\" AND metric.type = \"vpn.googleapis.com/tunnel_established\""
       duration        = "60s"
       comparison      = "COMPARISON_LT"
       threshold_value = 1

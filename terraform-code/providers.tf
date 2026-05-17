@@ -10,5 +10,7 @@ terraform {
 }
 
 provider "google" {
-  region = "asia-southeast1"
+  region                = "asia-southeast1"
+  user_project_override = true
+  billing_project       = var.project_id_hub_net
 }

@@ -11,6 +11,7 @@ resource "google_project_service" "gcp-apse1-apis-hub-net-001" {
     "storage.googleapis.com",
     "bigquerystorage.googleapis.com",
     "oslogin.googleapis.com",
+    "orgpolicy.googleapis.com",
   ])
 
   project                    = data.google_project.gcp-apse1-prj-hub-net-001.project_id

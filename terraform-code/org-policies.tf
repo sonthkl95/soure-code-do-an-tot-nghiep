@@ -8,6 +8,8 @@ resource "google_org_policy_policy" "gcp-asia-southeast1-org-policy-require-oslo
       enforce = "TRUE"
     }
   }
+
+  depends_on = [google_project_service.gcp-apse1-apis-hub-net-001]
 }
 
 # Org policy: skip default VPC creation in new projects
@@ -20,6 +22,8 @@ resource "google_org_policy_policy" "gcp-asia-southeast1-org-policy-skip-default
       enforce = "TRUE"
     }
   }
+
+  depends_on = [google_project_service.gcp-apse1-apis-hub-net-001]
 }
 
 # Org policy: deny external IP on all VMs across the organization
@@ -33,6 +37,8 @@ resource "google_org_policy_policy" "gcp-asia-southeast1-org-policy-deny-vm-exte
       deny_all = "TRUE"
     }
   }
+
+  depends_on = [google_project_service.gcp-apse1-apis-hub-net-001]
 }
 
 # Project-level exception: allow external IP for the Bastion Host in shared-access project
@@ -52,7 +58,25 @@ resource "google_org_policy_policy" "gcp-asia-southeast1-org-policy-allow-vm-ext
   }
 
   # Make sure the org-level deny is applied first so the project exception clearly overrides it
+  # and wait for the hub API enablement to finish as well
   depends_on = [
     google_org_policy_policy.gcp-asia-southeast1-org-policy-deny-vm-external-ip-001,
+    google_project_service.gcp-apse1-apis-hub-net-001,
   ]
+}
+
+# Dynamic Import Blocks (Terraform 1.5+) to resolve 409 'Requested entity already exists'
+import {
+  to = google_org_policy_policy.gcp-asia-southeast1-org-policy-require-oslogin-001
+  id = "organizations/54431047904/policies/compute.requireOsLogin"
+}
+
+import {
+  to = google_org_policy_policy.gcp-asia-southeast1-org-policy-skip-default-network-001
+  id = "organizations/54431047904/policies/compute.skipDefaultNetworkCreation"
+}
+
+import {
+  to = google_org_policy_policy.gcp-asia-southeast1-org-policy-deny-vm-external-ip-001
+  id = "organizations/54431047904/policies/compute.vmExternalIpAccess"
 }

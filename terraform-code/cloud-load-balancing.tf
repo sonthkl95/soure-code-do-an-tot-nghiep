@@ -37,6 +37,7 @@ resource "google_compute_backend_service" "gcp-asia-southeast1-backend-grafana-0
   project               = data.google_project.gcp-apse1-prj-obs-001.project_id
   protocol              = "HTTP"
   load_balancing_scheme = "EXTERNAL_MANAGED"
+  port_name             = "grafana"
   health_checks         = [google_compute_health_check.gcp-asia-southeast1-hc-grafana-001.id]
 
   backend {

@@ -1,3 +1,17 @@
+locals {
+  ops_agent_startup_script = <<-EOT
+    #!/bin/bash
+    # Install Google Cloud Ops Agent if not already installed
+    if ! systemctl is-active --quiet google-cloud-ops-agent; then
+      echo "Ops Agent is not running. Downloading and installing..."
+      curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+      bash add-google-cloud-ops-agent-repo.sh --also-install
+    else
+      echo "Ops Agent is already running."
+    fi
+  EOT
+}
+
 # Dev K8s master (10.10.1.10)
 resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-dev-master-1" {
   name         = "gcp-asia-southeast1-vm-k8s-dev-master-1"
@@ -26,6 +40,7 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-dev-master-1" {
   }
 
   metadata = { enable-oslogin = "TRUE" }
+  metadata_startup_script = local.ops_agent_startup_script
   tags     = ["k8s-master", "k8s-dev", "allow-internal"]
 
   depends_on = [google_compute_shared_vpc_service_project.gcp-asia-southeast1-shared-vpc-service-dev-001]
@@ -59,6 +74,7 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-dev-worker-1" {
   }
 
   metadata = { enable-oslogin = "TRUE" }
+  metadata_startup_script = local.ops_agent_startup_script
   tags     = ["k8s-worker", "k8s-dev", "allow-internal"]
 
   depends_on = [google_compute_shared_vpc_service_project.gcp-asia-southeast1-shared-vpc-service-dev-001]
@@ -92,6 +108,7 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-prod-master-1" {
   }
 
   metadata = { enable-oslogin = "TRUE" }
+  metadata_startup_script = local.ops_agent_startup_script
   tags     = ["k8s-master", "k8s-prod", "allow-internal"]
 
   depends_on = [google_compute_shared_vpc_service_project.gcp-asia-southeast1-shared-vpc-service-prod-001]
@@ -125,6 +142,7 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-prod-worker-1" {
   }
 
   metadata = { enable-oslogin = "TRUE" }
+  metadata_startup_script = local.ops_agent_startup_script
   tags     = ["k8s-worker", "k8s-prod", "allow-internal"]
 
   depends_on = [google_compute_shared_vpc_service_project.gcp-asia-southeast1-shared-vpc-service-prod-001]
@@ -162,6 +180,7 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-bastion-001" {
   }
 
   metadata = { enable-oslogin = "TRUE" }
+  metadata_startup_script = local.ops_agent_startup_script
   tags     = ["bastion", "allow-ssh-external"]
 
   depends_on = [
@@ -196,6 +215,7 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-observability-001" {
   }
 
   metadata = { enable-oslogin = "TRUE" }
+  metadata_startup_script = local.ops_agent_startup_script
   tags     = ["observability-vm", "allow-internal"]
 
   depends_on = [google_project_service.gcp-apse1-apis-observability-001]

@@ -17,6 +17,8 @@ locals {
   sa_sh_access_roles = [
     "roles/compute.instanceAdmin.v1",
     "roles/iam.serviceAccountUser",
+    "roles/monitoring.metricWriter",
+    "roles/logging.logWriter",
   ]
 
   sa_dev_env_roles = [

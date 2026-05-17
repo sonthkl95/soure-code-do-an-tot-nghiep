@@ -7,7 +7,7 @@ tempo_otlp_grpc_port: 4317
 
 # Storage backend - GCS bucket (Cloud-Native per architecture)
 tempo_storage_backend: "gcs"
-tempo_gcs_bucket: "gcp-asia-southeast1-tempo-storage-001"
+tempo_gcs_bucket: "gcp-apse1-tempo-storage-54431047904-003"
 
 # Compactor config (per architecture: merge trace chunks)
 tempo_compaction_enabled: true

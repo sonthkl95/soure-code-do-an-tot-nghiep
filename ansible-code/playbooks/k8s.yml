@@ -1,7 +1,7 @@
 ---
 # =============================================================
 # Playbook: K8s Cluster Setup (Dev + Prod)
-# 1 Master + 3 Workers per cluster (single control-plane, no HA)
+# 1 Master + 1 Worker per cluster (single control-plane, no HA)
 # Uses kubeadm with the master's own IP as control-plane-endpoint
 # =============================================================
 

@@ -52,15 +52,11 @@ flowchart TB
     subgraph DevEnvPrj["📁 dev-env-001  —  subnet 10.10.1.0/24"]
         DevMaster["k8s-dev-master\n10.10.1.10"]
         DevW1["worker-1  10.10.1.20"]
-        DevW2["worker-2  10.10.1.21"]
-        DevW3["worker-3  10.10.1.22"]
     end
 
     subgraph PrdEnvPrj["📁 prd-env-001  —  subnet 10.20.1.0/24"]
         PrdMaster["k8s-prod-master\n10.20.1.10"]
         PrdW1["worker-1  10.20.1.20"]
-        PrdW2["worker-2  10.20.1.21"]
-        PrdW3["worker-3  10.20.1.22"]
     end
 
     DevEnvPrj -.->|"Shared VPC service project"| DevHostPrj
@@ -82,12 +78,12 @@ flowchart TB
 
     ExtLB ==>|"backend IG\nGrafana :3000"| ObsVM
 
-    Bastion -.->|SSH| DevMaster & DevW1 & DevW2 & DevW3
-    Bastion -.->|SSH| PrdMaster & PrdW1 & PrdW2 & PrdW3
+    Bastion -.->|SSH| DevMaster & DevW1
+    Bastion -.->|SSH| PrdMaster & PrdW1
     Bastion -.->|SSH| ObsVM
 
-    DevW1 & DevW2 & DevW3 -.->|"metrics / logs"| ObsVM
-    PrdW1 & PrdW2 & PrdW3 -.->|"metrics / logs"| ObsVM
+    DevW1 -.->|"metrics / logs"| ObsVM
+    PrdW1 -.->|"metrics / logs"| ObsVM
 
     classDef vpc fill:#eef2ff,stroke:#818cf8
     classDef vm  fill:#f0fdfa,stroke:#2dd4bf
@@ -96,7 +92,7 @@ flowchart TB
     classDef nat fill:#fefce8,stroke:#facc15
 
     class HubVPC,DevVPC,PrdVPC,AccessVPC,ObsVPC vpc
-    class Bastion,DevMaster,DevW1,DevW2,DevW3,PrdMaster,PrdW1,PrdW2,PrdW3,ObsVM vm
+    class Bastion,DevMaster,DevW1,PrdMaster,PrdW1,ObsVM vm
     class ExtLB,VPN lb
     class Internet,OnPrem ext
     class NATd,NATp,NATo nat

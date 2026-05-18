@@ -51,3 +51,12 @@
 # NOTE: Tempo trace waterfall is available natively in Grafana Explore > Tempo datasource
 # NOTE: GCP GCE VMs dashboard (ID 10940) no longer exists on Grafana.com — build manually via UI
 
+- name: Deploy GCP Cloud Monitoring dashboard (custom - GCE CPU/Disk/Network)
+  copy:
+    src: gcp-cloud-monitoring.json
+    dest: /var/lib/grafana/dashboards/gcp-cloud-monitoring.json
+    owner: grafana
+    group: grafana
+    mode: '0644'
+  notify: restart grafana
+

@@ -1,3 +1,4 @@
+/* TEMPORARILY DISABLED - VPN resources commented out
 # Cloud Router in hub VPC (ASN 65001) for VPN BGP sessions
 resource "google_compute_router" "gcp-asia-southeast1-router-hub-001" {
   name       = "gcp-asia-southeast1-router-hub-001"
@@ -130,3 +131,4 @@ resource "google_compute_router_peer" "gcp-asia-southeast1-router-peer-002" {
   advertised_route_priority = 100
   interface                 = google_compute_router_interface.gcp-asia-southeast1-router-interface-002.name
 }
+TEMPORARILY DISABLED */

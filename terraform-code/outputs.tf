@@ -19,12 +19,13 @@ output "load_balancer_ip" {
 
 # ─── NETWORK (HA VPN) ───────────────────────────────────────────────────────────
 
-output "vpn_gateway_interface_0_ip" {
-  description = "External IP of HA VPN Gateway interface 0"
-  value       = google_compute_ha_vpn_gateway.gcp-asia-southeast1-vpn-hub-001.vpn_interfaces[0].ip_address
-}
+# TEMPORARILY DISABLED - VPN outputs commented out
+# output "vpn_gateway_interface_0_ip" {
+#   description = "External IP of HA VPN Gateway interface 0"
+#   value       = google_compute_ha_vpn_gateway.gcp-asia-southeast1-vpn-hub-001.vpn_interfaces[0].ip_address
+# }
 
-output "vpn_gateway_interface_1_ip" {
-  description = "External IP of HA VPN Gateway interface 1"
-  value       = google_compute_ha_vpn_gateway.gcp-asia-southeast1-vpn-hub-001.vpn_interfaces[1].ip_address
-}
+# output "vpn_gateway_interface_1_ip" {
+#   description = "External IP of HA VPN Gateway interface 1"
+#   value       = google_compute_ha_vpn_gateway.gcp-asia-southeast1-vpn-hub-001.vpn_interfaces[1].ip_address
+# }

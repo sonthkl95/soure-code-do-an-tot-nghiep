@@ -50,15 +50,17 @@
 
 - name: Download Tempo Trace Waterfall dashboard
   get_url:
-    url: "https://grafana.com/api/dashboards/16077/revisions/1/download"
+    url: "https://grafana.com/api/dashboards/16077/revisions/3/download"
     dest: /var/lib/grafana/dashboards/tempo-traces.json
     owner: grafana
     group: grafana
+    force: true
 
 - name: Download GCP GCE Virtual Machines dashboard
   get_url:
-    url: "https://grafana.com/api/dashboards/10940/revisions/1/download"
+    url: "https://grafana.com/api/dashboards/10940/revisions/6/download"
     dest: /var/lib/grafana/dashboards/gcp-gce-vms.json
     owner: grafana
     group: grafana
+    force: true
 

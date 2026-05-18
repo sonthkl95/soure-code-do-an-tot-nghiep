@@ -12,35 +12,43 @@
 
 - name: Deploy Kafka (Message Buffer for Traces and Logs)
   hosts: observability
+  tags: kafka
   roles:
     - kafka
 
 - name: Deploy Prometheus TSDB (Local Metrics Storage)
   hosts: observability
+  tags: prometheus
   roles:
     - prometheus
 
 - name: Deploy Loki (Log Storage - Cloud-Native)
   hosts: observability
+  tags: loki
   roles:
     - loki
 
 - name: Deploy Tempo (Trace Storage - Cloud-Native)
   hosts: observability
+  tags: tempo
   roles:
     - tempo
 
 - name: Deploy OTel Gateway (Kafka consumer -> Tempo + Loki)
   hosts: observability
+  tags: otel-gateway
   roles:
     - otel-gateway
 
 - name: Deploy Alertmanager (Self-hosted Alerting)
   hosts: observability
+  tags: alertmanager
   roles:
     - alertmanager
 
 - name: Deploy Grafana (Visualization + auto-provision Data Sources & Dashboards)
   hosts: observability
+  tags: grafana
+  become: true
   roles:
     - grafana

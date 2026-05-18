@@ -54,3 +54,11 @@
     dest: /var/lib/grafana/dashboards/tempo-traces.json
     owner: grafana
     group: grafana
+
+- name: Download GCP GCE Virtual Machines dashboard
+  get_url:
+    url: "https://grafana.com/api/dashboards/10940/revisions/1/download"
+    dest: /var/lib/grafana/dashboards/gcp-gce-vms.json
+    owner: grafana
+    group: grafana
+

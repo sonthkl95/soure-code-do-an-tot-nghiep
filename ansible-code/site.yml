@@ -34,3 +34,6 @@
 
 # Step 5: Deploy K8s metrics pipeline (Prometheus Agent + kube-state-metrics)
 - import_playbook: playbooks/metrics-k8s.yml
+
+# Step 6: Deploy Google Cloud Ops Agent on all instances
+- import_playbook: playbooks/install-ops-agent.yml

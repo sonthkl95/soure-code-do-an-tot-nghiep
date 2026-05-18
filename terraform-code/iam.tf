@@ -209,3 +209,29 @@ resource "google_project_iam_member" "lb_service_user_obs" {
   role    = "roles/compute.loadBalancerServiceUser"
   member  = "serviceAccount:${google_service_account.sa-sh-access.email}"
 }
+
+# Grant cross-project monitoring.viewer to sa-obs for Grafana GCP Cloud Monitoring integration
+resource "google_project_iam_member" "sa-obs-monitoring-hub" {
+  project = data.google_project.gcp-apse1-prj-hub-net-001.project_id
+  role    = "roles/monitoring.viewer"
+  member  = "serviceAccount:${google_service_account.sa-obs.email}"
+}
+
+resource "google_project_iam_member" "sa-obs-monitoring-dev" {
+  project = data.google_project.gcp-apse1-prj-dev-env-001.project_id
+  role    = "roles/monitoring.viewer"
+  member  = "serviceAccount:${google_service_account.sa-obs.email}"
+}
+
+resource "google_project_iam_member" "sa-obs-monitoring-prod" {
+  project = data.google_project.gcp-apse1-prj-prd-env-001.project_id
+  role    = "roles/monitoring.viewer"
+  member  = "serviceAccount:${google_service_account.sa-obs.email}"
+}
+
+resource "google_project_iam_member" "sa-obs-monitoring-access" {
+  project = data.google_project.gcp-apse1-prj-sh-access-001.project_id
+  role    = "roles/monitoring.viewer"
+  member  = "serviceAccount:${google_service_account.sa-obs.email}"
+}
+

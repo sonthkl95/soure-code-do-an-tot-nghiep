@@ -18,6 +18,10 @@ grafana_datasources:
   - name: "Tempo"
     type: "tempo"
     url: "http://10.60.1.10:3200"
+  - name: "Google Cloud Monitoring"
+    type: "googlecloud-monitoring"
+    url: ""
+    default_project: "gcp-apse1-prj-obs-003"
 
 # Dashboards to auto-provision (per architecture Visualization block)
 grafana_dashboards:
@@ -29,3 +33,6 @@ grafana_dashboards:
     gnet_id: 13639
   - name: "Trace Waterfall"                    # Microservices function call waterfall (Tempo)
     gnet_id: 16077
+  - name: "GCP GCE Virtual Machines"           # Native GCP GCE metrics via Cloud Monitoring
+    gnet_id: 10940
+

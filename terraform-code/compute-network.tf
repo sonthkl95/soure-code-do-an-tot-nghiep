@@ -1,55 +1,55 @@
 # Hub VPC
-resource "google_compute_network" "gcp-asia-southeast1-vpc-network-hub-001" {
-  name                    = "gcp-asia-southeast1-vpc-network-hub-001"
-  project                 = data.google_project.gcp-apse1-prj-hub-net-001.project_id
+resource "google_compute_network" "gcp-asia-southeast1-vpc-network-hub-003" {
+  name                    = "gcp-asia-southeast1-vpc-network-hub-003"
+  project                 = data.google_project.gcp-apse1-prj-hub-net-003.project_id
   auto_create_subnetworks = false
   routing_mode            = "GLOBAL"
-  depends_on              = [google_project_service.gcp-apse1-apis-hub-net-001]
+  depends_on              = [google_project_service.gcp-apse1-apis-hub-net-003]
 }
 
 # Shared VPC Dev
-resource "google_compute_network" "gcp-asia-southeast1-vpc-shared-dev-001" {
-  name                    = "gcp-asia-southeast1-vpc-shared-dev-001"
-  project                 = data.google_project.gcp-apse1-prj-sh-vpc-dev-001.project_id
+resource "google_compute_network" "gcp-asia-southeast1-vpc-shared-dev-003" {
+  name                    = "gcp-asia-southeast1-vpc-shared-dev-003"
+  project                 = data.google_project.gcp-apse1-prj-sh-vpc-dev-003.project_id
   auto_create_subnetworks = false
   routing_mode            = "GLOBAL"
-  depends_on              = [google_project_service.gcp-apse1-apis-sh-vpc-dev-001]
+  depends_on              = [google_project_service.gcp-apse1-apis-sh-vpc-dev-003]
 }
 
 # Shared VPC Prod
-resource "google_compute_network" "gcp-asia-southeast1-vpc-shared-prod-001" {
-  name                    = "gcp-asia-southeast1-vpc-shared-prod-001"
-  project                 = data.google_project.gcp-apse1-prj-sh-vpc-prd-001.project_id
+resource "google_compute_network" "gcp-asia-southeast1-vpc-shared-prod-003" {
+  name                    = "gcp-asia-southeast1-vpc-shared-prod-003"
+  project                 = data.google_project.gcp-apse1-prj-sh-vpc-prd-003.project_id
   auto_create_subnetworks = false
   routing_mode            = "GLOBAL"
-  depends_on              = [google_project_service.gcp-apse1-apis-sh-vpc-prd-001]
+  depends_on              = [google_project_service.gcp-apse1-apis-sh-vpc-prd-003]
 }
 
 # Shared Access VPC
-resource "google_compute_network" "gcp-asia-southeast1-vpc-shared-access-001" {
-  name                    = "gcp-asia-southeast1-vpc-shared-access-001"
-  project                 = data.google_project.gcp-apse1-prj-sh-access-001.project_id
+resource "google_compute_network" "gcp-asia-southeast1-vpc-shared-access-003" {
+  name                    = "gcp-asia-southeast1-vpc-shared-access-003"
+  project                 = data.google_project.gcp-apse1-prj-sh-access-003.project_id
   auto_create_subnetworks = false
   routing_mode            = "GLOBAL"
-  depends_on              = [google_project_service.gcp-apse1-apis-sh-access-001]
+  depends_on              = [google_project_service.gcp-apse1-apis-sh-access-003]
 }
 
 # Observability VPC
-resource "google_compute_network" "gcp-asia-southeast1-vpc-observability-001" {
-  name                    = "gcp-asia-southeast1-vpc-observability-001"
-  project                 = data.google_project.gcp-apse1-prj-obs-001.project_id
+resource "google_compute_network" "gcp-asia-southeast1-vpc-observability-003" {
+  name                    = "gcp-asia-southeast1-vpc-observability-003"
+  project                 = data.google_project.gcp-apse1-prj-obs-003.project_id
   auto_create_subnetworks = false
   routing_mode            = "GLOBAL"
-  depends_on              = [google_project_service.gcp-apse1-apis-observability-001]
+  depends_on              = [google_project_service.gcp-apse1-apis-observability-003]
 }
 
 # Hub subnet (10.0.0.0/24)
-resource "google_compute_subnetwork" "gcp-asia-southeast1-subnet-hub-001" {
-  name                     = "gcp-asia-southeast1-subnet-hub-001"
+resource "google_compute_subnetwork" "gcp-asia-southeast1-subnet-hub-003" {
+  name                     = "gcp-asia-southeast1-subnet-hub-003"
   ip_cidr_range            = "10.0.0.0/24"
   region                   = "asia-southeast1"
-  network                  = google_compute_network.gcp-asia-southeast1-vpc-network-hub-001.id
-  project                  = data.google_project.gcp-apse1-prj-hub-net-001.project_id
+  network                  = google_compute_network.gcp-asia-southeast1-vpc-network-hub-003.id
+  project                  = data.google_project.gcp-apse1-prj-hub-net-003.project_id
   private_ip_google_access = true
   log_config {
     aggregation_interval = "INTERVAL_5_SEC"
@@ -59,12 +59,12 @@ resource "google_compute_subnetwork" "gcp-asia-southeast1-subnet-hub-001" {
 }
 
 # Dev app subnet (10.10.1.0/24)
-resource "google_compute_subnetwork" "gcp-asia-southeast1-subnet-dev-app-001" {
-  name                     = "gcp-asia-southeast1-subnet-dev-app-001"
+resource "google_compute_subnetwork" "gcp-asia-southeast1-subnet-dev-app-003" {
+  name                     = "gcp-asia-southeast1-subnet-dev-app-003"
   ip_cidr_range            = "10.10.1.0/24"
   region                   = "asia-southeast1"
-  network                  = google_compute_network.gcp-asia-southeast1-vpc-shared-dev-001.id
-  project                  = data.google_project.gcp-apse1-prj-sh-vpc-dev-001.project_id
+  network                  = google_compute_network.gcp-asia-southeast1-vpc-shared-dev-003.id
+  project                  = data.google_project.gcp-apse1-prj-sh-vpc-dev-003.project_id
   private_ip_google_access = true
   log_config {
     aggregation_interval = "INTERVAL_5_SEC"
@@ -74,12 +74,12 @@ resource "google_compute_subnetwork" "gcp-asia-southeast1-subnet-dev-app-001" {
 }
 
 # Prod app subnet (10.20.1.0/24)
-resource "google_compute_subnetwork" "gcp-asia-southeast1-subnet-prod-app-001" {
-  name                     = "gcp-asia-southeast1-subnet-prod-app-001"
+resource "google_compute_subnetwork" "gcp-asia-southeast1-subnet-prod-app-003" {
+  name                     = "gcp-asia-southeast1-subnet-prod-app-003"
   ip_cidr_range            = "10.20.1.0/24"
   region                   = "asia-southeast1"
-  network                  = google_compute_network.gcp-asia-southeast1-vpc-shared-prod-001.id
-  project                  = data.google_project.gcp-apse1-prj-sh-vpc-prd-001.project_id
+  network                  = google_compute_network.gcp-asia-southeast1-vpc-shared-prod-003.id
+  project                  = data.google_project.gcp-apse1-prj-sh-vpc-prd-003.project_id
   private_ip_google_access = true
   log_config {
     aggregation_interval = "INTERVAL_5_SEC"
@@ -89,12 +89,12 @@ resource "google_compute_subnetwork" "gcp-asia-southeast1-subnet-prod-app-001" {
 }
 
 # Shared access subnet (10.50.1.0/24)
-resource "google_compute_subnetwork" "gcp-asia-southeast1-subnet-shared-access-001" {
-  name                     = "gcp-asia-southeast1-subnet-shared-access-001"
+resource "google_compute_subnetwork" "gcp-asia-southeast1-subnet-shared-access-003" {
+  name                     = "gcp-asia-southeast1-subnet-shared-access-003"
   ip_cidr_range            = "10.50.1.0/24"
   region                   = "asia-southeast1"
-  network                  = google_compute_network.gcp-asia-southeast1-vpc-shared-access-001.id
-  project                  = data.google_project.gcp-apse1-prj-sh-access-001.project_id
+  network                  = google_compute_network.gcp-asia-southeast1-vpc-shared-access-003.id
+  project                  = data.google_project.gcp-apse1-prj-sh-access-003.project_id
   private_ip_google_access = true
   log_config {
     aggregation_interval = "INTERVAL_5_SEC"
@@ -104,12 +104,12 @@ resource "google_compute_subnetwork" "gcp-asia-southeast1-subnet-shared-access-0
 }
 
 # Observability subnet (10.60.1.0/24)
-resource "google_compute_subnetwork" "gcp-asia-southeast1-subnet-observability-001" {
-  name                     = "gcp-asia-southeast1-subnet-observability-001"
+resource "google_compute_subnetwork" "gcp-asia-southeast1-subnet-observability-003" {
+  name                     = "gcp-asia-southeast1-subnet-observability-003"
   ip_cidr_range            = "10.60.1.0/24"
   region                   = "asia-southeast1"
-  network                  = google_compute_network.gcp-asia-southeast1-vpc-observability-001.id
-  project                  = data.google_project.gcp-apse1-prj-obs-001.project_id
+  network                  = google_compute_network.gcp-asia-southeast1-vpc-observability-003.id
+  project                  = data.google_project.gcp-apse1-prj-obs-003.project_id
   private_ip_google_access = true
   log_config {
     aggregation_interval = "INTERVAL_5_SEC"

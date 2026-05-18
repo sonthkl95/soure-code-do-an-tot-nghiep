@@ -1,14 +1,14 @@
 /* TEMPORARILY DISABLED - VPN resources commented out
-# Cloud Router in hub VPC (ASN 65001) for VPN BGP sessions
-resource "google_compute_router" "gcp-asia-southeast1-router-hub-001" {
-  name       = "gcp-asia-southeast1-router-hub-001"
-  project    = data.google_project.gcp-apse1-prj-hub-net-001.project_id
+# Cloud Router in hub VPC (ASN 65003) for VPN BGP sessions
+resource "google_compute_router" "gcp-asia-southeast1-router-hub-003" {
+  name       = "gcp-asia-southeast1-router-hub-003"
+  project    = data.google_project.gcp-apse1-prj-hub-net-003.project_id
   region     = "asia-southeast1"
-  network    = google_compute_network.gcp-asia-southeast1-vpc-network-hub-001.id
-  depends_on = [google_project_service.gcp-apse1-apis-hub-net-001]
+  network    = google_compute_network.gcp-asia-southeast1-vpc-network-hub-003.id
+  depends_on = [google_project_service.gcp-apse1-apis-hub-net-003]
 
   bgp {
-    asn               = 65001
+    asn               = 65003
     advertise_mode    = "CUSTOM"
     advertised_groups = ["ALL_SUBNETS"]
 
@@ -33,21 +33,21 @@ resource "google_compute_router" "gcp-asia-southeast1-router-hub-001" {
 }
 
 # HA VPN Gateway in hub VPC
-resource "google_compute_ha_vpn_gateway" "gcp-asia-southeast1-vpn-hub-001" {
-  name       = "gcp-asia-southeast1-vpn-hub-001"
-  project    = data.google_project.gcp-apse1-prj-hub-net-001.project_id
+resource "google_compute_ha_vpn_gateway" "gcp-asia-southeast1-vpn-hub-003" {
+  name       = "gcp-asia-southeast1-vpn-hub-003"
+  project    = data.google_project.gcp-apse1-prj-hub-net-003.project_id
   region     = "asia-southeast1"
-  network    = google_compute_network.gcp-asia-southeast1-vpc-network-hub-001.id
-  depends_on = [google_project_service.gcp-apse1-apis-hub-net-001]
+  network    = google_compute_network.gcp-asia-southeast1-vpc-network-hub-003.id
+  depends_on = [google_project_service.gcp-apse1-apis-hub-net-003]
 }
 
 # External VPN Gateway representing on-prem peer
-resource "google_compute_external_vpn_gateway" "gcp-asia-southeast1-vpn-external-peer-001" {
-  name            = "gcp-asia-southeast1-vpn-external-peer-001"
-  project         = data.google_project.gcp-apse1-prj-hub-net-001.project_id
+resource "google_compute_external_vpn_gateway" "gcp-asia-southeast1-vpn-external-peer-003" {
+  name            = "gcp-asia-southeast1-vpn-external-peer-003"
+  project         = data.google_project.gcp-apse1-prj-hub-net-003.project_id
   redundancy_type = "TWO_IPS_REDUNDANCY"
   description     = "External on-premises VPN peer gateway"
-  depends_on      = [google_project_service.gcp-apse1-apis-hub-net-001]
+  depends_on      = [google_project_service.gcp-apse1-apis-hub-net-003]
 
   interface {
     id         = 0
@@ -61,70 +61,70 @@ resource "google_compute_external_vpn_gateway" "gcp-asia-southeast1-vpn-external
 }
 
 # VPN Tunnel 0 (HA VPN iface 0 <-> peer iface 0)
-resource "google_compute_vpn_tunnel" "gcp-asia-southeast1-vpn-tunnel-001" {
-  name                            = "gcp-asia-southeast1-vpn-tunnel-001"
-  project                         = data.google_project.gcp-apse1-prj-hub-net-001.project_id
+resource "google_compute_vpn_tunnel" "gcp-asia-southeast1-vpn-tunnel-003" {
+  name                            = "gcp-asia-southeast1-vpn-tunnel-003"
+  project                         = data.google_project.gcp-apse1-prj-hub-net-003.project_id
   region                          = "asia-southeast1"
-  vpn_gateway                     = google_compute_ha_vpn_gateway.gcp-asia-southeast1-vpn-hub-001.id
+  vpn_gateway                     = google_compute_ha_vpn_gateway.gcp-asia-southeast1-vpn-hub-003.id
   vpn_gateway_interface           = 0
-  peer_external_gateway           = google_compute_external_vpn_gateway.gcp-asia-southeast1-vpn-external-peer-001.id
+  peer_external_gateway           = google_compute_external_vpn_gateway.gcp-asia-southeast1-vpn-external-peer-003.id
   peer_external_gateway_interface = 0
   shared_secret                   = var.vpn_shared_secret_1
-  router                          = google_compute_router.gcp-asia-southeast1-router-hub-001.id
+  router                          = google_compute_router.gcp-asia-southeast1-router-hub-003.id
 }
 
 # VPN Tunnel 1 (HA VPN iface 1 <-> peer iface 1)
 resource "google_compute_vpn_tunnel" "gcp-asia-southeast1-vpn-tunnel-002" {
   name                            = "gcp-asia-southeast1-vpn-tunnel-002"
-  project                         = data.google_project.gcp-apse1-prj-hub-net-001.project_id
+  project                         = data.google_project.gcp-apse1-prj-hub-net-003.project_id
   region                          = "asia-southeast1"
-  vpn_gateway                     = google_compute_ha_vpn_gateway.gcp-asia-southeast1-vpn-hub-001.id
+  vpn_gateway                     = google_compute_ha_vpn_gateway.gcp-asia-southeast1-vpn-hub-003.id
   vpn_gateway_interface           = 1
-  peer_external_gateway           = google_compute_external_vpn_gateway.gcp-asia-southeast1-vpn-external-peer-001.id
+  peer_external_gateway           = google_compute_external_vpn_gateway.gcp-asia-southeast1-vpn-external-peer-003.id
   peer_external_gateway_interface = 1
   shared_secret                   = var.vpn_shared_secret_2
-  router                          = google_compute_router.gcp-asia-southeast1-router-hub-001.id
+  router                          = google_compute_router.gcp-asia-southeast1-router-hub-003.id
 }
 
 # BGP interface for tunnel 0
-resource "google_compute_router_interface" "gcp-asia-southeast1-router-interface-001" {
-  name       = "gcp-asia-southeast1-router-interface-001"
-  project    = data.google_project.gcp-apse1-prj-hub-net-001.project_id
-  router     = google_compute_router.gcp-asia-southeast1-router-hub-001.name
+resource "google_compute_router_interface" "gcp-asia-southeast1-router-interface-003" {
+  name       = "gcp-asia-southeast1-router-interface-003"
+  project    = data.google_project.gcp-apse1-prj-hub-net-003.project_id
+  router     = google_compute_router.gcp-asia-southeast1-router-hub-003.name
   region     = "asia-southeast1"
   ip_range   = "169.254.0.1/30"
-  vpn_tunnel = google_compute_vpn_tunnel.gcp-asia-southeast1-vpn-tunnel-001.name
+  vpn_tunnel = google_compute_vpn_tunnel.gcp-asia-southeast1-vpn-tunnel-003.name
 }
 
 # BGP peer for tunnel 0
-resource "google_compute_router_peer" "gcp-asia-southeast1-router-peer-001" {
-  name                      = "gcp-asia-southeast1-router-peer-001"
-  project                   = data.google_project.gcp-apse1-prj-hub-net-001.project_id
-  router                    = google_compute_router.gcp-asia-southeast1-router-hub-001.name
+resource "google_compute_router_peer" "gcp-asia-southeast1-router-peer-003" {
+  name                      = "gcp-asia-southeast1-router-peer-003"
+  project                   = data.google_project.gcp-apse1-prj-hub-net-003.project_id
+  router                    = google_compute_router.gcp-asia-southeast1-router-hub-003.name
   region                    = "asia-southeast1"
   peer_ip_address           = "169.254.0.2"
   peer_asn                  = 65002
   advertised_route_priority = 100
-  interface                 = google_compute_router_interface.gcp-asia-southeast1-router-interface-001.name
+  interface                 = google_compute_router_interface.gcp-asia-southeast1-router-interface-003.name
 }
 
 # BGP interface for tunnel 1
 resource "google_compute_router_interface" "gcp-asia-southeast1-router-interface-002" {
   name       = "gcp-asia-southeast1-router-interface-002"
-  project    = data.google_project.gcp-apse1-prj-hub-net-001.project_id
-  router     = google_compute_router.gcp-asia-southeast1-router-hub-001.name
+  project    = data.google_project.gcp-apse1-prj-hub-net-003.project_id
+  router     = google_compute_router.gcp-asia-southeast1-router-hub-003.name
   region     = "asia-southeast1"
   ip_range   = "169.254.1.1/30"
   vpn_tunnel = google_compute_vpn_tunnel.gcp-asia-southeast1-vpn-tunnel-002.name
 
-  depends_on = [google_compute_router_interface.gcp-asia-southeast1-router-interface-001]
+  depends_on = [google_compute_router_interface.gcp-asia-southeast1-router-interface-003]
 }
 
 # BGP peer for tunnel 1
 resource "google_compute_router_peer" "gcp-asia-southeast1-router-peer-002" {
   name                      = "gcp-asia-southeast1-router-peer-002"
-  project                   = data.google_project.gcp-apse1-prj-hub-net-001.project_id
-  router                    = google_compute_router.gcp-asia-southeast1-router-hub-001.name
+  project                   = data.google_project.gcp-apse1-prj-hub-net-003.project_id
+  router                    = google_compute_router.gcp-asia-southeast1-router-hub-003.name
   region                    = "asia-southeast1"
   peer_ip_address           = "169.254.1.2"
   peer_asn                  = 65002

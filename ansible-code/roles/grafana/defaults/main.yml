@@ -22,7 +22,7 @@ grafana_datasources:
     type: "stackdriver"
     uid: "google-cloud-monitoring"
     url: ""
-    default_project: "gcp-apse1-prj-dev-env-001"
+    default_project: "gcp-apse1-prj-dev-env-003"
 
 
 # Dashboards to auto-provision (per architecture Visualization block)

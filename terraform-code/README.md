@@ -15,13 +15,13 @@ flowchart TB
     Internet((🌐 Internet))
     OnPrem[("🏢 On-Premises\nBGP ASN 65002")]
 
-    subgraph HubPrj["📁 hub-net-001"]
-        VPN["HA VPN Gateway\nBGP ASN 65001"]
+    subgraph HubPrj["📁 hub-net-003"]
+        VPN["HA VPN Gateway\nBGP ASN 65003"]
         HubVPC["VPC Hub\n10.0.0.0/24"]
         VPN --- HubVPC
     end
 
-    subgraph AccessPrj["📁 sh-access-001"]
+    subgraph AccessPrj["📁 sh-access-003"]
         AccessVPC["VPC Shared-Access\n10.50.1.0/24"]
         Bastion["🖥️ Bastion VM\n10.50.1.100  •  public IP"]
         ExtLB["🌍 Global External LB\nHTTP :80  →  Grafana :3000"]
@@ -29,19 +29,19 @@ flowchart TB
         AccessVPC --- ExtLB
     end
 
-    subgraph DevHostPrj["📁 sh-vpc-dev-001  (Shared VPC host)"]
+    subgraph DevHostPrj["📁 sh-vpc-dev-003  (Shared VPC host)"]
         DevVPC["VPC Shared-Dev\n10.10.0.0/20"]
         NATd["Cloud NAT"]
         DevVPC --- NATd
     end
 
-    subgraph PrdHostPrj["📁 sh-vpc-prd-001  (Shared VPC host)"]
+    subgraph PrdHostPrj["📁 sh-vpc-prd-003  (Shared VPC host)"]
         PrdVPC["VPC Shared-Prod\n10.20.0.0/20"]
         NATp["Cloud NAT"]
         PrdVPC --- NATp
     end
 
-    subgraph ObsPrj["📁 obs-001"]
+    subgraph ObsPrj["📁 obs-003"]
         ObsVPC["VPC Observability\n10.60.1.0/24"]
         ObsVM["🖥️ Obs VM  10.60.1.10\nPrometheus · Loki · Tempo\nGrafana · Kafka · Alertmanager"]
         NATo["Cloud NAT"]
@@ -49,12 +49,12 @@ flowchart TB
         ObsVPC --- NATo
     end
 
-    subgraph DevEnvPrj["📁 dev-env-001  —  subnet 10.10.1.0/24"]
+    subgraph DevEnvPrj["📁 dev-env-003  —  subnet 10.10.1.0/24"]
         DevMaster["k8s-dev-master\n10.10.1.10"]
         DevW1["worker-1  10.10.1.20"]
     end
 
-    subgraph PrdEnvPrj["📁 prd-env-001  —  subnet 10.20.1.0/24"]
+    subgraph PrdEnvPrj["📁 prd-env-003  —  subnet 10.20.1.0/24"]
         PrdMaster["k8s-prod-master\n10.20.1.10"]
         PrdW1["worker-1  10.20.1.20"]
     end

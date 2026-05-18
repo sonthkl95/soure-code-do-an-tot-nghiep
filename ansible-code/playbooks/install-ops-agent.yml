@@ -21,7 +21,8 @@
       when: ops_agent_check.rc != 0
 
     - name: Ensure Google Cloud Ops Agent is started and enabled
-      systemctl:
+      systemd:
         name: google-cloud-ops-agent
         state: started
         enabled: true
+

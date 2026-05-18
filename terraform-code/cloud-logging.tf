@@ -97,3 +97,20 @@ resource "google_storage_bucket_iam_member" "gcp-asia-southeast1-tempo-storage-i
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${google_service_account.sa-obs.email}"
 }
+
+# Import existing GCS buckets (already created in a previous partial apply)
+import {
+  to = google_storage_bucket.gcp-asia-southeast1-log-archive-003
+  id = "gcp-apse1-log-archive-54431047904-003"
+}
+
+import {
+  to = google_storage_bucket.gcp-asia-southeast1-loki-storage-003
+  id = "gcp-apse1-loki-storage-54431047904-003"
+}
+
+# Import existing BigQuery dataset (already created in a previous partial apply)
+import {
+  to = google_bigquery_dataset.gcp-asia-southeast1-log-dataset-003
+  id = "gcp-apse1-prj-hub-net-003/gcp_apse1_infra_logs_003"
+}

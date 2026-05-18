@@ -433,9 +433,638 @@
       ],
       "title": "Network Sent",
       "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 27 },
+      "id": 103,
+      "title": "Memory (requires Ops Agent)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "fillOpacity": 10 },
+          "unit": "percentunit", "min": 0, "max": 1
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 },
+      "id": 7,
+      "options": { "tooltip": { "mode": "multi", "sort": "desc" }, "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } },
+      "targets": [
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-dev-env-003",
+            "metricType": "agent.googleapis.com/memory/percent_used",
+            "filters": [{ "key": "metric.label.state", "operator": "=", "value": "used" }],
+            "aliasBy": "dev/{{resource.label.instance_id}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id"],
+            "preprocessor": "none"
+          },
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-prd-env-003",
+            "metricType": "agent.googleapis.com/memory/percent_used",
+            "filters": [{ "key": "metric.label.state", "operator": "=", "value": "used" }],
+            "aliasBy": "prod/{{resource.label.instance_id}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id"],
+            "preprocessor": "none"
+          },
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-obs-003",
+            "metricType": "agent.googleapis.com/memory/percent_used",
+            "filters": [{ "key": "metric.label.state", "operator": "=", "value": "used" }],
+            "aliasBy": "obs/{{resource.label.instance_id}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id"],
+            "preprocessor": "none"
+          },
+          "refId": "C"
+        }
+      ],
+      "title": "Memory Utilization % (all projects)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "fillOpacity": 10 },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
+      "id": 8,
+      "options": { "tooltip": { "mode": "multi", "sort": "desc" }, "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } },
+      "targets": [
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-dev-env-003",
+            "metricType": "agent.googleapis.com/memory/bytes_used",
+            "filters": [{ "key": "metric.label.state", "operator": "=", "value": "used" }],
+            "aliasBy": "dev/{{resource.label.instance_id}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id"],
+            "preprocessor": "none"
+          },
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-prd-env-003",
+            "metricType": "agent.googleapis.com/memory/bytes_used",
+            "filters": [{ "key": "metric.label.state", "operator": "=", "value": "used" }],
+            "aliasBy": "prod/{{resource.label.instance_id}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id"],
+            "preprocessor": "none"
+          },
+          "refId": "B"
+        }
+      ],
+      "title": "Memory Bytes Used (all projects)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 36 },
+      "id": 104,
+      "title": "Disk IOPS & Latency (requires Ops Agent)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "fillOpacity": 10 },
+          "unit": "iops"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 37 },
+      "id": 9,
+      "options": { "tooltip": { "mode": "multi", "sort": "desc" }, "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } },
+      "targets": [
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-dev-env-003",
+            "metricType": "compute.googleapis.com/instance/disk/read_ops_count",
+            "filters": [],
+            "aliasBy": "dev/{{resource.label.instance_id}} read",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id"],
+            "preprocessor": "none"
+          },
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-dev-env-003",
+            "metricType": "compute.googleapis.com/instance/disk/write_ops_count",
+            "filters": [],
+            "aliasBy": "dev/{{resource.label.instance_id}} write",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id"],
+            "preprocessor": "none"
+          },
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-prd-env-003",
+            "metricType": "compute.googleapis.com/instance/disk/read_ops_count",
+            "filters": [],
+            "aliasBy": "prod/{{resource.label.instance_id}} read",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id"],
+            "preprocessor": "none"
+          },
+          "refId": "C"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-prd-env-003",
+            "metricType": "compute.googleapis.com/instance/disk/write_ops_count",
+            "filters": [],
+            "aliasBy": "prod/{{resource.label.instance_id}} write",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id"],
+            "preprocessor": "none"
+          },
+          "refId": "D"
+        }
+      ],
+      "title": "Disk IOPS (Read/Write)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "fillOpacity": 10 },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 37 },
+      "id": 10,
+      "options": { "tooltip": { "mode": "multi", "sort": "desc" }, "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } },
+      "targets": [
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-dev-env-003",
+            "metricType": "agent.googleapis.com/disk/operation_time",
+            "filters": [],
+            "aliasBy": "dev/{{resource.label.instance_id}}/{{metric.label.device}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id", "metric.label.device"],
+            "preprocessor": "none"
+          },
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-prd-env-003",
+            "metricType": "agent.googleapis.com/disk/operation_time",
+            "filters": [],
+            "aliasBy": "prod/{{resource.label.instance_id}}/{{metric.label.device}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id", "metric.label.device"],
+            "preprocessor": "none"
+          },
+          "refId": "B"
+        }
+      ],
+      "title": "Disk I/O Latency",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 45 },
+      "id": 105,
+      "title": "System Load (requires Ops Agent)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "fillOpacity": 10 },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 46 },
+      "id": 11,
+      "options": { "tooltip": { "mode": "multi", "sort": "desc" }, "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } },
+      "targets": [
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-dev-env-003",
+            "metricType": "agent.googleapis.com/cpu/load_1m",
+            "filters": [],
+            "aliasBy": "dev/{{resource.label.instance_id}} load1m",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id"],
+            "preprocessor": "none"
+          },
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-prd-env-003",
+            "metricType": "agent.googleapis.com/cpu/load_1m",
+            "filters": [],
+            "aliasBy": "prod/{{resource.label.instance_id}} load1m",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id"],
+            "preprocessor": "none"
+          },
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-obs-003",
+            "metricType": "agent.googleapis.com/cpu/load_1m",
+            "filters": [],
+            "aliasBy": "obs/{{resource.label.instance_id}} load1m",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id"],
+            "preprocessor": "none"
+          },
+          "refId": "C"
+        }
+      ],
+      "title": "System Load 1m (all projects)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 54 },
+      "id": 106,
+      "title": "Processes (requires Ops Agent)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "fillOpacity": 10 },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 55 },
+      "id": 12,
+      "options": { "tooltip": { "mode": "multi", "sort": "desc" }, "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } },
+      "targets": [
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-dev-env-003",
+            "metricType": "agent.googleapis.com/processes/cpu_time",
+            "filters": [],
+            "aliasBy": "dev/{{resource.label.instance_id}}/{{metric.label.process}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id", "metric.label.process"],
+            "preprocessor": "none"
+          },
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-prd-env-003",
+            "metricType": "agent.googleapis.com/processes/cpu_time",
+            "filters": [],
+            "aliasBy": "prod/{{resource.label.instance_id}}/{{metric.label.process}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id", "metric.label.process"],
+            "preprocessor": "none"
+          },
+          "refId": "B"
+        }
+      ],
+      "title": "Processes by CPU Usage (Top processes)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "fillOpacity": 10 },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 55 },
+      "id": 13,
+      "options": { "tooltip": { "mode": "multi", "sort": "desc" }, "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } },
+      "targets": [
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-dev-env-003",
+            "metricType": "agent.googleapis.com/processes/rss_usage",
+            "filters": [],
+            "aliasBy": "dev/{{resource.label.instance_id}}/{{metric.label.process}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id", "metric.label.process"],
+            "preprocessor": "none"
+          },
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-prd-env-003",
+            "metricType": "agent.googleapis.com/processes/rss_usage",
+            "filters": [],
+            "aliasBy": "prod/{{resource.label.instance_id}}/{{metric.label.process}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_MEAN",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id", "metric.label.process"],
+            "preprocessor": "none"
+          },
+          "refId": "B"
+        }
+      ],
+      "title": "Processes by Memory RSS (Top processes)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 63 },
+      "id": 107,
+      "title": "Network RTT & Cross-Region (requires VPC Flow Logs)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "fillOpacity": 10 },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 64 },
+      "id": 14,
+      "options": { "tooltip": { "mode": "multi", "sort": "desc" }, "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } },
+      "targets": [
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-dev-env-003",
+            "metricType": "networking.googleapis.com/vm_flow/rtt_msec",
+            "filters": [],
+            "aliasBy": "dev/{{resource.label.subnetwork_name}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_PERCENTILE_99",
+            "crossSeriesReducer": "REDUCE_MEAN",
+            "groupBys": ["resource.label.subnetwork_name"],
+            "preprocessor": "none"
+          },
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-prd-env-003",
+            "metricType": "networking.googleapis.com/vm_flow/rtt_msec",
+            "filters": [],
+            "aliasBy": "prod/{{resource.label.subnetwork_name}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_PERCENTILE_99",
+            "crossSeriesReducer": "REDUCE_MEAN",
+            "groupBys": ["resource.label.subnetwork_name"],
+            "preprocessor": "none"
+          },
+          "refId": "B"
+        }
+      ],
+      "title": "Network RTT p99 (ms) by Subnet",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 1, "fillOpacity": 10 },
+          "unit": "Bps"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 64 },
+      "id": 15,
+      "options": { "tooltip": { "mode": "multi", "sort": "desc" }, "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] } },
+      "targets": [
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-dev-env-003",
+            "metricType": "networking.googleapis.com/vm_flow/egress_bytes_count",
+            "filters": [],
+            "aliasBy": "dev/{{metric.label.remote_location}}/{{metric.label.remote_location_type}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": ["metric.label.remote_location", "metric.label.remote_location_type"],
+            "preprocessor": "none"
+          },
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-prd-env-003",
+            "metricType": "networking.googleapis.com/vm_flow/egress_bytes_count",
+            "filters": [],
+            "aliasBy": "prod/{{metric.label.remote_location}}/{{metric.label.remote_location_type}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_SUM",
+            "groupBys": ["metric.label.remote_location", "metric.label.remote_location_type"],
+            "preprocessor": "none"
+          },
+          "refId": "B"
+        }
+      ],
+      "title": "Egress by Destination Type (Cross-Region/External/Internal)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 72 },
+      "id": 108,
+      "title": "Firewall",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "lineWidth": 2, "fillOpacity": 15 },
+          "unit": "pps",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 10 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 73 },
+      "id": 16,
+      "options": { "tooltip": { "mode": "multi", "sort": "desc" }, "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "sum"] } },
+      "targets": [
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-dev-env-003",
+            "metricType": "compute.googleapis.com/firewall/dropped_packets_count",
+            "filters": [],
+            "aliasBy": "dev/{{resource.label.instance_id}}/{{metric.label.direction}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id", "metric.label.direction"],
+            "preprocessor": "none"
+          },
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-prd-env-003",
+            "metricType": "compute.googleapis.com/firewall/dropped_packets_count",
+            "filters": [],
+            "aliasBy": "prod/{{resource.label.instance_id}}/{{metric.label.direction}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id", "metric.label.direction"],
+            "preprocessor": "none"
+          },
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
+          "queryType": "metrics",
+          "metricQuery": {
+            "projectName": "gcp-apse1-prj-hub-net-003",
+            "metricType": "compute.googleapis.com/firewall/dropped_packets_count",
+            "filters": [],
+            "aliasBy": "hub/{{resource.label.instance_id}}/{{metric.label.direction}}",
+            "alignmentPeriod": "cloud-monitoring-auto",
+            "perSeriesAligner": "ALIGN_RATE",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "groupBys": ["resource.label.instance_id", "metric.label.direction"],
+            "preprocessor": "none"
+          },
+          "refId": "C"
+        }
+      ],
+      "title": "Firewall Packets Denied (packets/s) - all projects",
+      "type": "timeseries"
     }
   ],
-  "refresh": "1m",
+  "refresh": "30s",
   "schemaVersion": 39,
   "tags": ["gcp", "cloud-monitoring", "gce"],
   "templating": { "list": [] },
@@ -444,5 +1073,5 @@
   "timezone": "browser",
   "title": "GCP Cloud Monitoring - GCE VMs",
   "uid": "gcp-cloud-monitoring-vms",
-  "version": 1
+  "version": 2
 }

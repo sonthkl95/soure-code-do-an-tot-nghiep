@@ -33,8 +33,6 @@ grafana_dashboards:
     gnet_id: 9614
   - name: "Log Aggregation View"               # Real-time Log search (Loki)
     gnet_id: 13639
-  - name: "Trace Waterfall"                    # Microservices function call waterfall (Tempo)
-    gnet_id: 16077
-  - name: "GCP GCE Virtual Machines"           # Native GCP GCE metrics via Cloud Monitoring
-    gnet_id: 10940
+  # Tempo trace waterfall: use Grafana Explore > Tempo datasource (built-in, no dashboard needed)
+  # GCP GCE VMs: dashboard ID 10940 removed from Grafana.com — create manually via Grafana UI
 

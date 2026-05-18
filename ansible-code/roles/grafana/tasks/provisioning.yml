@@ -48,19 +48,6 @@
     owner: grafana
     group: grafana
 
-- name: Download Tempo Trace Waterfall dashboard
-  get_url:
-    url: "https://grafana.com/api/dashboards/16077/revisions/3/download"
-    dest: /var/lib/grafana/dashboards/tempo-traces.json
-    owner: grafana
-    group: grafana
-    force: true
-
-- name: Download GCP GCE Virtual Machines dashboard
-  get_url:
-    url: "https://grafana.com/api/dashboards/10940/revisions/6/download"
-    dest: /var/lib/grafana/dashboards/gcp-gce-vms.json
-    owner: grafana
-    group: grafana
-    force: true
+# NOTE: Tempo trace waterfall is available natively in Grafana Explore > Tempo datasource
+# NOTE: GCP GCE VMs dashboard (ID 10940) no longer exists on Grafana.com — build manually via UI
 

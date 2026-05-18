@@ -8,6 +8,9 @@ datasources:
     access: proxy
     isDefault: {{ ds.is_default | default(false) }}
     editable: false
+{% if ds.uid is defined %}
+    uid: {{ ds.uid }}
+{% endif %}
 {% if ds.type == 'tempo' %}
     jsonData:
       httpMethod: GET

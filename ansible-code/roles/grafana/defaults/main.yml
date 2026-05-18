@@ -20,8 +20,9 @@ grafana_datasources:
     url: "http://10.60.1.10:3200"
   - name: "Google Cloud Monitoring"
     type: "stackdriver"
+    uid: "google-cloud-monitoring"
     url: ""
-    default_project: "gcp-apse1-prj-obs-003"
+    default_project: "gcp-apse1-prj-dev-env-001"
 
 
 # Dashboards to auto-provision (per architecture Visualization block)

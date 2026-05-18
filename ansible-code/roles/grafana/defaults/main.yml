@@ -19,9 +19,10 @@ grafana_datasources:
     type: "tempo"
     url: "http://10.60.1.10:3200"
   - name: "Google Cloud Monitoring"
-    type: "googlecloud-monitoring"
+    type: "stackdriver"
     url: ""
     default_project: "gcp-apse1-prj-obs-003"
+
 
 # Dashboards to auto-provision (per architecture Visualization block)
 grafana_dashboards:

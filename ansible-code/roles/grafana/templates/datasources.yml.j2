@@ -25,10 +25,11 @@ datasources:
           matcherRegex: '"traceId":"(\w+)"'
           name: TraceID
           url: '$${__value.raw}'
-{% elif ds.type == 'googlecloud-monitoring' %}
+{% elif ds.type == 'stackdriver' %}
     jsonData:
       authenticationType: gce
       defaultProject: "{{ ds.default_project }}"
+
 {% endif %}
 {% endfor %}
 

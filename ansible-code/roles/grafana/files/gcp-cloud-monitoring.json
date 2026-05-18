@@ -894,7 +894,7 @@
           "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
           "queryType": "metrics",
           "metricQuery": {
-            "projectName": "gcp-apse1-prj-dev-env-003",
+            "projectName": "gcp-apse1-prj-sh-vpc-dev-001",
             "metricType": "networking.googleapis.com/vm_flow/rtt_msec",
             "filters": [],
             "aliasBy": "dev/{{resource.label.subnetwork_name}}",
@@ -910,7 +910,7 @@
           "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
           "queryType": "metrics",
           "metricQuery": {
-            "projectName": "gcp-apse1-prj-prd-env-003",
+            "projectName": "gcp-apse1-prj-sh-vpc-prd-001",
             "metricType": "networking.googleapis.com/vm_flow/rtt_msec",
             "filters": [],
             "aliasBy": "prod/{{resource.label.subnetwork_name}}",
@@ -944,7 +944,7 @@
           "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
           "queryType": "metrics",
           "metricQuery": {
-            "projectName": "gcp-apse1-prj-dev-env-003",
+            "projectName": "gcp-apse1-prj-sh-vpc-dev-001",
             "metricType": "networking.googleapis.com/vm_flow/egress_bytes_count",
             "filters": [],
             "aliasBy": "dev/{{metric.label.remote_location}}/{{metric.label.remote_location_type}}",
@@ -960,7 +960,7 @@
           "datasource": { "type": "stackdriver", "uid": "google-cloud-monitoring" },
           "queryType": "metrics",
           "metricQuery": {
-            "projectName": "gcp-apse1-prj-prd-env-003",
+            "projectName": "gcp-apse1-prj-sh-vpc-prd-001",
             "metricType": "networking.googleapis.com/vm_flow/egress_bytes_count",
             "filters": [],
             "aliasBy": "prod/{{metric.label.remote_location}}/{{metric.label.remote_location_type}}",

@@ -14,7 +14,3 @@
     name: "grafana={{ grafana_version }}*"
     state: present
     update_cache: true
-
-- name: Install Google Cloud Monitoring datasource plugin
-  command: grafana-cli plugins install grafana-googlecloudmonitoring-datasource
-  notify: restart grafana

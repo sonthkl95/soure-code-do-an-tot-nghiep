@@ -1,0 +1,9 @@
+[submodule "app/tech-shop/ecommerce-customer"]
+	path = app/tech-shop/ecommerce-customer
+	url = https://github.com/Pham-Van-Khiem-Toan-Tin/ecommerce-customer.git
+[submodule "app/tech-shop/microservice"]
+	path = app/tech-shop/microservice
+	url = https://github.com/Pham-Van-Khiem-Toan-Tin/microservice.git
+[submodule "app/tech-shop/techshop"]
+	path = app/tech-shop/techshop
+	url = https://github.com/Pham-Van-Khiem-Toan-Tin/techshop.git

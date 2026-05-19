@@ -1,6 +1,6 @@
 ---
 # vars for kafka role
-kafka_version: "3.7.0"
+kafka_version: "3.9.0"
 kafka_scala_version: "2.13"
 kafka_install_dir: "/opt/kafka"
 kafka_data_dir: "/var/kafka/data"

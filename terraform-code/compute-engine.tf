@@ -41,6 +41,7 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-dev-master-1" {
 
   metadata = { enable-oslogin = "TRUE" }
   metadata_startup_script = local.ops_agent_startup_script
+  labels   = { vm_name = "k8s-dev-master-1", env = "dev", role = "master" }
   tags     = ["k8s-master", "k8s-dev", "allow-internal"]
 
   depends_on = [google_compute_shared_vpc_service_project.gcp-asia-southeast1-shared-vpc-service-dev-003]
@@ -75,6 +76,7 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-dev-worker-1" {
 
   metadata = { enable-oslogin = "TRUE" }
   metadata_startup_script = local.ops_agent_startup_script
+  labels   = { vm_name = "k8s-dev-worker-1", env = "dev", role = "worker" }
   tags     = ["k8s-worker", "k8s-dev", "allow-internal"]
 
   depends_on = [google_compute_shared_vpc_service_project.gcp-asia-southeast1-shared-vpc-service-dev-003]
@@ -109,6 +111,7 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-prod-master-1" {
 
   metadata = { enable-oslogin = "TRUE" }
   metadata_startup_script = local.ops_agent_startup_script
+  labels   = { vm_name = "k8s-prod-master-1", env = "prod", role = "master" }
   tags     = ["k8s-master", "k8s-prod", "allow-internal"]
 
   depends_on = [google_compute_shared_vpc_service_project.gcp-asia-southeast1-shared-vpc-service-prod-003]
@@ -143,6 +146,7 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-prod-worker-1" {
 
   metadata = { enable-oslogin = "TRUE" }
   metadata_startup_script = local.ops_agent_startup_script
+  labels   = { vm_name = "k8s-prod-worker-1", env = "prod", role = "worker" }
   tags     = ["k8s-worker", "k8s-prod", "allow-internal"]
 
   depends_on = [google_compute_shared_vpc_service_project.gcp-asia-southeast1-shared-vpc-service-prod-003]
@@ -216,6 +220,7 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-observability-003" {
 
   metadata = { enable-oslogin = "TRUE" }
   metadata_startup_script = local.ops_agent_startup_script
+  labels   = { vm_name = "observability-vm", env = "obs", role = "observability" }
   tags     = ["observability-vm", "allow-internal"]
 
   depends_on = [google_project_service.gcp-apse1-apis-observability-003]

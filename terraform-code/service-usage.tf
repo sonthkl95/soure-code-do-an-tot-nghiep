@@ -28,6 +28,7 @@ resource "google_project_service" "gcp-apse1-apis-sh-vpc-dev-003" {
     "cloudresourcemanager.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",
+    "networkmanagement.googleapis.com",
     "oslogin.googleapis.com",
   ])
 
@@ -45,6 +46,7 @@ resource "google_project_service" "gcp-apse1-apis-sh-vpc-prd-003" {
     "cloudresourcemanager.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",
+    "networkmanagement.googleapis.com",
     "oslogin.googleapis.com",
   ])
 

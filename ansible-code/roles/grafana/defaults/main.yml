@@ -1,6 +1,6 @@
 ---
 # vars for grafana role
-grafana_version: "10.4.0"
+grafana_version: "11.4.0"
 grafana_install_dir: "/opt/grafana"
 grafana_port: 3000
 grafana_admin_user: "admin"

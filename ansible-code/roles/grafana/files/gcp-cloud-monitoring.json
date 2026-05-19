@@ -461,7 +461,7 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "agent.googleapis.com/memory/percent_used",
-            "filters": ["metric.label.state", "=", "used", "AND"],
+            "filters": ["metric.label.state", "=", "used"],
             "aliasBy": "dev/${resource.label.instance_id}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -477,7 +477,7 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "agent.googleapis.com/memory/percent_used",
-            "filters": ["metric.label.state", "=", "used", "AND"],
+            "filters": ["metric.label.state", "=", "used"],
             "aliasBy": "prod/${resource.label.instance_id}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -493,7 +493,7 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "agent.googleapis.com/memory/percent_used",
-            "filters": ["metric.label.state", "=", "used", "AND"],
+            "filters": ["metric.label.state", "=", "used"],
             "aliasBy": "obs/${resource.label.instance_id}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -527,7 +527,7 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "agent.googleapis.com/memory/bytes_used",
-            "filters": ["metric.label.state", "=", "used", "AND"],
+            "filters": ["metric.label.state", "=", "used"],
             "aliasBy": "dev/${resource.label.instance_id}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -543,7 +543,7 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "agent.googleapis.com/memory/bytes_used",
-            "filters": ["metric.label.state", "=", "used", "AND"],
+            "filters": ["metric.label.state", "=", "used"],
             "aliasBy": "prod/${resource.label.instance_id}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",

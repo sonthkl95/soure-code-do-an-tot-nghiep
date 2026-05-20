@@ -1,0 +1,147 @@
+/* =====================================================
+   Background utility classes
+   Dựa trên design tokens trong :root
+   ===================================================== */
+
+/* ===== Solid backgrounds ===== */
+
+.bg-app {
+  background-color: var(--app-bg) !important;
+}
+
+.bg-surface {
+  background-color: var(--app-surface) !important;
+}
+
+.bg-white {
+  background-color: var(--neutral-0) !important;
+}
+
+.bg-muted {
+  background-color: var(--neutral-100) !important;
+}
+
+/* ===== Neutral scale ===== */
+
+.bg-neutral-50 {
+  background-color: var(--neutral-50) !important;
+}
+.bg-neutral-100 {
+  background-color: var(--neutral-100) !important;
+}
+.bg-neutral-200 {
+  background-color: var(--neutral-200) !important;
+}
+.bg-neutral-300 {
+  background-color: var(--neutral-300) !important;
+}
+.bg-neutral-400 {
+  background-color: var(--neutral-400) !important;
+}
+.bg-neutral-500 {
+  background-color: var(--neutral-500) !important;
+}
+.bg-neutral-600 {
+  background-color: var(--neutral-600) !important;
+}
+.bg-neutral-700 {
+  background-color: var(--neutral-700) !important;
+}
+.bg-neutral-800 {
+  background-color: var(--neutral-800) !important;
+}
+.bg-neutral-900 {
+  background-color: var(--neutral-900) !important;
+}
+
+/* ===== Semantic backgrounds ===== */
+
+.bg-success {
+  background-color: var(--success) !important;
+  color: #fff;
+}
+
+.bg-danger {
+  background-color: var(--danger) !important;
+  color: #fff;
+}
+
+.bg-danger-soft {
+  background-color: var(--danger-50) !important;
+  color: var(--danger);
+}
+
+.bg-success-soft {
+  background-color: rgba(22, 163, 74, 0.12) !important;
+  color: var(--success);
+}
+
+/* ===== Surface styles (admin style) ===== */
+
+.bg-card {
+  background-color: var(--app-surface);
+  border-radius: var(--app-radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.bg-panel {
+  background-color: var(--app-surface);
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius);
+  box-shadow: var(--shadow-md);
+}
+
+/* ===== Gradient backgrounds ===== */
+
+.bg-gradient-light {
+  background: linear-gradient(180deg, var(--neutral-50), var(--neutral-100));
+}
+
+.bg-gradient-surface {
+  background: linear-gradient(180deg, var(--neutral-0), var(--neutral-100));
+}
+
+.bg-gradient-dark {
+  background: linear-gradient(180deg, var(--neutral-800), var(--neutral-900));
+  color: #fff;
+}
+
+/* ===== Admin / Overlay backgrounds ===== */
+
+.bg-overlay {
+  background-color: rgba(243, 244, 246, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.bg-overlay-dark {
+  background-color: rgba(17, 24, 39, 0.6);
+  backdrop-filter: blur(8px);
+  color: #fff;
+}
+
+/* ===== Border helpers ===== */
+
+.border-app {
+  border: 1px solid var(--app-border);
+}
+
+.border-muted {
+  border: 1px solid var(--neutral-200);
+}
+.border-app--rounded {
+  border: 1px solid var(--app-border);
+  border-radius: 14px;
+}
+/* ===== Debug (optional) ===== */
+.border-dashed {
+  border-style: dashed !important;
+}
+.bg-debug {
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(239, 68, 68, 0.15),
+    rgba(239, 68, 68, 0.15) 10px,
+    transparent 10px,
+    transparent 20px
+  );
+}

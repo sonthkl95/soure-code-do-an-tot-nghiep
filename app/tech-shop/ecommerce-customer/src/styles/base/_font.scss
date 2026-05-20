@@ -1,0 +1,65 @@
+/* Size utilities */
+.f-body     { font-size: var(--fs-md); }   
+.f-body-sm  { font-size: var(--fs-sm); }   
+.f-body-xs  { font-size: var(--fs-xs); }   
+.f-body-2xs { font-size: var(--fs-2xs); }  
+.f-body-3xs { font-size: var(--fs-3xs); }  
+.f-body-4xs { font-size: var(--fs-4xs); } 
+
+/* Style utilities */
+.f-title {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+}
+
+.f-section {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  letter-spacing: -0.01em;
+}
+
+.f-meta {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+}
+
+.f-hint {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+}
+
+.f-caption {
+  font-size: var(--fs-2xs);
+  color: var(--text-muted);
+}
+
+.f-micro {
+  font-size: var(--fs-3xs);
+  color: var(--text-disabled);
+  letter-spacing: 0.02em;
+}
+
+/* Weight & Line-height */
+.f-regular  { font-weight: var(--fw-regular); }
+.f-medium   { font-weight: var(--fw-medium); }
+.f-semibold { font-weight: var(--fw-semibold); }
+.f-bold     { font-weight: var(--fw-bold); }
+
+.lh-tight   { line-height: var(--lh-tight); }
+.lh-normal  { line-height: var(--lh-normal); }
+.lh-relaxed { line-height: var(--lh-relaxed); }
+
+/* COLOR UTILITIES (NEW) */
+.text-brand {
+  color: var(--text-brand) !important;
+}
+.text-brand-hover:hover {
+  color: var(--text-brand-hover) !important;
+}
+.text-danger {
+  color: var(--danger) !important;
+}
+.text-success {
+  color: var(--success) !important;
+}

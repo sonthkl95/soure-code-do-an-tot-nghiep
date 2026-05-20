@@ -1,0 +1,98 @@
+.input-search {
+  position: relative;
+
+  input {
+    width: 100%;
+    /* Tinh chỉnh lại padding/height cho cân đối */
+    padding-right: 34px !important;
+    padding-left: 10px;
+    height: 36px !important;
+    vertical-align: middle;
+
+    /* Sử dụng biến hệ thống thay vì hardcode */
+    background-color: var(--neutral-100);
+    color: var(--app-text);
+    border: 1px solid var(--app-border);
+    border-radius: 16px; /* Bo góc 6px */
+
+    /* Transition mượt hơn */
+    transition: all 0.15s ease-in-out;
+
+    &::placeholder {
+      color: var(--text-muted); /* Dùng màu neutral-500 */
+      font-size: var(--fs-xs); /* 12px */
+    }
+
+    /* === UPDATE: FOCUS STATE (RED THEME) === */
+    &:focus {
+      border-color: var(--brand-500); /* Viền đỏ đậm */
+      box-shadow: 0 0 0 3px var(--ring); /* Vòng sáng đỏ nhạt */
+      outline: none;
+    }
+
+    &:disabled,
+    &[readonly] {
+      background-color: var(--neutral-100);
+      color: var(--text-disabled);
+      cursor: not-allowed;
+      border-color: var(--neutral-200);
+    }
+  }
+
+  .icon-search {
+    position: absolute;
+    right: 2px;
+    color: var(--neutral-0);
+    top: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    background-color: var(--brand-500);
+    /* Icon nhỏ lại chút cho tinh tế (18-20px) */
+    font-size: 18px;
+    border: none;
+  }
+  .suggest-search {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border-radius: 10px;
+    transform: translateY(103%);
+    border: 1px solid var(--app-border);
+    width: 100%;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 100px;
+    max-height: 340px;
+    overflow-y: auto;
+    .suggest-footer {
+      flex: none;
+    }
+    .suggest-group {
+      width: 100%;
+      height: 100%;
+      padding: 10px;
+      .suggest-title {
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .suggest-item {
+        display: flex;
+
+        .suggest-thumb {
+          width: 60px;
+          height: 60px;
+          border-radius: 8px;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,68 @@
+.accordion {
+  .accordion-item.accordion-disabled {
+    .accordion-button {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+  .accordion-header {
+    button {
+      box-shadow: none;
+      background-color: var(--neutral-100);
+    }
+    .accordion-button::after {
+      background-image: url("/dropdown.png");
+    }
+    .total-select {
+      display: inline-block;
+      position: absolute;
+      right: 45px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+  .accordion-body {
+    .perm-option-card {
+      border: 1px solid #e6eefb;
+      border-radius: 10px;
+      padding: 12px 14px;
+      background: #fff;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease,
+        box-shadow 0.15s ease;
+      
+
+      &:hover {
+        background: #f6f9ff;
+      }
+      .perm-option-text {
+        text-align: left;
+        font-size: 14px;
+        font-weight: 400;
+      }
+      .perm-option-desc {
+        text-align: left;
+        font-size: 10px;
+      }
+    }
+
+    .perm-option-card.is-selected {
+      border-color: #b7c9ff;
+      background: #f3f6ff;
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.15);
+    }
+
+    .perm-option-card.is-disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+
+      &:hover {
+        background: #fff;
+      }
+    }
+
+    .perm-checkbox {
+      margin-top: 2px;
+    }
+  }
+}

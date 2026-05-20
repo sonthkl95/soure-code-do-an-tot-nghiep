@@ -1,0 +1,82 @@
+// File: tokens/_brand.scss (trước đây là _neutral.scss)
+
+:root {
+  /* =========================================
+     1. NEUTRAL PALETTE (Giữ lại cho UI Structure)
+     ========================================= */
+  --neutral-0: #ffffff;
+  --neutral-50: #f9fafb;
+  --neutral-100: #f3f4f6;
+  --neutral-200: #e5e7eb;
+  --neutral-300: #d1d5db;
+  --neutral-400: #9ca3af;
+  --neutral-500: #6b7280;
+  --neutral-600: #4b5563;
+  --neutral-700: #374151;
+  --neutral-800: #1f2937;
+  --neutral-900: #111827;
+
+  /* =========================================
+     2. BRAND PALETTE (Red Theme)
+     Base: #dd2627
+     ========================================= */
+  --brand-50:  #fef2f2;
+  --brand-100: #fee2e2;
+  --brand-200: #fecaca;
+  --brand-300: #fca5a5;
+  --brand-400: #f87171;
+  --brand-500: #dd2627; /* MAIN BRAND COLOR */
+  --brand-600: #dc2626;
+  --brand-700: #b91c1c; /* Hover darker */
+  --brand-800: #991b1b;
+  --brand-900: #7f1d1d;
+
+  /* =========================================
+     3. APP SEMANTIC TOKENS
+     ========================================= */
+  
+  /* Backgrounds & Surfaces (Vẫn dùng Neutral để sạch sẽ) */
+  --app-bg: var(--neutral-50);
+  --app-surface: var(--neutral-0);
+  --app-border: var(--neutral-200);
+
+  /* Text Colors */
+  --app-text: var(--neutral-900);
+  --app-text-muted: var(--neutral-500);
+
+  /* Shadows */
+  --app-radius: 10px;
+  --app-radius--sm: 6px;
+  --app-radius--md: 8px;
+  --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.06);
+  --shadow-md: 0 8px 24px rgba(17, 24, 39, 0.08);
+
+  /* Focus Rings (Đổi sang tông đỏ) */
+  --ring: rgba(221, 38, 39, 0.25); 
+  --ring-strong: rgba(221, 38, 39, 0.4);
+
+  /* =========================================
+     4. STATES & ACTIONS (Chuyển sang RED)
+     ========================================= */
+  
+  /* Primary Action */
+  --primary: var(--brand-500);
+  --primary-hover: var(--brand-700);
+  --primary-light: var(--brand-50); 
+
+  /* Active States */
+  --active: var(--brand-500);
+  --active-bg: var(--brand-50);
+  --link-color: var(--brand-500);
+
+  /* Functional Colors */
+  --danger: #ef4444;       // Giữ nguyên hoặc đồng bộ với brand nếu muốn
+  --danger-50: rgba(239, 68, 68, 0.12);
+  
+  --success: #16a34a;
+  
+  /* Sizes */
+  --control-h: 40px;
+  --control-h-sm: 34px;
+  --control-h-lg: 44px;
+}

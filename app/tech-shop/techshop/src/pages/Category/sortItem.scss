@@ -1,0 +1,19 @@
+.sort-item-card {
+    input {
+        border-radius: 6px;
+        text-align: center;
+        border: 1px solid var(--app-border);
+        &:focus {
+            border: inherit;
+        }
+    }
+    .label-option-select {
+        border: 1px solid var(--app-border);
+        display: inline-flex;
+        width: 100%;
+        align-items: center;
+        padding: 5px;
+        border-radius: 6px;
+        gap: 5px;
+    }
+}

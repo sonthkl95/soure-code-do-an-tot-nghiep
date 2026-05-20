@@ -1,0 +1,25 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+/* Brand Selection Color */
+::selection {
+  background-color: var(--brand-500); /* Red background */
+  color: #ffffff;
+}
+
+/* Hide 3rd party elements */
+.tox-statusbar {
+  display: none !important;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}

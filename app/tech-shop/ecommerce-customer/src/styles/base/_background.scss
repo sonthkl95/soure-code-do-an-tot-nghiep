@@ -1,0 +1,121 @@
+/* =====================================================
+   Background utility classes
+   Updated: FULL RED BRAND THEME (#dd2627)
+   ===================================================== */
+
+/* =========================================
+   1. CORE STRUCTURE (Vẫn cần Neutral để làm nền chính)
+   ========================================= */
+.bg-app {
+  background-color: var(--app-bg) !important; /* Thường là xám rất nhạt */
+}
+
+.bg-surface {
+  background-color: var(--app-surface) !important; /* Trắng */
+}
+
+/* =========================================
+   2. BRAND BACKGROUNDS (HỆ THỐNG MÀU CHỦ ĐẠO)
+   Thêm đầy đủ dải màu để bạn tùy biến độ đậm nhạt
+   ========================================= */
+
+/* --- Solid Brand Colors --- */
+
+/* Nền chính (Nút bấm, Header quan trọng) */
+.bg-primary {
+  background-color: var(--brand-500) !important;
+  color: #ffffff;
+}
+
+/* Nền đậm (Sidebar, Footer, Hover state) */
+.bg-primary-dark {
+  background-color: var(--brand-700) !important;
+  color: #ffffff;
+}
+
+.bg-primary-darker {
+  background-color: var(--brand-900) !important;
+  color: #ffffff;
+}
+
+/* Nền nhạt (Badge, Tag, Alert, Active Item) */
+.bg-primary-light {
+  background-color: var(--brand-100) !important;
+  color: var(--brand-800);
+}
+
+.bg-primary-subtle {
+  background-color: var(--brand-50) !important;
+  color: var(--brand-700);
+}
+
+/* --- Utility Scale (Dùng khi cần chỉnh chi tiết) --- */
+.bg-brand-50  { background-color: var(--brand-50) !important; }
+.bg-brand-100 { background-color: var(--brand-100) !important; }
+.bg-brand-200 { background-color: var(--brand-200) !important; }
+.bg-brand-500 { background-color: var(--brand-500) !important; color: #fff; }
+.bg-brand-600 { background-color: var(--brand-600) !important; color: #fff; }
+.bg-brand-700 { background-color: var(--brand-700) !important; color: #fff; }
+.bg-brand-900 { background-color: var(--brand-900) !important; color: #fff; }
+
+
+/* =========================================
+   3. GRADIENT BRAND (Tạo cảm giác hiện đại)
+   ========================================= */
+
+/* Gradient Đỏ chuẩn */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-700) 100%) !important;
+  color: #ffffff;
+}
+
+/* Gradient Đỏ sáng (Dùng cho Card nổi bật) */
+.bg-gradient-primary-light {
+  background: linear-gradient(135deg, var(--brand-400) 0%, var(--brand-600) 100%) !important;
+  color: #ffffff;
+}
+
+/* Gradient Đỏ tối (Dùng cho Sidebar/Admin) */
+.bg-gradient-primary-dark {
+  background: linear-gradient(180deg, var(--brand-800) 0%, var(--brand-900) 100%) !important;
+  color: #ffffff;
+}
+
+/* Gradient nhạt (Dùng làm nền trang trí) */
+.bg-gradient-primary-subtle {
+  background: linear-gradient(180deg, var(--brand-50) 0%, #ffffff 100%) !important;
+}
+
+/* =========================================
+   4. SEMANTIC & NEUTRAL (Giữ lại để hỗ trợ)
+   ========================================= */
+
+.bg-white { background-color: var(--neutral-0) !important; }
+.bg-muted { background-color: var(--neutral-100) !important; }
+
+/* Trạng thái chức năng (Vẫn cần thiết) */
+.bg-success { background-color: var(--success) !important; color: #fff; }
+.bg-danger  { background-color: var(--danger) !important; color: #fff; }
+.bg-warning { background-color: #f59e0b !important; color: #fff; }
+
+.bg-success-soft { background-color: #dcfce7 !important; color: var(--success); }
+.bg-danger-soft  { background-color: var(--danger-50) !important; color: var(--danger); }
+
+/* =========================================
+   5. BORDERS & OVERLAYS
+   ========================================= */
+
+.border-primary {
+  border: 1px solid var(--brand-500) !important;
+}
+
+.border-primary-subtle {
+  border: 1px solid var(--brand-200) !important;
+}
+
+/* Overlay đỏ (Khi mở modal hoặc menu mobile) */
+.bg-overlay-primary {
+  background-color: rgba(221, 38, 39, 0.85); /* Đỏ trong suốt */
+  backdrop-filter: blur(4px);
+  color: #fff;
+}

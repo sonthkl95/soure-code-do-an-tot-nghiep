@@ -1,0 +1,51 @@
+:root {
+  --spinner-size: 18px;
+  --spinner-stroke: 2px;
+  --spinner-color: var(--neutral-900);
+  --spinner-muted: rgba(17, 24, 39, 0.35);
+}
+
+/* Base spinner (C shape) */
+.spinner {
+  width: var(--spinner-size);
+  height: var(--spinner-size);
+  display: inline-block;
+  border-radius: 999px;
+
+  border: var(--spinner-stroke) solid var(--spinner-muted);
+  border-top-color: var(--spinner-color);
+
+  animation: spin 0.8s linear infinite;
+}
+
+/* Sizes */
+.spinner--sm {
+  --spinner-size: 14px;
+  --spinner-stroke: 2px;
+}
+.spinner--md {
+  --spinner-size: 18px;
+  --spinner-stroke: 2px;
+}
+.spinner--lg {
+  --spinner-size: 24px;
+  --spinner-stroke: 3px;
+}
+
+/* On dark button */
+.spinner--on-dark {
+  --spinner-color: rgba(255, 255, 255, 0.92);
+  --spinner-muted: rgba(255, 255, 255, 0.35);
+}
+
+/* On destructive/light red badge */
+.spinner--danger {
+  --spinner-color: var(--danger);
+  --spinner-muted: rgba(239, 68, 68, 0.25);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

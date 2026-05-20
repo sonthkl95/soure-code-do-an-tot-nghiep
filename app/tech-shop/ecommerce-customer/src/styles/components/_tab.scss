@@ -1,0 +1,30 @@
+.react-tabs {
+  border-radius: 10px;
+  border: 1px solid var(--app-border);
+  margin-bottom: 20px;
+  background-color: var(--neutral-0);
+  &__tab-list {
+    border-bottom: 1px solid var(--app-border);
+    .react-tabs__tab {
+      background-color: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      color: var(--brand-500);
+      height: 100%;
+      text-transform: uppercase;
+      &.react-tabs__tab--selected {
+        color: var(--brand-500);
+        background-color: var(--brand-100);
+        border-bottom: 2px solid var(--brand-500);
+        border-radius: 0;
+        &::after {
+          display: none;
+        }
+      }
+    }
+  }
+  &__tab-panel {
+    padding: 10px;
+  }
+}

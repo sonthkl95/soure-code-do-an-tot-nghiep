@@ -1,0 +1,241 @@
+/* src/styles/components/_buttons.scss */
+
+:root {
+  /* =========================================
+     BUTTON COMPONENT TOKENS
+     Mặc định map vào Brand Color (Red)
+     ========================================= */
+
+  /* Dimensions */
+  --btn-h: var(--control-h);      /* 40px */
+  --btn-h-sm: var(--control-h-sm); /* 34px */
+  --btn-h-lg: var(--control-h-lg); /* 44px */
+  --btn-radius: var(--radius-md);
+  
+  /* Typography */
+  --btn-font-weight: 600;
+  --btn-font-size: 14px;
+
+  /* Default Theme (Primary/Brand) */
+  --btn-bg: var(--brand-500);          /* Nền Đỏ */
+  --btn-fg: #ffffff;                   /* Chữ Trắng */
+  --btn-border: transparent;           /* Không viền */
+  
+  --btn-hover-bg: var(--brand-700);    /* Hover đậm hơn */
+  --btn-hover-fg: #ffffff;
+  --btn-hover-border: transparent;
+
+  --btn-active-bg: var(--brand-800);
+  --btn-focus-ring: var(--ring);       /* Vòng sáng đỏ nhạt */
+  --btn-shadow: var(--shadow-sm);
+}
+
+/* =========================================
+   BASE BUTTON CLASS (.btn-app)
+   Mặc định là Primary (Màu Đỏ)
+   ========================================= */
+.btn-app {
+  /* 1. Layout & Box Model */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Khoảng cách giữa icon và text */
+  
+  height: var(--btn-h);
+  padding: 0 16px;
+  width: auto; /* Tránh bị stretch */
+
+  /* 2. Visual */
+  background-color: var(--btn-bg);
+  color: var(--btn-fg);
+  border: 1px solid var(--btn-border);
+  border-radius: var(--btn-radius);
+  box-shadow: var(--btn-shadow);
+
+  /* 3. Typography */
+  font-family: inherit;
+  font-weight: var(--btn-font-weight);
+  font-size: var(--btn-font-size);
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+
+  /* 4. Interaction */
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* --- STATES --- */
+
+  /* Hover */
+  &:hover {
+    background-color: var(--btn-hover-bg);
+    color: var(--btn-hover-fg);
+    border-color: var(--btn-hover-border);
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Active (Clicking) */
+  &:active {
+    background-color: var(--btn-active-bg);
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  /* Focus (Accessibility) */
+  &:focus-visible {
+    outline: none;
+    border-color: var(--brand-300);
+    box-shadow: 0 0 0 3px var(--btn-focus-ring);
+  }
+
+  /* Disabled */
+  &:disabled,
+  &.is-disabled,
+  &[aria-disabled="true"] {
+    opacity: 0.6;
+    pointer-events: none;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+    filter: grayscale(0.2); /* Làm xám nhẹ đi */
+  }
+}
+
+/* =========================================
+   VARIANTS (MODIFIERS)
+   ========================================= */
+
+/* 1. NEUTRAL (Màu Đen/Xám đậm - Dùng thay thế Primary khi cần ít nổi bật) */
+.btn-app--neutral {
+  --btn-bg: var(--neutral-900);
+  --btn-fg: #ffffff;
+  --btn-border: transparent;
+
+  --btn-hover-bg: var(--neutral-800);
+  --btn-hover-fg: #ffffff;
+  
+  --btn-active-bg: var(--neutral-900);
+  --btn-focus-ring: rgba(17, 24, 39, 0.2); /* Ring màu xám */
+}
+
+/* 2. SECONDARY (Màu Trắng/Xám nhạt - Dùng cho hành động phụ) */
+.btn-app--secondary {
+  --btn-bg: var(--neutral-0);
+  --btn-fg: var(--neutral-700);
+  --btn-border: var(--neutral-300);
+  --btn-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+
+  --btn-hover-bg: var(--neutral-50);
+  --btn-hover-fg: var(--neutral-900);
+  --btn-hover-border: var(--neutral-300);
+
+  --btn-active-bg: var(--neutral-100);
+}
+
+/* 3. OUTLINE (Trong suốt có viền - Ưu tiên Brand Color) */
+.btn-app--outline {
+  --btn-bg: transparent;
+  --btn-fg: var(--neutral-700);
+  --btn-border: var(--neutral-300);
+  --btn-shadow: none;
+
+  /* Hover thành màu Brand */
+  --btn-hover-bg: var(--brand-50);
+  --btn-hover-fg: var(--brand-600);
+  --btn-hover-border: var(--brand-200);
+}
+
+/* 4. GHOST (Trong suốt không viền) */
+.btn-app--ghost {
+  --btn-bg: transparent;
+  --btn-fg: var(--neutral-600);
+  --btn-border: transparent;
+  --btn-shadow: none;
+
+  /* Hover hiện nền nhẹ */
+  --btn-hover-bg: var(--neutral-100);
+  --btn-hover-fg: var(--neutral-900);
+}
+
+/* 5. GHOST BRAND (Chữ Brand, Hover nền Brand) */
+.btn-app--ghost-brand {
+  --btn-bg: transparent;
+  --btn-fg: var(--brand-600);
+  --btn-border: transparent;
+  --btn-shadow: none;
+
+  --btn-hover-bg: var(--brand-50);
+  --btn-hover-fg: var(--brand-700);
+}
+
+/* 6. DESTRUCTIVE (Màu đỏ báo lỗi/xóa) */
+.btn-app--destructive {
+  --btn-bg: var(--danger-50);
+  --btn-fg: var(--danger);
+  --btn-border: transparent;
+  --btn-shadow: none;
+
+  --btn-hover-bg: #fee2e2; /* Red-100 */
+  --btn-hover-fg: #991b1b; /* Red-800 */
+  
+  --btn-focus-ring: rgba(239, 68, 68, 0.25);
+}
+
+/* 7. LINK (Dạng liên kết text) */
+.btn-app--link {
+  --btn-bg: transparent;
+  --btn-fg: var(--brand-600); /* Màu link theo brand */
+  --btn-border: transparent;
+  --btn-shadow: none;
+  
+  padding: 0;
+  height: auto;
+  
+  &:hover {
+    text-decoration: underline;
+    background-color: transparent;
+    transform: none;
+    box-shadow: none;
+    color: var(--brand-800);
+  }
+}
+
+/* =========================================
+   SIZES
+   ========================================= */
+
+.btn-app--sm {
+  --btn-h: var(--btn-h-sm);
+  padding: 0 12px;
+  font-size: 13px; /* Nhỏ hơn một chút */
+}
+
+.btn-app--lg {
+  --btn-h: var(--btn-h-lg);
+  padding: 0 24px;
+  font-size: 16px;
+}
+
+/* =========================================
+   ICON BUTTON (Vuông)
+   ========================================= */
+.btn-app--icon {
+  width: var(--btn-h);
+  padding: 0;
+  border-radius: var(--btn-radius); /* Hoặc 50% nếu muốn tròn */
+  
+  &.btn-app--rounded {
+    border-radius: 50%;
+  }
+}
+
+/* =========================================
+   FULL WIDTH (Mobile)
+   ========================================= */
+.btn-app--block {
+  display: flex;
+  width: 100%;
+}

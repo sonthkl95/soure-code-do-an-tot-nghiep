@@ -1,0 +1,33 @@
+@use "./tokens/neutral";
+@use "./base/background";
+@use "./base/status";
+@use "./tokens/theme";
+@use "./base/reset";
+@use "./base/typography";
+@use "./base/font";
+@use "./layout/layout";
+@use "./components/buttons";
+@use "./components/forms";
+@use "./components/avatar";
+@use "./components/spinner";
+@use "./components/table";
+@use "./components/modal";
+@use "./components/badge";
+@use "./components/pagination";
+@use "./components/tab";
+@use "./components/upload";
+@use "./components/input";
+
+/* App-specific helpers */
+body {
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+
+/* Optional: nicer cards by default */
+.card {
+  border-color: var(--bs-border-color);
+  border-radius: var(--bs-border-radius-lg);
+}
+
+

@@ -1,0 +1,93 @@
+:root {
+  --pg-border: var(--app-border);
+  --pg-bg: var(--app-surface);
+  --pg-hover: var(--neutral-50);
+  --pg-active: rgba(17, 24, 39, 0.06);
+}
+
+.pagination-app {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding-top: 14px;
+}
+
+.pagination-app__left,
+.pagination-app__right {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pg {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pg__btn {
+  height: 34px;
+  min-width: 34px;
+  padding: 0 10px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--app-text);
+  font-weight: 600;
+  font-size: 13px;
+
+  transition: background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+
+  &:hover {
+    background: var(--pg-hover);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--ring);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.pg__btn--outline {
+  border-color: var(--pg-border);
+  background: var(--pg-bg);
+}
+
+.pg__btn.is-active {
+  background: var(--pg-active);
+  border-color: var(--pg-border);
+}
+
+.pg__dots {
+  color: var(--app-text-muted);
+  padding: 0 6px;
+}
+
+/* "Rows per page" select */
+.pg__label {
+  font-size: 13px;
+  color: var(--app-text);
+  font-weight: 600;
+}
+
+.pg__select {
+  height: 34px;
+  border-radius: 12px;
+  border: 1px solid var(--pg-border);
+  padding: 0 10px;
+  background: var(--pg-bg);
+  color: var(--app-text);
+  font-size: 13px;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--ring);
+  }
+}

@@ -1,0 +1,126 @@
+/* ===== Modal theme: apply by adding className="modal-app" to <Modal> ===== */
+
+.modal.modal-app {
+  .modal-content {
+    background: var(--app-surface);
+    color: var(--app-text);
+    border: 1px solid var(--app-border);
+    border-radius: var(--app-radius);
+    box-shadow: var(--shadow-md);
+  }
+  .modal-header {
+    border-bottom: 1px solid var(--app-border);
+    padding: 14px 16px;
+  }
+  .modal-title {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1.2;
+  }
+  .modal-body {
+    padding: 14px 16px;
+    color: var(--app-text);
+  }
+  .modal-footer {
+    border-top: 1px solid var(--app-border);
+    padding: 12px 16px;
+    gap: 10px;
+  }
+}
+
+
+
+/* Backdrop mềm theo tone */
+.modal-backdrop.show.modal-app-backdrop {
+  opacity: 1;
+  background: rgba(17, 24, 39, 0.55);
+}
+
+/* Close button (Bootstrap's .btn-close) */
+.modal.modal-app .btn-close {
+  opacity: 1;
+  filter: none;
+  box-shadow: none;
+  border-radius: var(--app-radius--sm);
+}
+.modal.modal-app .btn-close:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* Optional: scroll body inside modal */
+.modal.modal-app .modal-dialog-scrollable .modal-body {
+  scrollbar-gutter: stable;
+}
+
+/* ===== Buttons used inside modal ===== */
+
+.btn-app {
+  height: var(--control-h);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 12px;
+  border-radius: var(--app-radius--sm);
+  border: 1px solid transparent;
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.02s ease, box-shadow 0.12s ease, background 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.btn-app:active {
+  transform: translateY(1px);
+}
+
+.btn-app--default {
+  background: var(--neutral-800);
+  color: var(--neutral-0);
+}
+.btn-app--default:hover {
+  background: var(--neutral-900);
+}
+
+.btn-app--ghost {
+  background: transparent;
+  color: var(--app-text);
+  border-color: var(--app-border);
+  box-shadow: none;
+}
+.btn-app--ghost:hover {
+  background: var(--neutral-100);
+}
+
+.btn-app--danger {
+  background: var(--danger);
+  color: var(--neutral-0);
+}
+.btn-app--danger:hover {
+  filter: brightness(0.95);
+}
+
+.btn-app:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* react-icons inside buttons */
+.btn-app svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ===== Form controls inside modal (optional) ===== */
+.modal.modal-app .form-control,
+.modal.modal-app .form-select {
+  border-radius: var(--app-radius--sm);
+  border-color: var(--app-border);
+}
+.modal.modal-app .form-control:focus,
+.modal.modal-app .form-select:focus {
+  border-color: var(--neutral-400);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* ===== Fix layout shift: keep scrollbar gutter stable ===== */

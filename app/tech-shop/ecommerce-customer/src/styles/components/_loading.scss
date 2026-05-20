@@ -1,0 +1,77 @@
+.ui-loading2 {
+  --bg: rgba(243, 244, 246, 0.72);
+
+  --surface: var(--app-surface);
+  --border: var(--app-border);
+  --text: var(--app-text);
+  --muted: var(--app-text-muted);
+
+  --radius: var(--app-radius);
+  --spin-size: 42px;
+
+  --runner-speed: 1.9s;
+  --runner-dot: 8px;
+
+  &--overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1080;
+    background: var(--bg);
+    backdrop-filter: blur(8px);
+  }
+
+  &--inline {
+    position: relative;
+  }
+
+  &__wrap {
+    min-height: 120px;
+  }
+
+  &__mask {
+    background: rgba(249, 250, 251, 0.75);
+    backdrop-filter: blur(6px);
+    border-radius: var(--radius);
+  }
+
+  &__card {
+    width: min(300px, 92vw);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+
+  &__body {
+    position: relative; /* runner bám theo body */
+    border-radius: calc(var(--radius) - 2px);
+  }
+
+  /* Spinner tròn */
+  &__spinner {
+    width: var(--spin-size);
+    height: var(--spin-size);
+    border-radius: 999px;
+    border: 3px solid var(--neutral-200);
+    border-top-color: var(--neutral-700);
+    animation: uiLoading2Spin 900ms linear infinite;
+    flex: 0 0 var(--spin-size);
+  }
+
+  @keyframes uiLoading2Spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  &__title {
+    color: var(--text);
+    letter-spacing: 0.2px;
+  }
+
+  &__subtitle {
+    color: var(--muted);
+    margin-top: 4px;
+  }
+}

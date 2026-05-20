@@ -1,0 +1,29 @@
+// File: tokens/_theme.scss
+
+:root {
+  /* Typography */
+  --bs-body-font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial,
+    sans-serif;
+
+  /* Bootstrap Core Mappings */
+  --bs-body-bg: var(--app-bg);
+  --bs-body-color: var(--app-text);
+  --bs-border-color: var(--app-border);
+
+  /* === UPDATE: PRIMARY BRAND IS NOW RED === */
+  --bs-primary: var(--brand-500);      /* #dd2627 */
+  --bs-primary-rgb: 221, 38, 39;       /* RGB cho các class opacity của Bootstrap */
+  
+  /* Secondary giữ nguyên hoặc đổi tùy ý */
+  --bs-secondary: var(--neutral-600);
+  --bs-secondary-rgb: 75, 85, 99;
+
+  /* Links */
+  --bs-link-color: var(--brand-500);
+  --bs-link-hover-color: var(--brand-700);
+
+  /* Radius */
+  --bs-border-radius: var(--app-radius);
+  --bs-border-radius-lg: calc(var(--app-radius) + 4px);
+  --bs-border-radius-sm: 10px;
+}

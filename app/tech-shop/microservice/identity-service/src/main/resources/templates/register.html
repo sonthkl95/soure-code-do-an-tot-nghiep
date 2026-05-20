@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <th:block th:replace="fragments/head :: head-common"></th:block>
+    <link rel="stylesheet" th:href="@{/css/page/register.css}">
+</head>
+<body>
+<div class="container-fluid p-0">
+    <div class="row g-0 min-vh-100">
+        <!-- Left: Form -->
+        <div class="col-lg-6 d-flex flex-column justify-content-center p-5">
+            <main class="mx-auto w-100" style="max-width: 520px;">
+
+                <header class="mb-5">
+                    <h1 class="mb-2">Join as a Customer</h1>
+                    <p class="lead">Create an account to track orders and save favorites.</p>
+                </header>
+
+
+                <form th:action="@{/register}" method="POST" id="registerForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <div class="input-group">
+                                <input name="firstName" type="text" id="firstName" class="form-control" placeholder="Jane" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <div class="input-group">
+                                <input type="text" name="lastName" id="lastName" class="form-control" placeholder="Doe" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-regular fa-envelope"></i></span>
+                            <input type="email" id="email" class="form-control" placeholder="jane@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-light fa-lock"></i></span>
+                                <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                                <button class="btn border-0 text-secondary toggle-password" type="button" style="background: transparent;">
+                                    <i class="fa-thin fa-eye-slash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-light fa-lock"></i></span>
+                                <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" placeholder="••••••••" required>
+                                <button class="btn border-0 text-secondary toggle-password" type="button" style="background: transparent;">
+                                    <i class="fa-thin fa-eye-slash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" class="form-check-input" name="terms" id="terms" required>
+                        <label for="terms" class="form-check-label text-secondary small">I agree to the <a th:href="@{/terms}" class="text-orange">Terms of Service</a> and <a th:href="@{/privacy}" class="text-orange">Privacy Policy</a></label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mb-4 d-flex justify-content-center align-items-center px-4">
+                        <span class="fw-bold">Create Account</span>
+                    </button>
+
+                    <div class="text-center mb-5">
+                        <p class="small text-secondary">Already have an account? <a th:href="@{/login}" class="text-orange fw-bold">Log in</a></p>
+                    </div>
+                </form>
+
+                <footer class="text-center mt-auto pt-4 border-top">
+                    <p class="small text-secondary mb-2">&copy; 2024 GearMarket Inc. All rights reserved.</p>
+                    <div>
+                        <a th:href="@{/terms}" class="footer-link">Privacy Policy</a>
+                        <span class="text-secondary">•</span>
+                        <a th:href="@{/privacy}" class="footer-link">Terms of Service</a>
+                    </div>
+                </footer>
+            </main>
+        </div>
+
+        <!-- Right: Visual -->
+        <div class="col-lg-6 d-none d-lg-block p-0 position-relative hero-bg">
+            <div class="position-absolute bottom-0 start-0 w-100 p-5 text-white" style="background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);">
+                <h2>Build Your Dream Rig</h2>
+                <p class="lead text-white-50">Access thousands of premium components from top brands.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block th:replace="fragments/toast :: toast"></th:block>
+
+<th:block th:replace="fragments/scripts :: scripts-common"></th:block>
+<script th:src="@{/js/page/register.js}"></script>
+
+</body>
+</html>

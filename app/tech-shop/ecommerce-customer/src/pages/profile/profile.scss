@@ -1,0 +1,60 @@
+.profile-page {
+  // Sidebar Container
+  .profile-sidebar {
+    .list-group-item {
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      transition: all 0.2s ease;
+      color: #495057; // Màu text mặc định
+      padding: 0.75rem 1.5rem;
+
+      &:hover {
+        background-color: #f1f3f5;
+        color: #dc3545;
+      }
+
+      // Trạng thái Active khi dùng NavLink của React Router
+      // Lưu ý: NavLink tự thêm class "active" khi khớp URL
+      &.active, 
+      &.active-sidebar { 
+        background-color: #f8f9fa !important; // bg-light
+        color: #dc3545 !important; // text-danger
+        border-left: 4px solid #dc3545 !important; // Viền đỏ bên trái đặc trưng
+        font-weight: 600;
+        
+        // Căn chỉnh icon khi active (nếu cần)
+        svg {
+          color: #dc3545;
+        }
+      }
+
+      // Loại bỏ hiệu ứng focus mặc định của Bootstrap
+      &:focus {
+        box-shadow: none;
+        outline: none;
+      }
+    }
+  }
+
+  // Tiện ích bổ sung
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  // Content bên phải
+  .profile-content {
+    .card {
+      border-radius: 12px; // Bo góc mềm mại hơn cho Marketplace
+      overflow: hidden;
+    }
+  }
+}
+.btn-avatar {
+  background-color: rgba(0, 0, 0, 0.3);
+  transition: 0.3s ease opacity;
+  opacity: 0;
+  &:hover {
+    opacity: 1;
+  }
+}

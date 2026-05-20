@@ -1,0 +1,154 @@
+/* Avatar tokens */
+:root {
+  --avatar-bg: var(--neutral-100);
+  --avatar-border: var(--neutral-200);
+  --avatar-text: var(--neutral-600);
+
+  --avatar-ring: var(--app-surface); /* viền trắng khi overlap */
+  --avatar-shadow: 0 1px 2px rgba(17, 24, 39, 0.06);
+
+  --avatar-badge-bg: #111827; /* dot mặc định (đậm) */
+  --avatar-badge-border: var(--app-surface);
+
+  --avatar-count-bg: var(--neutral-100);
+  --avatar-count-fg: var(--neutral-700);
+}
+
+/* Base */
+.avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+  background: var(--avatar-bg);
+  border: 1px solid var(--avatar-border);
+  box-shadow: var(--avatar-shadow);
+  overflow: hidden;
+
+  color: var(--avatar-text);
+  font-weight: 700;
+  user-select: none;
+}
+
+/* Image */
+.avatar__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Initials */
+.avatar__fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  letter-spacing: -0.02em;
+}
+
+/* Sizes (match hình: sm/md/lg) */
+.avatar--sm {
+  width: 28px;
+  height: 28px;
+  font-size: 11px;
+}
+.avatar--md {
+  width: 36px;
+  height: 36px;
+  font-size: 12px;
+}
+.avatar--lg {
+  width: 48px;
+  height: 48px;
+  font-size: 14px;
+}
+
+/* Badge dot (online/offline) */
+.avatar__badge {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+
+  background: var(--avatar-badge-bg);
+  border: 2px solid var(--avatar-badge-border);
+}
+
+.avatar--sm .avatar__badge { width: 9px; height: 9px; border-width: 2px; }
+.avatar--md .avatar__badge { width: 10px; height: 10px; border-width: 2px; }
+.avatar--lg .avatar__badge { width: 12px; height: 12px; border-width: 2px; }
+
+/* Badge with icon (check) */
+.avatar__badge--icon {
+  width: 14px;
+  height: 14px;
+  display: grid;
+  place-items: center;
+}
+.avatar--lg .avatar__badge--icon { width: 16px; height: 16px; }
+.avatar__badge svg {
+  width: 10px;
+  height: 10px;
+  display: block;
+}
+.avatar--lg .avatar__badge svg {
+  width: 11px;
+  height: 11px;
+}
+
+/* Group */
+.avatar-group {
+  display: inline-flex;
+  align-items: center;
+}
+.avatar-group--sm .avatar,
+.avatar-group--md .avatar,
+.avatar-group--lg .avatar {
+  margin-left: 0 !important;
+}
+/* overlap spacing per size */
+.avatar-group--sm .avatar { margin-left: -8px; }
+.avatar-group--md .avatar { margin-left: -10px; }
+.avatar-group--lg .avatar { margin-left: -12px; }
+
+.avatar-group .avatar:first-child {
+  margin-left: 0;
+}
+
+/* ring around avatars in group */
+.avatar-group .avatar {
+  border-color: transparent;
+  box-shadow: none;
+  outline: 2px solid var(--avatar-ring);
+}
+
+/* Count avatar */
+.avatar--count {
+  background: var(--avatar-count-bg);
+  border: 1px solid var(--avatar-border);
+  color: var(--avatar-count-fg);
+  outline: 2px solid var(--avatar-ring);
+}
+
+/* Icon count avatar (plus) */
+.avatar--iconcount {
+  background: var(--avatar-count-bg);
+  border: 1px solid var(--avatar-border);
+  color: var(--avatar-count-fg);
+  outline: 2px solid var(--avatar-ring);
+}
+.avatar--iconcount svg {
+  width: 14px;
+  height: 14px;
+}
+.avatar--lg.avatar--iconcount svg {
+  width: 16px;
+  height: 16px;
+}

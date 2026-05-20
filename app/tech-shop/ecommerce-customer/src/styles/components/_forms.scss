@@ -1,0 +1,274 @@
+/* src/styles/components/_forms.scss */
+
+:root {
+  --field-bg: var(--app-surface);
+  --field-fg: var(--app-text);
+  --field-border: var(--app-border);
+  --field-muted: var(--app-text-muted);
+
+  --field-radius: var(--app-radius--sm);
+  --field-shadow: none;
+}
+
+.form-app {
+  /* wrapper để bạn scope style nếu muốn */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Label */
+.form-app .form-label {
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: var(--app-text);
+}
+
+/* Help text */
+.form-app .form-text {
+  color: var(--field-muted);
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+/* Input base (áp cho bootstrap .form-control luôn) */
+.form-app .form-control,
+.form-app .form-select,
+.form-app .form-check-input {
+  border-radius: var(--field-radius) !important;
+  border: 1px solid var(--field-border);
+}
+.form-app .form-message-error {
+  color: var(--danger);
+  font-size: 12px;
+}
+.form-app .form-control,
+.form-app .form-select {
+  height: var(--control-h);
+  padding: 0 12px;
+  background: var(--field-bg);
+  color: var(--field-fg);
+  box-shadow: var(--field-shadow);
+  transition: box-shadow 120ms ease, border-color 120ms ease, background 120ms ease;
+
+  &::placeholder {
+    color: rgba(107, 114, 128, 0.85);
+    font-size: 0.75rem;
+  }
+
+  &:focus {
+    border-color: var(--brand-300);
+    box-shadow: 0 0 0 4px var(--ring);
+  }
+
+  &:disabled,
+  &[readonly] {
+    background: var(--neutral-100);
+    opacity: 0.8;
+  }
+}
+
+/* Sizes */
+.form-app .form-control.form-control-sm,
+.form-app .form-select.form-select-sm {
+  height: var(--control-h-sm);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+.form-app .form-control.form-control-lg,
+.form-app .form-select.form-select-lg {
+  height: var(--control-h-lg);
+  border-radius: var(--radius-lg);
+}
+
+/* Invalid state giống ảnh */
+.form-app .is-invalid,
+.form-app .was-validated .form-control:invalid {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.16);
+}
+.form-app .invalid-feedback {
+  font-size: 12px;
+}
+
+/* Input Group – sạch + giống thiết kế */
+.form-app .input-group {
+  border-radius: var(--field-radius);
+}
+
+.form-app .input-group .form-control,
+.form-app .input-group .form-select {
+  /* để addon không bị lệch radius */
+  border-radius: var(--field-radius);
+}
+
+.form-app .input-group-text {
+  background: var(--field-bg);
+  color: var(--field-muted);
+  border: 1px solid var(--field-border);
+  border-radius: var(--field-radius);
+  padding: 0 10px;
+}
+
+/* Inline-start addon: bo tròn phía trái, input bo phía phải */
+.form-app .input-group.has-addon-start .input-group-text {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.form-app .input-group.has-addon-start .form-control,
+.form-app .input-group.has-addon-start .form-select {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* Inline-end addon */
+.form-app .input-group.has-addon-end .input-group-text {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-app .input-group.has-addon-end .form-control,
+.form-app .input-group.has-addon-end .form-select {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* Focus ring liền mạch cho group */
+.form-app .input-group:focus-within .form-control,
+.form-app .input-group:focus-within .form-select,
+.form-app .input-group:focus-within .input-group-text {
+  border-color: var(--neutral-300);
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+/* Addon dạng icon button ở cuối (như eye/mic) */
+.form-app .field-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--control-h);
+  height: var(--control-h);
+  border-radius: var(--field-radius);
+  border: 1px solid var(--field-border);
+  background: var(--field-bg);
+  color: var(--field-muted);
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+
+  &:hover {
+    background: var(--neutral-50);
+    border-color: var(--brand-300);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px var(--ring);
+  }
+}
+
+/* Block-addon pattern: label trong field (giống “First Name” trong ảnh) */
+.form-app .field-block {
+  border: 1px solid var(--field-border);
+  border-radius: var(--field-radius);
+  background: var(--field-bg);
+  padding: 10px 12px;
+  transition: box-shadow 120ms ease, border-color 120ms ease;
+
+  &:focus-within {
+    border-color: var(--brand-300);
+    box-shadow: 0 0 0 4px var(--ring);
+  }
+}
+
+.form-app .field-block-label {
+  font-size: 12px;
+  color: var(--field-muted);
+  margin-bottom: 6px;
+}
+
+.form-app .field-block-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  color: var(--field-fg);
+  font-size: 14px;
+
+  &::placeholder {
+    color: rgba(107, 114, 128, 0.85);
+  }
+}
+
+/* Counter (20/240 characters) */
+.form-app .field-counter {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--field-muted);
+  text-align: right;
+}
+
+
+
+.form-app textarea.form-control {
+  height: auto;                 /* quan trọng: không dùng height control-h */
+  min-height: 96px;             /* giống ảnh (basic) */
+  padding: 12px;                /* textarea padding đều */
+  line-height: 1.4;
+  resize: vertical;             /* chỉ cho kéo dọc (gọn) */
+}
+
+/* Size variants */
+.form-app textarea.form-control.form-control-sm {
+  min-height: 84px;
+  padding: 10px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+}
+
+.form-app textarea.form-control.form-control-lg {
+  min-height: 120px;
+  padding: 14px;
+  border-radius: var(--radius-lg);
+}
+
+/* Placeholder: nhỏ + muted giống ảnh */
+.form-app textarea.form-control::placeholder {
+  color: rgba(107, 114, 128, 0.85);
+  font-size: 0.75rem; /* 12px nếu base 16; bạn đang dùng body 14 thì vẫn ổn */
+}
+
+/* Focus: ring giống input (giữ consistency) */
+.form-app textarea.form-control:focus {
+  border-color: var(--brand-300);
+  box-shadow: 0 0 0 4px var(--ring);
+}
+
+/* Disabled/readonly */
+.form-app textarea.form-control:disabled,
+.form-app textarea.form-control[readonly] {
+  background: var(--neutral-100);
+  opacity: 0.8;
+  resize: none;
+}
+
+/* Invalid: giống ảnh viền đỏ + ring đỏ */
+.form-app textarea.form-control.is-invalid,
+.form-app .was-validated textarea.form-control:invalid {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.16);
+}
+
+/* Optional: nếu bạn muốn "Invalid" nhìn nổi hơn (giống screenshot có 2 lớp) */
+.form-app textarea.form-control.is-invalid:focus,
+.form-app .was-validated textarea.form-control:invalid:focus {
+  box-shadow:
+    0 0 0 2px rgba(239, 68, 68, 0.20),
+    0 0 0 6px rgba(239, 68, 68, 0.10);
+}
+
+/* Nếu textarea nằm trong input-group (ít dùng nhưng cho đủ) */
+.form-app .input-group textarea.form-control {
+  height: auto;
+  min-height: 96px;
+}
+

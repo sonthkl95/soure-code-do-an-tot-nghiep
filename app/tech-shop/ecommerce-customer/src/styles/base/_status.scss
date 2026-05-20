@@ -1,0 +1,115 @@
+/* =========================
+   STATUS BADGE / PILL
+   ========================= */
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  border-radius: 999px;
+  border: 1px solid transparent;
+
+  font-weight: 500;
+  white-space: nowrap;
+  user-select: none;
+  cursor: default;
+}
+
+.status__icon {
+  display: inline-flex;
+  font-size: 0.9em;
+  line-height: 1;
+}
+
+.status--clickable {
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.status--clickable:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.status--clickable:active {
+  transform: translateY(0);
+}
+
+/* =========================
+   Sizes
+   ========================= */
+
+.status--sm {
+  font-size: 11px;
+  padding: 2px 8px;
+  min-height: 20px;
+}
+
+.status--md {
+  font-size: 13px;
+  padding: 4px 12px;
+  min-height: 28px;
+}
+
+.status--lg {
+  font-size: 14px;
+  padding: 6px 16px;
+  min-height: 34px;
+}
+
+/* =========================
+   Variants
+   ========================= */
+
+/* BRAND / PRIMARY (New Red Theme) */
+.status--primary {
+  background-color: var(--brand-50);
+  border-color: var(--brand-200);
+  color: var(--brand-700);
+}
+
+/* Active / Success (Green) */
+.status--active,
+.status--success {
+  background-color: #ecfdf3;
+  border-color: #a7f3d0;
+  color: #047857;
+}
+
+/* Inactive / Gray */
+.status--inactive {
+  background-color: var(--neutral-100);
+  border-color: var(--neutral-200);
+  color: var(--neutral-600);
+}
+
+/* Pending / Warning (Yellow/Orange) */
+.status--pending,
+.status--warning {
+  background-color: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+/* Draft / Info (Indigo/Blue) */
+.status--draft,
+.status--info {
+  background-color: #eef2ff;
+  border-color: #c7d2fe;
+  color: #3730a3;
+}
+
+/* Error / Danger (Red - Đậm hơn brand một chút để cảnh báo) */
+.status--error,
+.status--danger {
+  background-color: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.status--block {
+  display: flex;
+  width: 100%;
+}

@@ -1,0 +1,25 @@
+:root {
+  /* Typography */
+  --bs-body-font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial,
+    sans-serif;
+
+  /* Bootstrap theme via CSS variables */
+  --bs-body-bg: var(--app-bg);
+  --bs-body-color: var(--app-text);
+  --bs-border-color: var(--app-border);
+
+  /* Neutral-first brand */
+  --bs-primary: var(--neutral-900);
+  --bs-primary-rgb: 17, 24, 39;
+
+  --bs-secondary: var(--neutral-600);
+  --bs-secondary-rgb: 75, 85, 99;
+
+  --bs-link-color: var(--neutral-900);
+  --bs-link-hover-color: var(--neutral-700);
+
+  /* Radius */
+  --bs-border-radius: var(--app-radius);
+  --bs-border-radius-lg: calc(var(--app-radius) + 4px);
+  --bs-border-radius-sm: 10px;
+}

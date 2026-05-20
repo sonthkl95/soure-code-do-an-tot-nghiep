@@ -1,0 +1,60 @@
+spring:
+  application:
+   name: catalog-service
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest
+
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://localhost:27018/ecommerce?directConnection=true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8085
+  servlet:
+    multipart:
+      max-file-size: 10MB      # Tăng lên 10MB mỗi file
+      max-request-size: 50MB
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api-key: ${CLOUDINARY_API_KEY}
+  api-secret: ${CLOUDINARY_API_SECRET}
+
+server:
+  port: 8083
+  tomcat:
+    # 1. Giới hạn số lượng tham số (Mặc định là 10.000)
+    # Với form nested phức tạp, 4 biến thể có thể tạo ra > 10.000 key
+    max-parameter-count: 20000
+    max-part-count: 2000
+    # 2. Giới hạn dung lượng gửi lên (Mặc định là 2MB)
+    # Nếu form chứa nhiều text/html dài, nó sẽ bị cắt
+    max-http-form-post-size: 50MB
+
+    # 3. Giới hạn bộ đệm nuốt dữ liệu
+    max-swallow-size: -1
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+    instance-id: ${eureka.instance.hostname}:${server.port}
+application:
+  config:
+    identity-url: http://localhost:8085

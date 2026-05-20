@@ -1,0 +1,39 @@
+:root {
+  --badge-radius: 999px;
+  --badge-font: 12px;
+  --badge-pad-y: 6px;
+  --badge-pad-x: 10px;
+}
+
+/* pill badges like in screenshot */
+.badge-app {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: var(--badge-pad-y) var(--badge-pad-x);
+  border-radius: var(--badge-radius);
+  font-size: var(--badge-font);
+  font-weight: 600;
+  border: 1px solid transparent;
+  line-height: 1;
+}
+
+/* Status */
+.badge-app--success {
+  color: #15803d;
+  background: rgba(22, 163, 74, 0.14);
+}
+.badge-app--warning {
+  color: #a16207;
+  background: rgba(234, 179, 8, 0.18);
+}
+.badge-app--muted {
+  color: var(--neutral-700);
+  background: rgba(107, 114, 128, 0.14);
+}
+
+/* Priority */
+.badge-app--blue {
+  color: #1d4ed8;
+  background: rgba(59, 130, 246, 0.16);
+}

@@ -1,0 +1,130 @@
+:root {
+  --content-header: 60px;
+  --top-header: 21px;
+}
+.app-content {
+  margin-top: calc(var(--content-header) + 20px);
+  @media (min-width: 768px) {
+    margin-top: calc(var(--content-header) + var(--top-header) + 20px);
+  }
+  min-height: 100vh;
+}
+.tz-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: calc(var(--content-header) + var(--top-header));
+  z-index: 999;
+  .top-header {
+    height: var(--top-header);
+    background-color: var(--brand-500);
+    color: var(--neutral-0);
+    font-size: 0.8rem;
+    font-weight: 200;
+  }
+  .content-header {
+    height: var(--content-header);
+  }
+  .btn-menu {
+    color: var(--neutral-700);
+    font-weight: 500;
+    font-size: 0.7rem;
+    &:hover {
+      color: var(--brand-500);
+    }
+  }
+}
+.sidebar {
+    .offcanvas-header {
+        background-color: var(--brand-500) !important;
+        .offcanvas-title {
+            width: 100%;
+        }
+    }
+    .offcanvas-body {
+        padding: 0;
+        .accordion {
+            .accordion-item {
+                .accordion-button {
+                    border: none;
+                    outline: none;
+                }
+            }
+            .accordion-collapse {
+                .accordion-body {
+                    // padding: 0;
+                }
+            }
+        }
+    }
+}
+.footer {
+  background-color: #101826;
+  color: var(--neutral-400);
+  .top-footer {
+    border-bottom: 1px solid rgba($color: #ffffff, $alpha: 0.5);
+  }
+  a {
+    font-size: 12px;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  .btn-social {
+    padding: 4px;
+    background-color: #1f2836;
+    border-radius: 5px;
+    display: flex;
+    color: var(--neutral-0);
+    align-items: center;
+    justify-content: center;
+    &:hover {
+      background-color: var(--brand-400);
+    }
+  }
+  .input-mail {
+    input {
+      height: 36px;
+      padding-left: 5px;
+      outline: none;
+      border: 1px solid rgba($color: #101826, $alpha: 0.6);
+      transition: all 0.15s ease-in-out;
+      vertical-align: middle;
+
+      /* Sử dụng biến hệ thống thay vì hardcode */
+      background-color: var(--neutral-700);
+      color: var(--app-text);
+      border-radius: 4px; /* Bo góc 6px */
+      &::placeholder {
+        color: var(--text-muted); /* Dùng màu neutral-500 */
+        font-size: var(--fs-xs); /* 12px */
+      }
+
+      /* === UPDATE: FOCUS STATE (RED THEME) === */
+      &:focus {
+        border-color: var(--brand-500); /* Viền đỏ đậm */
+        box-shadow: 0 0 0 3px var(--ring); /* Vòng sáng đỏ nhạt */
+        outline: none;
+      }
+
+      &:disabled,
+      &[readonly] {
+        background-color: var(--neutral-100);
+        color: var(--text-disabled);
+        cursor: not-allowed;
+        border-color: var(--neutral-200);
+      }
+    }
+    button {
+      height: 36px;
+      width: 36px;
+      background-color: var(--brand-500);
+      border: none;
+      color: var(--neutral-0);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}

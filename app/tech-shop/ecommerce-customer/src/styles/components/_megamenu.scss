@@ -1,0 +1,197 @@
+.mega-menu {
+  &,
+  button {
+    border: none;
+    background-color: transparent;
+    outline: none;
+  }
+
+  &-error {
+    padding: 12px;
+    margin: 8px;
+  }
+  &-list {
+    border: 1px solid var(--app-border);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    font-size: 15px;
+    font-weight: 500;
+
+    &-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+
+      padding: 8px 32px 8px 15px; // chừa chỗ cho block bên phải
+      height: 36px;
+
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px solid var(--app-border);
+      .item-text {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      // ✅ layer nền (được cắt theo bo góc LIST, không cắt mũi nhọn)
+      .item-bg {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        background-color: var(--brand-500);
+
+        // ✅ chỉ bo góc khi item là phần tử đầu/cuối
+        border-radius: 0;
+
+        z-index: 0;
+        transition: none;
+      }
+
+      // ✅ đảm bảo text/icon nằm trên nền
+      > *:not(.item-bg) {
+        position: relative;
+        z-index: 1;
+      }
+
+      &::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 20px;
+        height: 100%;
+        background-color: var(--brand-500);
+        z-index: 200;
+        opacity: 0;
+        transition: none;
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        right: -10px;
+        top: 0;
+        width: 0;
+        height: 0;
+        border-top: 18px solid transparent;
+        border-bottom: 18px solid transparent;
+        border-left: 10px solid var(--brand-500);
+        z-index: 200;
+        opacity: 0;
+        transition: none;
+      }
+
+      // ✅ hover/active: KHÔNG set background-color trực tiếp nữa
+      &:hover,
+      &.active {
+        color: var(--neutral-0);
+
+        .item-bg {
+          opacity: 1;
+        }
+
+        &::after,
+        &::before {
+          opacity: 1;
+        }
+      }
+
+      // ✅ bo góc đúng theo list khi hover/active ở item đầu/cuối
+      &:first-child {
+        .item-bg {
+          border-top-left-radius: 10px;
+          border-top-right-radius: 10px; // nếu bạn muốn bo cả phía phải trong list
+        }
+      }
+
+      &:last-child {
+        .item-bg {
+          border-bottom-left-radius: 10px;
+          border-bottom-right-radius: 10px;
+        }
+      }
+    }
+  }
+  &-right {
+    position: relative;
+    background-color: transparent;
+    .swiper {
+      .swiper-wrapper {
+        border-radius: 6px;
+        .swiper-slide {
+          height: 480px;
+          img {
+            border-radius: 6px;
+            height: 100%;
+            object-fit: fill;
+          }
+        }
+      }
+    }
+    .mega-menu-panel-container {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 100%;
+      background-color: transparent;
+      padding-left: 0.2rem;
+      z-index: 100;
+      .mega-menu-panel-content-container {
+        width: 100%;
+        height: 100%;
+        max-height: 560px;
+        background-color: var(--neutral-0);
+        border: 1px solid var(--app-border);
+        border-radius: 10px;
+        display: flex;
+        gap: 40px;
+        overflow: auto;
+        .mega-menu-panel-content {
+          width: 100%;
+          .logo-item {
+            height: 40px;
+            width: 70px;
+            .brand-logo {
+              &-container {
+                border: 1px solid var(--neutral-200);
+                border-radius: 10px;
+                overflow: hidden;
+                height: 40px;
+                width: 100%;
+                display: inline-block;
+              }
+              &-img {
+                width: 100%;
+                height: 100%;
+                object-fit: fill;
+              }
+            }
+          }
+          .mega-menu-panel-item {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--brand-500);
+            text-align: start;
+            padding: 5px;
+            white-space: unset;
+          }
+          .mega-menu-panel-subitem {
+            width: 100%;
+            text-align: start;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 5px;
+            border-bottom: 1px solid transparent;
+            white-space: unset;
+            &:hover {
+              border-color: var(--brand-500);
+            }
+          }
+        }
+      }
+    }
+  }
+}

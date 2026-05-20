@@ -1,0 +1,20 @@
+.react-tabs {
+  .tablist {
+    border-bottom: 1px solid var(--app-border);
+    .react-tabs__tab {
+      background-color: inherit;
+      font-weight: 600;
+      font-size: 0.9rem;
+      border: none;
+      color: var(--text-muted);
+
+      &.react-tabs__tab--selected {
+        color: var(--app-text);
+        border-bottom: 2px solid #000;
+        &::after {
+          display: none;
+        }
+      }
+    }
+  }
+}

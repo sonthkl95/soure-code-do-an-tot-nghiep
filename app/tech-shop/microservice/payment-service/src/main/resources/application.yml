@@ -1,0 +1,62 @@
+spring:
+  application:
+    name: payment-service
+  datasource:
+    url: jdbc:mysql://localhost:3306/payment
+    username: root
+    password: 271201
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 20
+      auto-commit: true
+      transaction-isolation: TRANSACTION_READ_COMMITTED
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8085
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: payment-group
+
+      # 2. BẮT BUỘC CÓ DÒNG NÀY (để nó đọc lại tin nhắn từ Offset 0)
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+    listener:
+      ack-mode: manual
+server:
+  port: 8090
+  forward-headers-strategy: FRAMEWORK
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+    prefer-ip-address: true
+    instance-id: ${eureka.instance.hostname}:${server.port}
+application:
+  sepay:
+    api-key: ${SEPAY_APIKEY}
+sepay:
+  bank-name: ${BANK_NAME}
+  bank-number: ${BANK_NUMBER}
+  content: ${SEPAY_CONTENT}
+vnpay:
+  url: ${VNPAY_URL}
+  returnUrl: ${VNPAY_RETURN}
+  tmnCode: ${VNPAY_TMNCODE}
+  secretKey: ${VNPAY_SECRET}
+  apiUrl: ${VNPAY_APIURL}
+  version: 2.1.0
+  command: pay
+

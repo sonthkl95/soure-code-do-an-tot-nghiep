@@ -1,0 +1,42 @@
+.order-success-page {
+    display: flex;
+    justify-content: center;
+    padding: 80px 0;
+    
+    .success-card {
+        background: white;
+        padding: 50px;
+        border-radius: 20px;
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+
+        .icon-box {
+            font-size: 80px;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+
+        .order-code {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        .info-steps {
+            text-align: left;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            
+            .step-item {
+                display: flex;
+                gap: 15px;
+                margin-bottom: 15px;
+                &:last-child { margin-bottom: 0; }
+                .step-icon { font-size: 24px; color: #666; }
+                h6 { margin: 0; font-weight: 600; }
+                p { margin: 0; font-size: 13px; color: #888; }
+            }
+        }
+    }
+}

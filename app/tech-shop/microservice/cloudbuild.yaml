@@ -40,6 +40,8 @@ steps:
   # ---------- discovery-service ----------
   - id: build-discovery
     name: gcr.io/cloud-builders/docker
+    env:
+      - DOCKER_BUILDKIT=1
     args:
       - build
       - --build-arg=SERVICE_NAME=discovery-service
@@ -49,6 +51,8 @@ steps:
   # ---------- identity-service ----------
   - id: build-identity
     name: gcr.io/cloud-builders/docker
+    env:
+      - DOCKER_BUILDKIT=1
     args:
       - build
       - --build-arg=SERVICE_NAME=identity-service
@@ -58,6 +62,8 @@ steps:
   # ---------- catalog-service ----------
   - id: build-catalog
     name: gcr.io/cloud-builders/docker
+    env:
+      - DOCKER_BUILDKIT=1
     args:
       - build
       - --build-arg=SERVICE_NAME=catalog-service
@@ -67,6 +73,8 @@ steps:
   # ---------- order-service ----------
   - id: build-order
     name: gcr.io/cloud-builders/docker
+    env:
+      - DOCKER_BUILDKIT=1
     args:
       - build
       - --build-arg=SERVICE_NAME=order-service
@@ -76,6 +84,8 @@ steps:
   # ---------- inventory-service ----------
   - id: build-inventory
     name: gcr.io/cloud-builders/docker
+    env:
+      - DOCKER_BUILDKIT=1
     args:
       - build
       - --build-arg=SERVICE_NAME=inventory-service
@@ -85,6 +95,8 @@ steps:
   # ---------- payment-service ----------
   - id: build-payment
     name: gcr.io/cloud-builders/docker
+    env:
+      - DOCKER_BUILDKIT=1
     args:
       - build
       - --build-arg=SERVICE_NAME=payment-service
@@ -94,6 +106,8 @@ steps:
   # ---------- search-service ----------
   - id: build-search
     name: gcr.io/cloud-builders/docker
+    env:
+      - DOCKER_BUILDKIT=1
     args:
       - build
       - --build-arg=SERVICE_NAME=search-service
@@ -103,6 +117,8 @@ steps:
   # ---------- bff-user ----------
   - id: build-bff-user
     name: gcr.io/cloud-builders/docker
+    env:
+      - DOCKER_BUILDKIT=1
     args:
       - build
       - --build-arg=SERVICE_NAME=bff-user
@@ -112,6 +128,8 @@ steps:
   # ---------- bff-admin ----------
   - id: build-bff-admin
     name: gcr.io/cloud-builders/docker
+    env:
+      - DOCKER_BUILDKIT=1
     args:
       - build
       - --build-arg=SERVICE_NAME=bff-admin

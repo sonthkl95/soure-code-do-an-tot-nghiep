@@ -1,0 +1,45 @@
+# Overlay PROD — apply lên K8s Prod cluster (10.20.x.x VPC)
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: techshop
+
+resources:
+  - ../../base
+  - app-secrets.yaml      # giá trị thật, KHÔNG commit (xem .gitignore)
+
+commonAnnotations:
+  techshop.io/env: prod
+
+images:
+  - name: ghcr.io/pham-van-khiem-toan-tin/discovery-service
+    newTag: prod
+  - name: ghcr.io/pham-van-khiem-toan-tin/identity-service
+    newTag: prod
+  - name: ghcr.io/pham-van-khiem-toan-tin/catalog-service
+    newTag: prod
+  - name: ghcr.io/pham-van-khiem-toan-tin/order-service
+    newTag: prod
+  - name: ghcr.io/pham-van-khiem-toan-tin/inventory-service
+    newTag: prod
+  - name: ghcr.io/pham-van-khiem-toan-tin/payment-service
+    newTag: prod
+  - name: ghcr.io/pham-van-khiem-toan-tin/search-service
+    newTag: prod
+  - name: ghcr.io/pham-van-khiem-toan-tin/bff-user
+    newTag: prod
+  - name: ghcr.io/pham-van-khiem-toan-tin/bff-admin
+    newTag: prod
+
+patches:
+  - path: patches/replicas.yaml
+  - path: patches/ingress-hosts.yaml
+  - path: patches/bff-redirect.yaml
+  - path: patches/hpa.yaml
+
+configMapGenerator:
+  - name: app-config
+    behavior: merge
+    literals:
+      - SPRING_PROFILES_ACTIVE=k8s,prod
+      - LOGGING_LEVEL_ROOT=WARN

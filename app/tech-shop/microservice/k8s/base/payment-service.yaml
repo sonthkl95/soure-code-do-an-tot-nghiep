@@ -1,0 +1,66 @@
+# =============================================================
+# Payment Service — MySQL payment + Kafka + SePay/VNPay gateway
+# =============================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+  namespace: techshop
+  labels: { app: payment-service }
+spec:
+  type: ClusterIP
+  selector: { app: payment-service }
+  ports:
+    - { name: http, port: 8090, targetPort: 8090 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: techshop
+  labels: { app: payment-service }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: payment-service }
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+  template:
+    metadata:
+      labels: { app: payment-service }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8090"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: payment-service
+          image: ghcr.io/pham-van-khiem-toan-tin/payment-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8090 }
+          envFrom:
+            - configMapRef: { name: app-config }
+            - configMapRef: { name: data-endpoints }
+            - secretRef:    { name: data-credentials }
+            - secretRef:    { name: app-secrets }
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: payment-service
+            - { name: SPRING_DATASOURCE_URL,      value: "$(PAYMENT_DB_URL)" }
+            - { name: SPRING_DATASOURCE_USERNAME, value: "$(PAYMENT_DB_USERNAME)" }
+            - { name: SPRING_DATASOURCE_PASSWORD, value: "$(PAYMENT_DB_PASSWORD)" }
+          resources:
+            requests: { cpu: "200m", memory: "512Mi" }
+            limits:   { cpu: "1",    memory: "1Gi"   }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8090 }
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8090 }
+            initialDelaySeconds: 90
+            periodSeconds: 20
+            failureThreshold: 5

@@ -1,0 +1,40 @@
+# Prod: tăng replicas cho high-availability + load
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: identity-service }
+spec: { replicas: 2 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: catalog-service }
+spec: { replicas: 3 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: order-service }
+spec: { replicas: 3 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: inventory-service }
+spec: { replicas: 2 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: payment-service }
+spec: { replicas: 2 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: search-service }
+spec: { replicas: 2 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: bff-user }
+spec: { replicas: 3 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: bff-admin }
+spec: { replicas: 2 }

@@ -1,0 +1,2 @@
+# File `app-secrets.yaml` thật được Kustomize import nhưng KHÔNG commit
+app-secrets.yaml

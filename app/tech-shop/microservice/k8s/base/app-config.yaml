@@ -1,0 +1,44 @@
+# =============================================================
+# app-config: các giá trị dùng chung KHÔNG phụ thuộc môi trường
+#   - Eureka URL (DNS nội cluster: discovery-service:8761)
+#   - Inter-service URLs (DNS nội cluster)
+#   - Issuer URI cho JWT resource server (= identity-service)
+#   - OTel endpoint -> otel-gateway (nếu khác cluster, override ở overlay)
+# Các giá trị PHỤ THUỘC môi trường (mongodb/mysql/redis/kafka host,
+# topic prefix, redis db, es prefix...) đã được Ansible role `app`
+# render vào ConfigMap `data-endpoints` + Secret `data-credentials`.
+# =============================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: techshop
+data:
+  # ── Service discovery (Eureka) ───────────────────────────────
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://discovery-service.techshop.svc.cluster.local:8761/eureka/"
+  EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+
+  # ── JWT issuer (resource servers verify token from identity-service) ──
+  SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://identity-service.techshop.svc.cluster.local:8085"
+
+  # ── Inter-service URLs (override application.yml) ────────────
+  APPLICATION_CONFIG_IDENTITY_URL: "http://identity-service.techshop.svc.cluster.local:8085"
+  APPLICATION_CONFIG_CATALOG_URL:  "http://catalog-service.techshop.svc.cluster.local:8083"
+  APPLICATION_CONFIG_INVENTORY_URL: "http://inventory-service.techshop.svc.cluster.local:8086"
+  APPLICATION_CONFIG_PAYMENT_URL:  "http://payment-service.techshop.svc.cluster.local:8090"
+  APPLICATION_CONFIG_SEARCH_URL:   "http://search-service.techshop.svc.cluster.local:8087"
+
+  # ── OpenTelemetry (Java agent đã được nhúng trong Dockerfile) ──
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-gateway.observability.svc.cluster.local:4317"
+  OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+  OTEL_TRACES_EXPORTER: "otlp"
+  OTEL_METRICS_EXPORTER: "otlp"
+  OTEL_LOGS_EXPORTER: "otlp"
+
+  # ── Search-service: dùng outbox DB thay vì ecommerce ─────────
+  # (search-service Deployment đã override SPRING_DATA_MONGODB_URI = $(MONGODB_URI_OUTBOX))
+  APP_OUTBOX_TOPIC_PATTERN: ".*\\.ecommerce\\.outbox_events"
+  APP_ES_INDEX: "products"
+
+  # ── Spring profile (overlay có thể đổi) ──────────────────────
+  SPRING_PROFILES_ACTIVE: "k8s"

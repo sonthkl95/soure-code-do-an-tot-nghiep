@@ -1,0 +1,50 @@
+# =============================================================
+# Ingress — phơi BFF ra ngoài qua NGINX Ingress (hoặc GCP LB)
+# - shop.example.com   ⇒ bff-user (8081)
+# - admin.example.com  ⇒ bff-admin (8088)
+# - identity.example.com ⇒ identity-service (8085) [login/oauth2 callback]
+#
+# Overlay dev/prod đổi `host:` + annotation TLS cho phù hợp.
+# =============================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: techshop-ingress
+  namespace: techshop
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "120"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: shop.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bff-user
+                port: { number: 8081 }
+    - host: admin.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bff-admin
+                port: { number: 8088 }
+    - host: identity.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: identity-service
+                port: { number: 8085 }
+  # tls:
+  #   - hosts: [shop.example.com, admin.example.com, identity.example.com]
+  #     secretName: techshop-tls

@@ -1,0 +1,65 @@
+# =============================================================
+# Inventory Service — MySQL inventory + Kafka consumer
+# =============================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service
+  namespace: techshop
+  labels: { app: inventory-service }
+spec:
+  type: ClusterIP
+  selector: { app: inventory-service }
+  ports:
+    - { name: http, port: 8086, targetPort: 8086 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-service
+  namespace: techshop
+  labels: { app: inventory-service }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: inventory-service }
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+  template:
+    metadata:
+      labels: { app: inventory-service }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8086"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: inventory-service
+          image: ghcr.io/pham-van-khiem-toan-tin/inventory-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8086 }
+          envFrom:
+            - configMapRef: { name: app-config }
+            - configMapRef: { name: data-endpoints }
+            - secretRef:    { name: data-credentials }
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: inventory-service
+            - { name: SPRING_DATASOURCE_URL,      value: "$(INVENTORY_DB_URL)" }
+            - { name: SPRING_DATASOURCE_USERNAME, value: "$(INVENTORY_DB_USERNAME)" }
+            - { name: SPRING_DATASOURCE_PASSWORD, value: "$(INVENTORY_DB_PASSWORD)" }
+          resources:
+            requests: { cpu: "200m", memory: "512Mi" }
+            limits:   { cpu: "1",    memory: "1Gi"   }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8086 }
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8086 }
+            initialDelaySeconds: 90
+            periodSeconds: 20
+            failureThreshold: 5

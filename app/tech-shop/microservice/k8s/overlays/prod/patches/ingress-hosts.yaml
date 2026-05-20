@@ -1,0 +1,33 @@
+# Prod hosts (đổi domain thật của bạn)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: techshop-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  rules:
+    - host: shop.techshop.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: bff-user, port: { number: 8081 } }
+    - host: admin.techshop.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: bff-admin, port: { number: 8088 } }
+    - host: identity.techshop.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: identity-service, port: { number: 8085 } }
+  tls:
+    - hosts: [shop.techshop.io, admin.techshop.io, identity.techshop.io]
+      secretName: techshop-tls

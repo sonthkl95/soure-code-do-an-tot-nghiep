@@ -1,0 +1,48 @@
+# Overlay DEV — apply lên K8s Dev cluster (10.10.x.x VPC)
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: techshop
+
+resources:
+  - ../../base
+  # Copy app-secrets.example.yaml -> app-secrets.yaml và điền giá trị.
+  # File này KHÔNG commit (đã thêm trong .gitignore).
+  - app-secrets.yaml
+
+namePrefix: ""
+commonAnnotations:
+  techshop.io/env: dev
+
+# Override image tag bằng `kustomize edit set image` hoặc CI/CD
+images:
+  - name: ghcr.io/pham-van-khiem-toan-tin/discovery-service
+    newTag: dev
+  - name: ghcr.io/pham-van-khiem-toan-tin/identity-service
+    newTag: dev
+  - name: ghcr.io/pham-van-khiem-toan-tin/catalog-service
+    newTag: dev
+  - name: ghcr.io/pham-van-khiem-toan-tin/order-service
+    newTag: dev
+  - name: ghcr.io/pham-van-khiem-toan-tin/inventory-service
+    newTag: dev
+  - name: ghcr.io/pham-van-khiem-toan-tin/payment-service
+    newTag: dev
+  - name: ghcr.io/pham-van-khiem-toan-tin/search-service
+    newTag: dev
+  - name: ghcr.io/pham-van-khiem-toan-tin/bff-user
+    newTag: dev
+  - name: ghcr.io/pham-van-khiem-toan-tin/bff-admin
+    newTag: dev
+
+patches:
+  - path: patches/replicas.yaml
+  - path: patches/ingress-hosts.yaml
+  - path: patches/bff-redirect.yaml
+
+configMapGenerator:
+  - name: app-config
+    behavior: merge
+    literals:
+      - SPRING_PROFILES_ACTIVE=k8s,dev
+      - LOGGING_LEVEL_ROOT=INFO

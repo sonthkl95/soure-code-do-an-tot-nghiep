@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: bff-user }
+spec:
+  template:
+    spec:
+      containers:
+        - name: bff-user
+          env:
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_USER_IDP_REDIRECT_URI
+              value: "https://shop.techshop.io/login/oauth2/code/user-idp"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: bff-admin }
+spec:
+  template:
+    spec:
+      containers:
+        - name: bff-admin
+          env:
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ADMIN_IDP_REDIRECT_URI
+              value: "https://admin.techshop.io/login/oauth2/code/admin-idp"

@@ -1,0 +1,33 @@
+# =============================================================
+# Kustomize base — Tech-shop microservices
+# Apply:
+#   kubectl apply -k k8s/overlays/dev    # K8s Dev cluster
+#   kubectl apply -k k8s/overlays/prod   # K8s Prod cluster
+#
+# LƯU Ý: ConfigMap `data-endpoints` + Secret `data-credentials`
+# do Ansible role `app` apply trước (đã chứa giá trị per-env).
+# Vì vậy KHÔNG include trong base — chỉ tham chiếu envFrom.
+# =============================================================
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: techshop
+
+commonLabels:
+  app.kubernetes.io/part-of: techshop
+
+resources:
+  - namespace.yaml
+  - app-config.yaml
+  - discovery-service.yaml
+  - identity-service.yaml
+  - catalog-service.yaml
+  - order-service.yaml
+  - inventory-service.yaml
+  - payment-service.yaml
+  - search-service.yaml
+  - bff-user.yaml
+  - bff-admin.yaml
+  - ingress.yaml
+  # app-secrets.example.yaml KHÔNG include — overlay tự copy thành
+  # app-secrets.yaml (giá trị thật) hoặc dùng SealedSecret/ExternalSecret.

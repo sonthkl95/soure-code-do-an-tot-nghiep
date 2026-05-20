@@ -1,0 +1,28 @@
+# Override Ingress hosts cho môi trường dev
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: techshop-ingress
+spec:
+  rules:
+    - host: shop.dev.techshop.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: bff-user, port: { number: 8081 } }
+    - host: admin.dev.techshop.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: bff-admin, port: { number: 8088 } }
+    - host: identity.dev.techshop.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: identity-service, port: { number: 8085 } }

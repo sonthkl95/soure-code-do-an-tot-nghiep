@@ -1,0 +1,65 @@
+# =============================================================
+# Catalog Service — quản lý sản phẩm
+# - MongoDB ecommerce (env SPRING_DATA_MONGODB_URI từ data-endpoints)
+# - Kafka producer (sync changes vào Debezium/outbox)
+# - Cloudinary (upload ảnh) ⇒ app-secrets
+# =============================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-service
+  namespace: techshop
+  labels: { app: catalog-service }
+spec:
+  type: ClusterIP
+  selector: { app: catalog-service }
+  ports:
+    - { name: http, port: 8083, targetPort: 8083 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-service
+  namespace: techshop
+  labels: { app: catalog-service }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: catalog-service }
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+  template:
+    metadata:
+      labels: { app: catalog-service }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8083"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: catalog-service
+          image: ghcr.io/pham-van-khiem-toan-tin/catalog-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8083 }
+          envFrom:
+            - configMapRef: { name: app-config }
+            - configMapRef: { name: data-endpoints }
+            - secretRef:    { name: app-secrets }
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: catalog-service
+          resources:
+            requests: { cpu: "200m", memory: "512Mi" }
+            limits:   { cpu: "1",    memory: "1Gi"   }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8083 }
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8083 }
+            initialDelaySeconds: 90
+            periodSeconds: 20
+            failureThreshold: 5

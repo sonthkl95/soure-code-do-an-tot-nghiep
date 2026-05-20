@@ -15,6 +15,20 @@
 # Source code Deployment/Helm chart sẽ được bổ sung sau.
 # =============================================================
 
+- name: Ensure namespace 'techshop' exists
+  command: kubectl create namespace techshop --dry-run=client -o yaml
+  register: ns_yaml
+  changed_when: false
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Apply namespace 'techshop'
+  shell: echo '{{ ns_yaml.stdout }}' | kubectl apply -f -
+  register: ns_apply
+  changed_when: "'created' in ns_apply.stdout"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
 - name: Render data-endpoints ConfigMap manifest
   template:
     src: data-endpoints-configmap.yaml.j2

@@ -1,0 +1,75 @@
+# =============================================================
+# BFF User — Spring Cloud Gateway + OAuth2 client (user-idp)
+# - Session lưu trong Redis (namespace spring:session:bff)
+# - Issuer-uri = identity-service (cluster DNS)
+# - Public qua Ingress (host frontend gọi /api/* ⇒ bff-user)
+# =============================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: bff-user
+  namespace: techshop
+  labels: { app: bff-user }
+spec:
+  type: ClusterIP
+  selector: { app: bff-user }
+  ports:
+    - { name: http, port: 8081, targetPort: 8081 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bff-user
+  namespace: techshop
+  labels: { app: bff-user }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: bff-user }
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+  template:
+    metadata:
+      labels: { app: bff-user }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8081"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: bff-user
+          image: ghcr.io/pham-van-khiem-toan-tin/bff-user:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8081 }
+          envFrom:
+            - configMapRef: { name: app-config }
+            - configMapRef: { name: data-endpoints }
+            - secretRef:    { name: app-secrets }
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: bff-user
+            # OAuth2 client registration: user-idp (override application.yml)
+            - { name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_MY_IDENTITY_PROVIDER_ISSUER_URI,
+                value: "$(SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI)" }
+            - { name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_USER_IDP_CLIENT_ID,
+                value: "$(BFF_USER_CLIENT_ID)" }
+            - { name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_USER_IDP_CLIENT_SECRET,
+                value: "$(BFF_USER_CLIENT_SECRET)" }
+            # Public redirect URI (overlay đặt theo domain thật)
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_USER_IDP_REDIRECT_URI
+              value: "https://shop.example.com/login/oauth2/code/user-idp"
+          resources:
+            requests: { cpu: "150m", memory: "384Mi" }
+            limits:   { cpu: "1",    memory: "768Mi" }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8081 }
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8081 }
+            initialDelaySeconds: 90
+            periodSeconds: 20
+            failureThreshold: 5

@@ -1,0 +1,68 @@
+# =============================================================
+# Search Service — đọc outbox (MongoDB) + Kafka consumer + ES sink
+# Lưu ý: dùng MONGODB_URI_OUTBOX (đè SPRING_DATA_MONGODB_URI mặc định)
+# =============================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: search-service
+  namespace: techshop
+  labels: { app: search-service }
+spec:
+  type: ClusterIP
+  selector: { app: search-service }
+  ports:
+    - { name: http, port: 8087, targetPort: 8087 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search-service
+  namespace: techshop
+  labels: { app: search-service }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: search-service }
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+  template:
+    metadata:
+      labels: { app: search-service }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8087"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: search-service
+          image: ghcr.io/pham-van-khiem-toan-tin/search-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8087 }
+          envFrom:
+            - configMapRef: { name: app-config }
+            - configMapRef: { name: data-endpoints }
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: search-service
+            # override mongodb URI ⇒ outbox DB thay vì ecommerce
+            - { name: SPRING_DATA_MONGODB_URI, value: "$(MONGODB_URI_OUTBOX)" }
+            # Topic outbox đã có sẵn APP_OUTBOX_TOPIC (env_name.ecommerce.outbox_events)
+            - { name: APP_OUTBOX_TOPIC, value: "$(APP_OUTBOX_TOPIC)" }
+            - { name: APP_ES_HOST,      value: "$(APP_ES_HOST)" }
+            - { name: APP_ES_PORT,      value: "$(APP_ES_PORT)" }
+          resources:
+            requests: { cpu: "200m", memory: "512Mi" }
+            limits:   { cpu: "1",    memory: "1Gi"   }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8087 }
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8087 }
+            initialDelaySeconds: 90
+            periodSeconds: 20
+            failureThreshold: 5

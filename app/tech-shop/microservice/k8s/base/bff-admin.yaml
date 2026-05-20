@@ -1,0 +1,70 @@
+# =============================================================
+# BFF Admin — Gateway + OAuth2 client (admin-idp)
+# =============================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: bff-admin
+  namespace: techshop
+  labels: { app: bff-admin }
+spec:
+  type: ClusterIP
+  selector: { app: bff-admin }
+  ports:
+    - { name: http, port: 8088, targetPort: 8088 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bff-admin
+  namespace: techshop
+  labels: { app: bff-admin }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: bff-admin }
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+  template:
+    metadata:
+      labels: { app: bff-admin }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8088"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: bff-admin
+          image: ghcr.io/pham-van-khiem-toan-tin/bff-admin:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8088 }
+          envFrom:
+            - configMapRef: { name: app-config }
+            - configMapRef: { name: data-endpoints }
+            - secretRef:    { name: app-secrets }
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: bff-admin
+            - { name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_MY_IDENTITY_PROVIDER_ISSUER_URI,
+                value: "$(SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI)" }
+            - { name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ADMIN_IDP_CLIENT_ID,
+                value: "$(BFF_ADMIN_CLIENT_ID)" }
+            - { name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ADMIN_IDP_CLIENT_SECRET,
+                value: "$(BFF_ADMIN_CLIENT_SECRET)" }
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ADMIN_IDP_REDIRECT_URI
+              value: "https://admin.example.com/login/oauth2/code/admin-idp"
+          resources:
+            requests: { cpu: "150m", memory: "384Mi" }
+            limits:   { cpu: "1",    memory: "768Mi" }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8088 }
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8088 }
+            initialDelaySeconds: 90
+            periodSeconds: 20
+            failureThreshold: 5

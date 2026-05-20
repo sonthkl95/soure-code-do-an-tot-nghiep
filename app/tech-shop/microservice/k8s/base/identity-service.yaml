@@ -1,0 +1,73 @@
+# =============================================================
+# Identity Service (OAuth2 Authorization Server + JWT issuer)
+# - MySQL: identity DB (env IDENTITY_DB_URL / IDENTITY_DB_USERNAME/PASSWORD)
+# - Redis session: spring:session:idp (host từ data-endpoints)
+# - SMTP Gmail: GOOGLE_APP_PASSWORD (app-secrets)
+# - Port 8085 (issuer-uri cho mọi resource server)
+# =============================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: identity-service
+  namespace: techshop
+  labels: { app: identity-service }
+spec:
+  type: ClusterIP
+  selector: { app: identity-service }
+  ports:
+    - { name: http, port: 8085, targetPort: 8085 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-service
+  namespace: techshop
+  labels: { app: identity-service }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: identity-service }
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+  template:
+    metadata:
+      labels: { app: identity-service }
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8085"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      containers:
+        - name: identity-service
+          image: ghcr.io/pham-van-khiem-toan-tin/identity-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 8085 }
+          envFrom:
+            - configMapRef: { name: app-config }
+            - configMapRef: { name: data-endpoints }
+            - secretRef:    { name: data-credentials }
+            - secretRef:    { name: app-secrets }
+          env:
+            - name: OTEL_SERVICE_NAME
+              value: identity-service
+            # Map IDENTITY_DB_* (data-endpoints/credentials) ⇒ Spring datasource keys
+            - { name: SPRING_DATASOURCE_URL,      value: "$(IDENTITY_DB_URL)" }
+            - { name: SPRING_DATASOURCE_USERNAME, value: "$(IDENTITY_DB_USERNAME)" }
+            - { name: SPRING_DATASOURCE_PASSWORD, value: "$(IDENTITY_DB_PASSWORD)" }
+            # Gmail SMTP
+            - { name: SPRING_MAIL_PASSWORD,       value: "$(GOOGLE_APP_PASSWORD)" }
+          resources:
+            requests: { cpu: "200m", memory: "640Mi" }
+            limits:   { cpu: "1",    memory: "1Gi"   }
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: 8085 }
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: 8085 }
+            initialDelaySeconds: 90
+            periodSeconds: 20
+            failureThreshold: 5

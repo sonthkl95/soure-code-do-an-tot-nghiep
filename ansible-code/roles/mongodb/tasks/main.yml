@@ -1,0 +1,72 @@
+---
+- name: Install prerequisites for MongoDB apt repo
+  apt:
+    name: [gnupg, curl, ca-certificates]
+    state: present
+    update_cache: true
+
+- name: Add MongoDB GPG key
+  ansible.builtin.get_url:
+    url: "https://www.mongodb.org/static/pgp/server-{{ mongodb_version_major }}.asc"
+    dest: "/usr/share/keyrings/mongodb-server-{{ mongodb_version_major }}.asc"
+    mode: '0644'
+
+- name: Add MongoDB apt repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/mongodb-server-{{ mongodb_version_major }}.asc] https://repo.mongodb.org/apt/debian bookworm/mongodb-org/{{ mongodb_version_major }} main"
+    filename: "mongodb-org-{{ mongodb_version_major }}"
+    state: present
+    update_cache: true
+
+- name: Install MongoDB
+  apt:
+    name: mongodb-org
+    state: present
+    update_cache: true
+
+- name: Ensure data and log directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: mongodb
+    group: mongodb
+    mode: '0755'
+  loop:
+    - "{{ mongodb_data_dir }}"
+    - "{{ mongodb_log_dir }}"
+
+- name: Deploy mongod.conf (replica set + bind all)
+  template:
+    src: mongod.conf.j2
+    dest: /etc/mongod.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart mongod
+
+- name: Enable and start mongod
+  systemd:
+    name: mongod
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: Wait for MongoDB to accept connections
+  wait_for:
+    port: "{{ mongodb_port }}"
+    delay: 5
+    timeout: 60
+
+- name: Check replica set status
+  command: mongosh --quiet --eval "rs.status().ok"
+  register: rs_status
+  changed_when: false
+  failed_when: false
+
+- name: Initiate replica set (chỉ chạy 1 lần)
+  command: >
+    mongosh --quiet --eval
+    'rs.initiate({_id:"{{ mongodb_replset_name }}",members:[{_id:0,host:"{{ mongodb_replset_host }}"}]})'
+  when: rs_status.stdout | trim != "1"
+  register: rs_init
+  changed_when: rs_init.rc == 0

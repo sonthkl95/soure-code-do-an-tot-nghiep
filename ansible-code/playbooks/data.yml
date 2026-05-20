@@ -1,0 +1,59 @@
+---
+# =============================================================
+# Playbook: Data Stack (native install, no Docker)
+# ------------------------------------------------------------
+# data-vm (10.60.1.20, VPC obs):
+#   - Kafka (KRaft)
+#   - Redis (shared, logical DB 0=dev, 1=prod)
+#   - Elasticsearch (shared, index prefix dev_/prod_)
+#   - Debezium (Kafka Connect + 2 MongoDB connector: dev + prod)
+#
+# db-dev-vm (10.10.1.30, VPC dev) + db-prod-vm (10.20.1.30, VPC prod):
+#   - MongoDB (replSet rs0)
+#   - MySQL/MariaDB (4 database: payment, inventory, order_db, identity)
+# =============================================================
+
+# ---------- Shared infra on data-vm ----------
+- name: Deploy Kafka (KRaft) on data-vm
+  hosts: data
+  become: true
+  tags: kafka
+  roles:
+    - kafka
+
+- name: Deploy Redis on data-vm
+  hosts: data
+  become: true
+  tags: redis
+  roles:
+    - redis
+
+- name: Deploy Elasticsearch on data-vm
+  hosts: data
+  become: true
+  tags: elasticsearch
+  roles:
+    - elasticsearch
+
+# ---------- Per-env DBs on db-dev/db-prod ----------
+- name: Deploy MongoDB on db VMs (Dev + Prod)
+  hosts: db
+  become: true
+  tags: mongodb
+  roles:
+    - mongodb
+
+- name: Deploy MySQL/MariaDB on db VMs (Dev + Prod)
+  hosts: db
+  become: true
+  tags: mysql
+  roles:
+    - mysql
+
+# ---------- Debezium last (cần Mongo đã sẵn sàng để register connector) ----------
+- name: Deploy Debezium (Kafka Connect) on data-vm + register 2 Mongo connector
+  hosts: data
+  become: true
+  tags: debezium
+  roles:
+    - debezium

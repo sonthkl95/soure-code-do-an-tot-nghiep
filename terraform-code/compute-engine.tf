@@ -192,7 +192,7 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-bastion-003" {
   ]
 }
 
-# Observability VM (10.60.1.10) running Kafka, Prometheus, Loki, Tempo, Grafana, Alertmanager
+# Observability VM (10.60.1.10) running Prometheus, Loki, Tempo, Grafana, Alertmanager, OTel Gateway
 resource "google_compute_instance" "gcp-asia-southeast1-vm-observability-003" {
   name         = "gcp-asia-southeast1-vm-observability-003"
   machine_type = "e2-medium" # 2 vCPUs, 4GB RAM - optimized for quota compliance

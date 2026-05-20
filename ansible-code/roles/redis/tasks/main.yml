@@ -1,0 +1,28 @@
+---
+- name: Install Redis server
+  apt:
+    name: redis-server
+    state: present
+    update_cache: true
+
+- name: Configure Redis (bind + AOF + maxmemory)
+  template:
+    src: redis.conf.j2
+    dest: /etc/redis/redis.conf
+    owner: redis
+    group: redis
+    mode: '0640'
+  notify: restart redis
+
+- name: Enable and start redis-server
+  systemd:
+    name: redis-server
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: Wait for Redis port
+  wait_for:
+    port: "{{ redis_port }}"
+    delay: 2
+    timeout: 30

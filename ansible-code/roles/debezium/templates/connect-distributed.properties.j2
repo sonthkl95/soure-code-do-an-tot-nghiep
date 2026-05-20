@@ -1,0 +1,27 @@
+# Managed by Ansible — Kafka Connect distributed mode (Debezium)
+bootstrap.servers={{ debezium_kafka_bootstrap }}
+group.id={{ debezium_group_id }}
+
+key.converter=org.apache.kafka.connect.json.JsonConverter
+value.converter=org.apache.kafka.connect.json.JsonConverter
+key.converter.schemas.enable=false
+value.converter.schemas.enable=false
+
+offset.storage.topic=my_connect_offsets
+offset.storage.replication.factor=1
+offset.storage.partitions=25
+
+config.storage.topic=my_connect_configs
+config.storage.replication.factor=1
+
+status.storage.topic=my_connect_statuses
+status.storage.replication.factor=1
+status.storage.partitions=5
+
+offset.flush.interval.ms=10000
+
+rest.port={{ debezium_rest_port }}
+rest.advertised.host.name={{ ansible_host }}
+rest.advertised.port={{ debezium_rest_port }}
+
+plugin.path={{ debezium_plugin_path }}

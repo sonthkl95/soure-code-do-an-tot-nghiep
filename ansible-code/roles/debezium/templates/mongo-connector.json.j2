@@ -1,0 +1,13 @@
+{
+  "name": "mongo-{{ env_name }}-source",
+  "config": {
+    "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
+    "tasks.max": "1",
+    "mongodb.connection.string": "mongodb://{{ env_db_host }}:27017/?replicaSet={{ mongodb_replset_name | default('rs0') }}",
+    "topic.prefix": "{{ env_name }}",
+    "database.include.list": "ecommerce,outbox",
+    "snapshot.mode": "initial",
+    "capture.mode": "change_streams_update_full",
+    "publish.full.document.only": "true"
+  }
+}

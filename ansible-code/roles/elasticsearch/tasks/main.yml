@@ -1,0 +1,66 @@
+---
+- name: Install prerequisites
+  apt:
+    name: [apt-transport-https, gnupg, curl, ca-certificates]
+    state: present
+    update_cache: true
+
+- name: Add Elastic GPG key
+  get_url:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    dest: /usr/share/keyrings/elasticsearch-keyring.asc
+    mode: '0644'
+
+- name: Add Elastic 8.x apt repository
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.asc] https://artifacts.elastic.co/packages/8.x/apt stable main"
+    filename: "elastic-8.x"
+    state: present
+    update_cache: true
+
+- name: Install Elasticsearch
+  apt:
+    name: "elasticsearch={{ elasticsearch_version }}"
+    state: present
+    update_cache: true
+    allow_downgrade: true
+
+- name: Set vm.max_map_count (yêu cầu của Elasticsearch)
+  sysctl:
+    name: vm.max_map_count
+    value: "262144"
+    state: present
+    reload: true
+
+- name: Deploy elasticsearch.yml
+  template:
+    src: elasticsearch.yml.j2
+    dest: /etc/elasticsearch/elasticsearch.yml
+    owner: root
+    group: elasticsearch
+    mode: '0660'
+  notify: restart elasticsearch
+
+- name: Configure JVM heap
+  copy:
+    dest: /etc/elasticsearch/jvm.options.d/heap.options
+    content: |
+      -Xms{{ elasticsearch_heap }}
+      -Xmx{{ elasticsearch_heap }}
+    owner: root
+    group: elasticsearch
+    mode: '0660'
+  notify: restart elasticsearch
+
+- name: Enable and start Elasticsearch
+  systemd:
+    name: elasticsearch
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: Wait for Elasticsearch HTTP port
+  wait_for:
+    port: "{{ elasticsearch_http_port }}"
+    delay: 10
+    timeout: 180

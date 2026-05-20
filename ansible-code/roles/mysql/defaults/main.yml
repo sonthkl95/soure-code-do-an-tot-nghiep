@@ -1,0 +1,17 @@
+---
+# MariaDB-compatible MySQL server (Debian default)
+# Mỗi db-vm chỉ chạy 4 database của ENV tương ứng (dev hoặc prod).
+mysql_bind_ip: "0.0.0.0"
+mysql_port: 3306
+
+# 4 microservice DB.
+# Password đọc từ Ansible Vault (group_vars/db/vault.yml) — KHÔNG hard-code clear-text.
+# Xem hướng dẫn tạo vault ở group_vars/db/vault.yml.example.
+mysql_databases:
+  - { name: "payment",   user: "payment_user",   password: "{{ vault_mysql_payment_password }}" }
+  - { name: "inventory", user: "inventory_user", password: "{{ vault_mysql_inventory_password }}" }
+  - { name: "order_db",  user: "order_user",     password: "{{ vault_mysql_order_password }}" }
+  - { name: "identity",  user: "identity_user",  password: "{{ vault_mysql_identity_password }}" }
+
+# InnoDB buffer pool (~50% RAM)
+mysql_innodb_buffer_pool_size: "512M"

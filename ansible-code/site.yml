@@ -6,7 +6,7 @@
 
 # Step 0: Ensure baseline utilities (Vim, curl, etc.) are installed on all servers
 - name: Ensure baseline packages are installed on all servers
-  hosts: k8s, observability
+  hosts: k8s, observability, data, db
   become: true
   tasks:
     - name: Install standard developer utilities
@@ -23,17 +23,21 @@
 # Step 1: Setup K8s cluster on Dev/Prod VMs
 - import_playbook: playbooks/k8s.yml
 
-# Step 2: Deploy app (microservices) on K8s
+# Step 2: Deploy data stack on data-vm + db-vm (Kafka, Redis, ES, Debezium / Mongo, MySQL)
+# Phải chạy TRƯỚC app.yml vì microservice Deployment sẽ phụ thuộc các endpoint này.
+- import_playbook: playbooks/data.yml
+
+# Step 3: Deploy app (microservices ConfigMap + Deployments) on K8s
 - import_playbook: playbooks/app.yml
 
-# Step 3: Deploy core observability stack on observability-vm
+# Step 4: Deploy core observability stack on observability-vm
 - import_playbook: playbooks/observability.yml
 
-# Step 4: Deploy data collectors on K8s nodes and VMs (traces + logs)
+# Step 5: Deploy data collectors on K8s nodes and VMs (traces + logs + node metrics)
 - import_playbook: playbooks/collectors.yml
 
-# Step 5: Deploy K8s metrics pipeline (Prometheus Agent + kube-state-metrics)
+# Step 6: Deploy K8s metrics pipeline (Prometheus Agent + kube-state-metrics)
 - import_playbook: playbooks/metrics-k8s.yml
 
-# Step 6: Deploy Google Cloud Ops Agent on all instances
+# Step 7: Deploy Google Cloud Ops Agent on all instances
 - import_playbook: playbooks/install-ops-agent.yml

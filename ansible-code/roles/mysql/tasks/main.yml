@@ -1,0 +1,52 @@
+---
+- name: Install MariaDB server + Python client (cho ansible mysql_* modules)
+  apt:
+    name:
+      - mariadb-server
+      - python3-pymysql
+    state: present
+    update_cache: true
+
+- name: Deploy MariaDB custom config (bind 0.0.0.0 + tuning)
+  template:
+    src: 60-data-vm.cnf.j2
+    dest: /etc/mysql/mariadb.conf.d/60-data-vm.cnf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart mariadb
+
+- name: Enable and start MariaDB
+  systemd:
+    name: mariadb
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: Wait for MariaDB port
+  wait_for:
+    port: "{{ mysql_port }}"
+    delay: 3
+    timeout: 60
+
+- name: Create application databases
+  community.mysql.mysql_db:
+    name: "{{ item.name }}"
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
+  loop: "{{ mysql_databases }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: Create application users + grants
+  community.mysql.mysql_user:
+    name: "{{ item.user }}"
+    password: "{{ item.password }}"
+    host: "%"
+    priv: "{{ item.name }}.*:ALL"
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
+  loop: "{{ mysql_databases }}"
+  loop_control:
+    label: "{{ item.user }}"
+  no_log: true

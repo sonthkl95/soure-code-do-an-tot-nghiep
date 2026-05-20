@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-endpoints
+  namespace: default
+  labels:
+    env: {{ env_name }}
+data:
+  # ────────────────────────────────────────────────────────────────
+  # Shared infra (data-vm 10.60.1.20 trong VPC obs)
+  # ────────────────────────────────────────────────────────────────
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "{{ shared_data_host }}:9092"
+
+  SPRING_DATA_REDIS_HOST: "{{ shared_data_host }}"
+  SPRING_DATA_REDIS_PORT: "6379"
+  SPRING_DATA_REDIS_DATABASE: "{{ env_redis_database | string }}"
+  SPRING_REDIS_HOST: "{{ shared_data_host }}"
+  SPRING_REDIS_PORT: "6379"
+  SPRING_REDIS_DATABASE: "{{ env_redis_database | string }}"
+
+  SPRING_ELASTICSEARCH_URIS: "http://{{ shared_data_host }}:9200"
+  APP_ES_HOST: "{{ shared_data_host }}"
+  APP_ES_PORT: "9200"
+  APP_ES_INDEX_PREFIX: "{{ env_es_index_prefix }}"
+
+  APP_KAFKA_TOPIC_PREFIX: "{{ env_kafka_topic_prefix }}"
+  APP_OUTBOX_TOPIC: "{{ env_name }}.ecommerce.outbox_events"
+
+  DEBEZIUM_CONNECT_URL: "http://{{ shared_data_host }}:8083"
+
+  # ────────────────────────────────────────────────────────────────
+  # Env-specific DB (db-{{ env_name }}-vm trong VPC {{ env_name }})
+  # ────────────────────────────────────────────────────────────────
+  # MongoDB — catalog-service (ecommerce) & search-service (outbox)
+  SPRING_DATA_MONGODB_URI: "mongodb://{{ env_db_host }}:27017/ecommerce?replicaSet=rs0"
+  MONGODB_URI_OUTBOX: "mongodb://{{ env_db_host }}:27017/outbox?replicaSet=rs0"
+
+  # MySQL JDBC URLs cho từng service (Deployment map theo service)
+  PAYMENT_DB_URL: "jdbc:mysql://{{ env_db_host }}:3306/payment"
+  INVENTORY_DB_URL: "jdbc:mysql://{{ env_db_host }}:3306/inventory"
+  ORDER_DB_URL: "jdbc:mysql://{{ env_db_host }}:3306/order_db"
+  IDENTITY_DB_URL: "jdbc:mysql://{{ env_db_host }}:3306/identity"
+---
+# Secret chứa user/pass MySQL.
+# Password được Ansible inject từ Vault (group_vars/all/vault.yml).
+# Khi Ansible chạy `kubectl apply`, file đã render chỉ tồn tại tạm ở /tmp,
+# nhưng vẫn nên xoá sau apply để hạn chế rò rỉ (xem app/tasks/main.yml).
+apiVersion: v1
+kind: Secret
+metadata:
+  name: data-credentials
+  namespace: default
+  labels:
+    env: {{ env_name }}
+type: Opaque
+stringData:
+  PAYMENT_DB_USERNAME: "payment_user"
+  PAYMENT_DB_PASSWORD: "{{ vault_mysql_payment_password }}"
+  INVENTORY_DB_USERNAME: "inventory_user"
+  INVENTORY_DB_PASSWORD: "{{ vault_mysql_inventory_password }}"
+  ORDER_DB_USERNAME: "order_user"
+  ORDER_DB_PASSWORD: "{{ vault_mysql_order_password }}"
+  IDENTITY_DB_USERNAME: "identity_user"
+  IDENTITY_DB_PASSWORD: "{{ vault_mysql_identity_password }}"

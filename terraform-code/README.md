@@ -43,9 +43,11 @@ flowchart TB
 
     subgraph ObsPrj["📁 obs-003"]
         ObsVPC["VPC Observability\n10.60.1.0/24"]
-        ObsVM["🖥️ Obs VM  10.60.1.10\nPrometheus · Loki · Tempo\nGrafana · Kafka · Alertmanager"]
+        ObsVM["🖥️ Obs VM  10.60.1.10\nPrometheus · Loki · Tempo\nGrafana · Alertmanager · OTel Gateway"]
+        DataVM["🖥️ Data VM  10.60.1.20\nKafka · MongoDB · Redis\nElasticsearch · Debezium"]
         NATo["Cloud NAT"]
         ObsVPC --- ObsVM
+        ObsVPC --- DataVM
         ObsVPC --- NATo
     end
 

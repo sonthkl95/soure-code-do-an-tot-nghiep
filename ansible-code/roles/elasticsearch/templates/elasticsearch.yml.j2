@@ -1,0 +1,19 @@
+# Managed by Ansible
+cluster.name: {{ elasticsearch_cluster_name }}
+node.name: {{ elasticsearch_node_name }}
+
+path.data: /var/lib/elasticsearch
+path.logs: /var/log/elasticsearch
+
+network.host: {{ elasticsearch_bind_host }}
+http.port: {{ elasticsearch_http_port }}
+transport.port: {{ elasticsearch_transport_port }}
+
+# Single-node cluster
+discovery.type: single-node
+
+# Security (tắt cho đồ án — production thật cần bật)
+xpack.security.enabled: {{ elasticsearch_security_enabled | lower }}
+xpack.security.enrollment.enabled: false
+xpack.security.http.ssl.enabled: false
+xpack.security.transport.ssl.enabled: false

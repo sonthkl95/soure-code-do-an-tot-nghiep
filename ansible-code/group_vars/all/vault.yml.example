@@ -1,0 +1,23 @@
+---
+# =============================================================
+# Centralized secrets (Ansible Vault)
+# Áp dụng cho TOÀN BỘ host (group_vars/all auto-load) — vì:
+#   - db_dev/db_prod: dùng để tạo MySQL user (role mysql)
+#   - k8s_dev_master/prod_master: dùng để render Secret data-credentials (role app)
+# =============================================================
+# CÁCH SỬ DỤNG:
+#   1. Copy file này thành `vault.yml` (cùng thư mục):
+#         cp group_vars/all/vault.yml.example group_vars/all/vault.yml
+#   2. Đổi giá trị placeholder thành password thật.
+#   3. Mã hoá:
+#         ansible-vault encrypt group_vars/all/vault.yml
+#   4. Chạy playbook với:
+#         ansible-playbook -i inventory/hosts.ini site.yml --ask-vault-pass
+#      hoặc --vault-password-file <path>
+# =============================================================
+
+# MySQL application user passwords (4 microservice DB)
+vault_mysql_payment_password:   "CHANGE_ME_payment_strong_password"
+vault_mysql_inventory_password: "CHANGE_ME_inventory_strong_password"
+vault_mysql_order_password:     "CHANGE_ME_order_strong_password"
+vault_mysql_identity_password:  "CHANGE_ME_identity_strong_password"

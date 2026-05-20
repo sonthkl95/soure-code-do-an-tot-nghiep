@@ -1,0 +1,21 @@
+---
+# Debezium chạy như Kafka Connect distributed worker (native, không Docker)
+debezium_connect_version: "3.9.2"          # đi cùng Kafka version
+debezium_scala_version: "2.13"
+debezium_plugin_version: "2.5.4.Final"
+
+debezium_user: "kafka"                      # dùng chung user kafka
+debezium_install_dir: "/opt/kafka"          # dùng chung với kafka role
+debezium_plugin_path: "/opt/kafka/connect-plugins"
+
+debezium_rest_port: 8083
+debezium_group_id: "debezium-cluster"
+debezium_heap: "-Xms512m -Xmx512m"
+
+# Kafka bootstrap (localhost vì cùng VM với kafka)
+debezium_kafka_bootstrap: "localhost:9092"
+
+debezium_internal_topics:
+  - my_connect_configs
+  - my_connect_offsets
+  - my_connect_statuses

@@ -1,0 +1,94 @@
+---
+# Debezium = Kafka Connect (đã có sẵn trong Kafka tarball) + MongoDB plugin
+- name: Ensure Kafka Connect plugin directory exists
+  file:
+    path: "{{ debezium_plugin_path }}"
+    state: directory
+    owner: "{{ debezium_user }}"
+    group: "{{ debezium_user }}"
+    mode: '0755'
+
+- name: Download Debezium MongoDB connector
+  get_url:
+    url: "https://repo1.maven.org/maven2/io/debezium/debezium-connector-mongodb/{{ debezium_plugin_version }}/debezium-connector-mongodb-{{ debezium_plugin_version }}-plugin.tar.gz"
+    dest: /tmp/debezium-mongodb.tar.gz
+    mode: '0644'
+    timeout: 120
+    force: false
+  register: dbz_download
+  retries: 3
+  delay: 10
+  until: dbz_download is succeeded
+
+- name: Extract Debezium MongoDB connector
+  unarchive:
+    src: /tmp/debezium-mongodb.tar.gz
+    dest: "{{ debezium_plugin_path }}"
+    remote_src: true
+    owner: "{{ debezium_user }}"
+    group: "{{ debezium_user }}"
+    creates: "{{ debezium_plugin_path }}/debezium-connector-mongodb"
+
+- name: Deploy Kafka Connect distributed properties
+  template:
+    src: connect-distributed.properties.j2
+    dest: "{{ debezium_install_dir }}/config/connect-distributed.properties"
+    owner: "{{ debezium_user }}"
+    group: "{{ debezium_user }}"
+    mode: '0644'
+  notify: restart debezium
+
+- name: Deploy Debezium systemd service
+  template:
+    src: debezium.service.j2
+    dest: /etc/systemd/system/debezium.service
+    mode: '0644'
+  notify: restart debezium
+
+- name: Enable and start Debezium (Kafka Connect)
+  systemd:
+    name: debezium
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: Wait for Debezium REST API
+  wait_for:
+    port: "{{ debezium_rest_port }}"
+    delay: 10
+    timeout: 120
+
+# ──────────────────────────────────────────────────────────────────
+# Register 1 MongoDB source connector per environment (dev + prod)
+# Mỗi connector dùng topic prefix riêng (dev.* / prod.*) để cô lập.
+# ──────────────────────────────────────────────────────────────────
+- name: Render MongoDB connector configs (per env)
+  template:
+    src: mongo-connector.json.j2
+    dest: "/tmp/mongo-{{ item.env_name }}-source.json"
+    mode: '0644'
+  loop: "{{ debezium_mongo_sources | default([]) }}"
+  loop_control:
+    label: "{{ item.env_name }}"
+  vars:
+    env_name: "{{ item.env_name }}"
+    env_db_host: "{{ item.env_db_host }}"
+
+- name: Register/Update MongoDB connectors via Kafka Connect REST
+  uri:
+    # PUT /connectors/<name>/config chỉ nhận phần `config` (không bọc {name, config}).
+    # Đọc từ file đã render ở task trước để đảm bảo vars của loop được giữ đúng.
+    url: "http://localhost:{{ debezium_rest_port }}/connectors/mongo-{{ item.env_name }}-source/config"
+    method: PUT
+    body_format: json
+    body: "{{ (lookup('file', '/tmp/mongo-' ~ item.env_name ~ '-source.json') | from_json).config }}"
+    status_code: [200, 201]
+    headers:
+      Content-Type: "application/json"
+  loop: "{{ debezium_mongo_sources | default([]) }}"
+  loop_control:
+    label: "mongo-{{ item.env_name }}-source"
+  retries: 5
+  delay: 10
+  register: connector_result
+  until: connector_result is succeeded

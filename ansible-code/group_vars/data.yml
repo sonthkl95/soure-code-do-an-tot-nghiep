@@ -1,0 +1,8 @@
+---
+# =============================================================
+# Biến cho Debezium chạy trên data-vm.
+# 2 MongoDB connector trỏ 2 db-vm (dev + prod) qua peering Obs↔Dev/Prod.
+# =============================================================
+debezium_mongo_sources:
+  - { env_name: "dev",  env_db_host: "10.10.1.30" }
+  - { env_name: "prod", env_db_host: "10.20.1.30" }

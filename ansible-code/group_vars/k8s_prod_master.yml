@@ -1,0 +1,12 @@
+---
+# =============================================================
+# Biến endpoints cho cluster K8s PROD
+# =============================================================
+env_name: "prod"
+
+env_db_host: "10.20.1.30"
+shared_data_host: "10.60.1.20"
+
+env_redis_database: 1
+env_es_index_prefix: "prod_"
+env_kafka_topic_prefix: "prod."

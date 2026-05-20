@@ -5,7 +5,7 @@
 # =============================================================
 
 - name: Deploy Google Cloud Ops Agent to all instances
-  hosts: k8s, observability, bastion
+  hosts: k8s, observability, bastion, data, db
   become: true
   tasks:
     - name: Check if Google Cloud Ops Agent is already running

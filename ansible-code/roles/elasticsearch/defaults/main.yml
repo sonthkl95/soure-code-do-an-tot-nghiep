@@ -1,0 +1,10 @@
+---
+# Elasticsearch 8.x – cài qua Elastic apt repo
+elasticsearch_version: "8.12.2"
+elasticsearch_cluster_name: "techshop"
+elasticsearch_node_name: "data-001"
+elasticsearch_bind_host: "0.0.0.0"
+elasticsearch_http_port: 9200
+elasticsearch_transport_port: 9300
+elasticsearch_heap: "1g"          # -Xms / -Xmx
+elasticsearch_security_enabled: false

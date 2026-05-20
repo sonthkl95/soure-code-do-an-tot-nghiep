@@ -1,11 +1,19 @@
 ---
 # =============================================================
 # Playbook: App Deployment
-# Deploys microservice application on K8s cluster
-# App source code will be provided later
+# Apply ConfigMap 'data-endpoints' (trỏ tới data-vm 10.60.1.20)
+# lên K8s Dev + Prod cluster qua master node đầu tiên của mỗi cluster.
+# Source code microservice Deployment sẽ được bổ sung sau.
 # =============================================================
 
-- name: Deploy application on K8s
-  hosts: k8s_master[0]
+- name: Deploy app config on Dev cluster
+  hosts: k8s_dev_master[0]
+  become: true
+  roles:
+    - app
+
+- name: Deploy app config on Prod cluster
+  hosts: k8s_prod_master[0]
+  become: true
   roles:
     - app

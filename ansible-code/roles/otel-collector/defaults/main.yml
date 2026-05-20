@@ -8,8 +8,8 @@ otelcol_otlp_http_port: 4318
 # ETL Pipeline config (per architecture diagram)
 otelcol_sampling_rate: 0.05          # Tail-based sampling: keep only 5% of traces
 
-# Push destination - Kafka brokers (gateway trên obs-vm đọc lại)
-otelcol_kafka_brokers: "10.60.1.10:9092"
+# Push destination - Kafka brokers (data-vm, cùng VPC obs)
+otelcol_kafka_brokers: "10.60.1.20:9092"
 otelcol_kafka_trace_topic: "trace-topic"
 otelcol_kafka_log_topic: "log-topic"
 

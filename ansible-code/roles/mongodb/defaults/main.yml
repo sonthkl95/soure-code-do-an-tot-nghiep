@@ -1,0 +1,14 @@
+---
+# vars for mongodb role (native install via apt, replica set rs0)
+mongodb_version_major: "7.0"
+mongodb_replset_name: "rs0"
+mongodb_bind_ip: "0.0.0.0"
+mongodb_port: 27017
+mongodb_data_dir: "/var/lib/mongodb"
+mongodb_log_dir: "/var/log/mongodb"
+
+# Sẽ dùng IP host này khi initiate replica set (client ngoài VM phải resolve được)
+mongodb_replset_host: "{{ ansible_host }}:{{ mongodb_port }}"
+
+# Cache size in GB (~50% RAM còn lại sau khi trừ ES + Kafka + Debezium)
+mongodb_wired_tiger_cache_gb: 1

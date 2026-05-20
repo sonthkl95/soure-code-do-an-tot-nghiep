@@ -10,11 +10,7 @@
 #   - Grafana (Visualization + Data Provisioning via IaC)
 # =============================================================
 
-- name: Deploy Kafka (Message Buffer for Traces and Logs)
-  hosts: observability
-  tags: kafka
-  roles:
-    - kafka
+# NOTE: Kafka đã được di dời sang data-vm (10.60.1.20) — xem playbooks/data.yml
 
 - name: Deploy Prometheus TSDB (Local Metrics Storage)
   hosts: observability

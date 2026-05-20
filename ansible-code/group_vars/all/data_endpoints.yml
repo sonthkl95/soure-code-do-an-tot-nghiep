@@ -1,0 +1,15 @@
+---
+# =============================================================
+# DEPRECATED — không dùng nữa
+# -------------------------------------------------------------
+# Trước đây tất cả endpoint (Kafka/Mongo/Redis/ES) đều trỏ chung
+# về data-vm (10.60.1.20). Sau khi tách DB cô lập theo môi trường,
+# các biến này được thay thế bằng group_vars per-cluster:
+#   - group_vars/k8s_dev_master.yml   (env_name=dev,  env_db_host=10.10.1.30)
+#   - group_vars/k8s_prod_master.yml  (env_name=prod, env_db_host=10.20.1.30)
+#   - group_vars/data.yml             (debezium_mongo_sources)
+#
+# Giữ file rỗng để Ansible không lỗi nếu có nơi nào còn import legacy.
+# Có thể xoá hẳn sau khi xác nhận không còn role nào tham chiếu biến cũ.
+# =============================================================
+

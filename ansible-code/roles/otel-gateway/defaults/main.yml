@@ -5,8 +5,8 @@ otelgw_version: "0.99.0"
 otelgw_install_dir: "/opt/otelgw"
 otelgw_health_port: 13133
 
-# Kafka brokers (local trên obs-vm)
-otelgw_kafka_brokers: "127.0.0.1:9092"
+# Kafka brokers (data-vm trong cùng VPC obs, peering same zone → free egress)
+otelgw_kafka_brokers: "10.60.1.20:9092"
 otelgw_kafka_trace_topic: "trace-topic"
 otelgw_kafka_log_topic: "log-topic"
 otelgw_kafka_trace_group: "tempo-consumer"

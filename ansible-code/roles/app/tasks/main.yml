@@ -1,7 +1,38 @@
 ---
-# Placeholder cho microservice app deployment.
-# Source code app sẽ được bổ sung sau, hiện tại role này không làm gì
-# để playbook site.yml chạy được end-to-end.
-- name: App role placeholder
+# =============================================================
+# App role - Apply ConfigMap "data-endpoints" lên K8s cluster
+# ConfigMap này chứa env vars trỏ tới data-vm (10.60.1.20):
+#   - SPRING_KAFKA_BOOTSTRAP_SERVERS
+#   - SPRING_DATA_MONGODB_URI
+#   - SPRING_DATA_REDIS_HOST / PORT
+#   - SPRING_ELASTICSEARCH_URIS
+#
+# Các Deployment microservice (catalog, payment, order, search, ...)
+# dùng envFrom.configMapRef: data-endpoints để Spring Boot tự bind
+# (env var có priority cao hơn application.yml literal).
+#
+# Lưu ý: role này chạy trên K8s master node (group `k8s_master`).
+# Source code Deployment/Helm chart sẽ được bổ sung sau.
+# =============================================================
+
+- name: Render data-endpoints ConfigMap manifest
+  template:
+    src: data-endpoints-configmap.yaml.j2
+    dest: /tmp/data-endpoints-configmap.yaml
+    mode: '0644'
+
+- name: Apply data-endpoints ConfigMap via kubectl
+  command: kubectl apply -f /tmp/data-endpoints-configmap.yaml
+  register: cm_apply
+  changed_when: "'configured' in cm_apply.stdout or 'created' in cm_apply.stdout"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: App role placeholder - microservice Deployments
   debug:
-    msg: "App role chưa cài đặt - source code microservices sẽ được bổ sung sau."
+    msg: >
+      ConfigMap 'data-endpoints' đã được apply.
+      Khi viết Deployment cho microservices, dùng:
+        envFrom:
+          - configMapRef: { name: data-endpoints }
+      → Spring Boot tự override application.yml bằng env vars.

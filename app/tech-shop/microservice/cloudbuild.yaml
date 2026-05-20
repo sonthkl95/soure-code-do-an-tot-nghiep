@@ -27,23 +27,14 @@ options:
 # Image base URL: ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/<service>
 images:
   - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/discovery-service:${_TAG}"
-  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/discovery-service:${SHORT_SHA}"
   - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/identity-service:${_TAG}"
-  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/identity-service:${SHORT_SHA}"
   - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/catalog-service:${_TAG}"
-  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/catalog-service:${SHORT_SHA}"
   - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/order-service:${_TAG}"
-  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/order-service:${SHORT_SHA}"
   - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/inventory-service:${_TAG}"
-  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/inventory-service:${SHORT_SHA}"
   - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/payment-service:${_TAG}"
-  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/payment-service:${SHORT_SHA}"
   - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/search-service:${_TAG}"
-  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/search-service:${SHORT_SHA}"
   - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-user:${_TAG}"
-  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-user:${SHORT_SHA}"
   - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-admin:${_TAG}"
-  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-admin:${SHORT_SHA}"
 
 steps:
   # ---------- discovery-service ----------
@@ -52,10 +43,7 @@ steps:
     args:
       - build
       - --build-arg=SERVICE_NAME=discovery-service
-      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
-      - --build-arg=VCS_REF=$COMMIT_SHA
       - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/discovery-service:${_TAG}
-      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/discovery-service:${SHORT_SHA}
       - .
 
   # ---------- identity-service ----------
@@ -64,10 +52,7 @@ steps:
     args:
       - build
       - --build-arg=SERVICE_NAME=identity-service
-      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
-      - --build-arg=VCS_REF=$COMMIT_SHA
       - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/identity-service:${_TAG}
-      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/identity-service:${SHORT_SHA}
       - .
 
   # ---------- catalog-service ----------
@@ -76,10 +61,7 @@ steps:
     args:
       - build
       - --build-arg=SERVICE_NAME=catalog-service
-      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
-      - --build-arg=VCS_REF=$COMMIT_SHA
       - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/catalog-service:${_TAG}
-      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/catalog-service:${SHORT_SHA}
       - .
 
   # ---------- order-service ----------
@@ -88,10 +70,7 @@ steps:
     args:
       - build
       - --build-arg=SERVICE_NAME=order-service
-      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
-      - --build-arg=VCS_REF=$COMMIT_SHA
       - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/order-service:${_TAG}
-      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/order-service:${SHORT_SHA}
       - .
 
   # ---------- inventory-service ----------
@@ -100,10 +79,7 @@ steps:
     args:
       - build
       - --build-arg=SERVICE_NAME=inventory-service
-      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
-      - --build-arg=VCS_REF=$COMMIT_SHA
       - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/inventory-service:${_TAG}
-      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/inventory-service:${SHORT_SHA}
       - .
 
   # ---------- payment-service ----------
@@ -112,10 +88,7 @@ steps:
     args:
       - build
       - --build-arg=SERVICE_NAME=payment-service
-      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
-      - --build-arg=VCS_REF=$COMMIT_SHA
       - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/payment-service:${_TAG}
-      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/payment-service:${SHORT_SHA}
       - .
 
   # ---------- search-service ----------
@@ -124,10 +97,7 @@ steps:
     args:
       - build
       - --build-arg=SERVICE_NAME=search-service
-      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
-      - --build-arg=VCS_REF=$COMMIT_SHA
       - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/search-service:${_TAG}
-      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/search-service:${SHORT_SHA}
       - .
 
   # ---------- bff-user ----------
@@ -136,10 +106,7 @@ steps:
     args:
       - build
       - --build-arg=SERVICE_NAME=bff-user
-      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
-      - --build-arg=VCS_REF=$COMMIT_SHA
       - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-user:${_TAG}
-      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-user:${SHORT_SHA}
       - .
 
   # ---------- bff-admin ----------
@@ -148,10 +115,7 @@ steps:
     args:
       - build
       - --build-arg=SERVICE_NAME=bff-admin
-      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
-      - --build-arg=VCS_REF=$COMMIT_SHA
       - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-admin:${_TAG}
-      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-admin:${SHORT_SHA}
       - .
 
 timeout: 3600s

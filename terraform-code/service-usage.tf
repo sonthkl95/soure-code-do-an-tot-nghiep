@@ -56,7 +56,7 @@ resource "google_project_service" "gcp-apse1-apis-sh-vpc-prd-003" {
   disable_dependent_services = false
 }
 
-# Enable APIs for shared access project (Bastion, LB)
+# Enable APIs for shared access project (Bastion, LB, Artifact Registry, Cloud Build)
 resource "google_project_service" "gcp-apse1-apis-sh-access-003" {
   for_each = toset([
     "compute.googleapis.com",
@@ -65,6 +65,8 @@ resource "google_project_service" "gcp-apse1-apis-sh-access-003" {
     "logging.googleapis.com",
     "monitoring.googleapis.com",
     "oslogin.googleapis.com",
+    "artifactregistry.googleapis.com",
+    "cloudbuild.googleapis.com",
   ])
 
   project                    = data.google_project.gcp-apse1-prj-sh-access-003.project_id

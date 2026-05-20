@@ -1,0 +1,157 @@
+# =============================================================
+# Cloud Build pipeline — build & push 9 microservices lên Artifact Registry
+#
+# Chạy từ workspace `app/tech-shop/microservice/`:
+#   cd app/tech-shop/microservice
+#   gcloud config set project gcp-apse1-prj-sh-access-003
+#   gcloud builds submit \
+#       --config=cloudbuild.yaml \
+#       --substitutions=_TAG=dev \
+#       .
+#
+# 9 services build TUẦN TỰ (vì dùng chung Maven cache layer của Docker).
+# Mỗi step ghi đè SERVICE_NAME → cache layer dependencies tái sử dụng.
+# Cuối build: tag = $_TAG (mặc định `latest`) + SHORT_SHA.
+# =============================================================
+
+substitutions:
+  _REGION: asia-southeast1
+  _REPO: techshop
+  _TAG: latest
+
+options:
+  machineType: E2_HIGHCPU_8       # Build nhanh hơn machine mặc định
+  logging: CLOUD_LOGGING_ONLY
+  dynamicSubstitutions: true
+
+# Image base URL: ${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/<service>
+images:
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/discovery-service:${_TAG}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/discovery-service:${SHORT_SHA}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/identity-service:${_TAG}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/identity-service:${SHORT_SHA}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/catalog-service:${_TAG}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/catalog-service:${SHORT_SHA}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/order-service:${_TAG}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/order-service:${SHORT_SHA}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/inventory-service:${_TAG}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/inventory-service:${SHORT_SHA}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/payment-service:${_TAG}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/payment-service:${SHORT_SHA}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/search-service:${_TAG}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/search-service:${SHORT_SHA}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-user:${_TAG}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-user:${SHORT_SHA}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-admin:${_TAG}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-admin:${SHORT_SHA}"
+
+steps:
+  # ---------- discovery-service ----------
+  - id: build-discovery
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg=SERVICE_NAME=discovery-service
+      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
+      - --build-arg=VCS_REF=$COMMIT_SHA
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/discovery-service:${_TAG}
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/discovery-service:${SHORT_SHA}
+      - .
+
+  # ---------- identity-service ----------
+  - id: build-identity
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg=SERVICE_NAME=identity-service
+      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
+      - --build-arg=VCS_REF=$COMMIT_SHA
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/identity-service:${_TAG}
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/identity-service:${SHORT_SHA}
+      - .
+
+  # ---------- catalog-service ----------
+  - id: build-catalog
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg=SERVICE_NAME=catalog-service
+      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
+      - --build-arg=VCS_REF=$COMMIT_SHA
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/catalog-service:${_TAG}
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/catalog-service:${SHORT_SHA}
+      - .
+
+  # ---------- order-service ----------
+  - id: build-order
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg=SERVICE_NAME=order-service
+      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
+      - --build-arg=VCS_REF=$COMMIT_SHA
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/order-service:${_TAG}
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/order-service:${SHORT_SHA}
+      - .
+
+  # ---------- inventory-service ----------
+  - id: build-inventory
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg=SERVICE_NAME=inventory-service
+      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
+      - --build-arg=VCS_REF=$COMMIT_SHA
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/inventory-service:${_TAG}
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/inventory-service:${SHORT_SHA}
+      - .
+
+  # ---------- payment-service ----------
+  - id: build-payment
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg=SERVICE_NAME=payment-service
+      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
+      - --build-arg=VCS_REF=$COMMIT_SHA
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/payment-service:${_TAG}
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/payment-service:${SHORT_SHA}
+      - .
+
+  # ---------- search-service ----------
+  - id: build-search
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg=SERVICE_NAME=search-service
+      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
+      - --build-arg=VCS_REF=$COMMIT_SHA
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/search-service:${_TAG}
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/search-service:${SHORT_SHA}
+      - .
+
+  # ---------- bff-user ----------
+  - id: build-bff-user
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg=SERVICE_NAME=bff-user
+      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
+      - --build-arg=VCS_REF=$COMMIT_SHA
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-user:${_TAG}
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-user:${SHORT_SHA}
+      - .
+
+  # ---------- bff-admin ----------
+  - id: build-bff-admin
+    name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - --build-arg=SERVICE_NAME=bff-admin
+      - --build-arg=BUILD_DATE=$BUILD_TIMESTAMP
+      - --build-arg=VCS_REF=$COMMIT_SHA
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-admin:${_TAG}
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/bff-admin:${SHORT_SHA}
+      - .
+
+timeout: 3600s

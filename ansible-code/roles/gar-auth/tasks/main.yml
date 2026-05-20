@@ -1,0 +1,78 @@
+---
+# =============================================================
+# gar-auth role
+# Cấu hình kubelet trên mọi K8s node (master + worker) để pull
+# image từ GCP Artifact Registry bằng VM service account
+# (sa-dev-env / sa-prd-env, đã có roles/artifactregistry.reader).
+#
+# Cơ chế: K8s Kubelet Credential Provider Plugin (k8s ≥ 1.26 stable).
+#   - Cài binary `auth-provider-gcp` (do GCP open-source)
+#   - Khai báo CredentialProviderConfig cho registry *.pkg.dev / *.gcr.io
+#   - Truyền flag --image-credential-provider-{config,bin-dir} vào kubelet
+#
+# Plugin sẽ tự lấy OAuth token từ metadata server (169.254.169.254) của VM
+# → không cần JSON key, không cần imagePullSecrets.
+# =============================================================
+
+- name: Create credential provider directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - /etc/kubernetes/image-credential-provider
+    - /usr/local/bin
+
+- name: Download auth-provider-gcp binary
+  get_url:
+    url: "https://storage.googleapis.com/k8s-artifacts-prod/binaries/auth-provider-gcp/v0.0.5/linux_amd64/auth-provider-gcp"
+    dest: /usr/local/bin/auth-provider-gcp
+    mode: '0755'
+    owner: root
+    group: root
+    force: false
+  register: download_result
+  retries: 3
+  delay: 5
+  until: download_result is succeeded
+
+- name: Deploy CredentialProviderConfig for kubelet
+  copy:
+    dest: /etc/kubernetes/image-credential-provider/config.yaml
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      apiVersion: kubelet.config.k8s.io/v1
+      kind: CredentialProviderConfig
+      providers:
+        - name: auth-provider-gcp
+          apiVersion: credentialprovider.kubelet.k8s.io/v1
+          matchImages:
+            - "*.pkg.dev"
+            - "*.gcr.io"
+            - "gcr.io"
+            - "k8s.gcr.io"
+            - "registry.k8s.io"
+          defaultCacheDuration: "12h"
+          args:
+            - get-credentials
+            - --v=3
+  notify: restart kubelet
+
+- name: Configure kubelet extra args for credential provider
+  copy:
+    dest: /etc/default/kubelet
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      # Managed by Ansible role `gar-auth`
+      KUBELET_EXTRA_ARGS=--image-credential-provider-config=/etc/kubernetes/image-credential-provider/config.yaml --image-credential-provider-bin-dir=/usr/local/bin
+  notify: restart kubelet
+
+- name: Ensure kubelet picks up new env (reload systemd)
+  systemd:
+    daemon_reload: true

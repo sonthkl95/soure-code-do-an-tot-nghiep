@@ -107,7 +107,7 @@ patches:
         value:
           httpGet:
             path: /actuator/health/liveness
-            port: 8088
+            port: http
           initialDelaySeconds: 30
           periodSeconds: 10
           failureThreshold: 60

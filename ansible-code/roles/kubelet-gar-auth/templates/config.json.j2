@@ -1,10 +1,13 @@
+{# _gar_key_content có thể là dict (Ansible auto-parse JSON) hoặc string.
+   Chuẩn hoá về JSON string 1 dòng (compact) rồi mới to_json để escape sang JSON string literal. #}
+{%- set _gar_key_str = _gar_key_content if _gar_key_content is string else (_gar_key_content | to_json) -%}
 {
   "auths": {
     "{{ gar_registry_host }}": {
       "username": "_json_key",
-      "password": {{ _gar_key_content | to_json }},
+      "password": {{ _gar_key_str | to_json }},
       "email": "admin@techshop.local",
-      "auth": "{{ ('_json_key:' ~ _gar_key_content) | b64encode }}"
+      "auth": "{{ ('_json_key:' ~ _gar_key_str) | b64encode }}"
     }
   }
 }

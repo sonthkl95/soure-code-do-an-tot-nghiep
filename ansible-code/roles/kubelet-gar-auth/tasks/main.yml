@@ -1,0 +1,44 @@
+---
+# =============================================================
+# kubelet-gar-auth role
+# Cài đặt credential GCP Artifact Registry cho kubelet trên các
+# worker node để node-level image pull hoạt động (không cần
+# imagePullSecrets trong từng namespace).
+#
+# Yêu cầu:
+#   - File JSON key của SA `sa-gar-puller` đã có trên bastion
+#     tại `gar_key_file` (mặc định ~/secrets/gar-puller-key.json).
+#
+# Tham khảo: containerd với CRI dùng `/var/lib/kubelet/config.json`
+# theo định dạng dockercfg để xác thực khi kubelet yêu cầu pull.
+# =============================================================
+
+- name: Read GAR puller JSON key from controller (bastion)
+  set_fact:
+    _gar_key_content: "{{ lookup('file', gar_key_file) }}"
+  delegate_to: localhost
+  run_once: true
+  no_log: true
+
+- name: Ensure kubelet directory exists
+  file:
+    path: "{{ kubelet_docker_config_path | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+# Lưu ý: dùng `template` thay vì `copy + set_fact(dict)` vì Ansible
+# không template Jinja trong DICT KEYS của set_fact — sẽ ra literal
+# "{{ gar_registry_host }}" trong file đích.
+- name: Deploy kubelet dockerconfigjson for GAR pull auth
+  template:
+    src: config.json.j2
+    dest: "{{ kubelet_docker_config_path }}"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  no_log: true
+  notify: Restart kubelet

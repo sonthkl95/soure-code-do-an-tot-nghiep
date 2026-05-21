@@ -1,0 +1,10 @@
+{
+  "auths": {
+    "{{ gar_registry_host }}": {
+      "username": "_json_key",
+      "password": {{ _gar_key_content | to_json }},
+      "email": "admin@techshop.local",
+      "auth": "{{ ('_json_key:' ~ _gar_key_content) | b64encode }}"
+    }
+  }
+}

@@ -41,8 +41,17 @@
   roles:
     - k8s-worker-join
 
-# Step 6: Tạo imagePullSecret cho techshop namespace để pull image từ GAR
-# Chạy trên master (cần kubectl). JSON key đã copy về bastion tại ~/secrets/gar-puller-key.json
+# Step 6: Cài kubelet credential (/var/lib/kubelet/config.json) cho mọi worker
+# để kubelet tự xác thực khi pull image từ GAR — KHÔNG cần imagePullSecret
+# trong từng namespace/pod.
+- name: Configure kubelet GAR pull credential on all nodes
+  hosts: k8s
+  roles:
+    - kubelet-gar-auth
+
+# Step 7: (Tuỳ chọn / legacy) Tạo imagePullSecret cho namespace techshop.
+# Giữ lại để namespace nào không có node-level auth vẫn pull được, nhưng
+# với Step 6 đã hoạt động thì secret này phần lớn dư thừa.
 - name: Configure GAR imagePullSecret in techshop namespace
   hosts: k8s_master
   roles:

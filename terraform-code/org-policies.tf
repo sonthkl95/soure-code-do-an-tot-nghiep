@@ -81,4 +81,20 @@ import {
   id = "organizations/54431047904/policies/compute.vmExternalIpAccess"
 }
 
+# Project-level exception: allow Service Account key creation in shared-access project
+# (cần thiết để tạo JSON key cho sa-gar-puller — K8s pull image từ GAR)
+resource "google_org_policy_policy" "gcp-asia-southeast1-org-policy-allow-sa-key-sh-access-003" {
+  name   = "projects/${data.google_project.gcp-apse1-prj-sh-access-003.project_id}/policies/iam.disableServiceAccountKeyCreation"
+  parent = "projects/${data.google_project.gcp-apse1-prj-sh-access-003.project_id}"
+
+  spec {
+    inherit_from_parent = false
+    rules {
+      enforce = "FALSE"
+    }
+  }
+
+  depends_on = [google_project_service.gcp-apse1-apis-sh-access-003]
+}
+
 

@@ -7,6 +7,7 @@ namespace: techshop
 resources:
   - ../../base
   - app-secrets.yaml      # giá trị thật, KHÔNG commit (xem .gitignore)
+  - patches/hpa.yaml      # HPA mới (không có trong base) — add làm resource
 
 commonAnnotations:
   techshop.io/env: prod
@@ -44,11 +45,13 @@ patches:
   - path: patches/replicas.yaml
   - path: patches/ingress-hosts.yaml
   - path: patches/bff-redirect.yaml
-  - path: patches/hpa.yaml
-
-configMapGenerator:
-  - name: app-config
-    behavior: merge
-    literals:
-      - SPRING_PROFILES_ACTIVE=k8s,prod
-      - LOGGING_LEVEL_ROOT=WARN
+  - target:
+      kind: ConfigMap
+      name: app-config
+    patch: |-
+      - op: replace
+        path: /data/SPRING_PROFILES_ACTIVE
+        value: "k8s,prod"
+      - op: add
+        path: /data/LOGGING_LEVEL_ROOT
+        value: "WARN"

@@ -1,40 +1,40 @@
 # Prod: tăng replicas cho high-availability + load
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: identity-service }
+metadata: { name: identity-service, namespace: techshop }
 spec: { replicas: 2 }
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: catalog-service }
+metadata: { name: catalog-service, namespace: techshop }
 spec: { replicas: 3 }
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: order-service }
+metadata: { name: order-service, namespace: techshop }
 spec: { replicas: 3 }
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: inventory-service }
+metadata: { name: inventory-service, namespace: techshop }
 spec: { replicas: 2 }
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: payment-service }
+metadata: { name: payment-service, namespace: techshop }
 spec: { replicas: 2 }
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: search-service }
+metadata: { name: search-service, namespace: techshop }
 spec: { replicas: 2 }
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: bff-user }
+metadata: { name: bff-user, namespace: techshop }
 spec: { replicas: 3 }
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: bff-admin }
+metadata: { name: bff-admin, namespace: techshop }
 spec: { replicas: 2 }

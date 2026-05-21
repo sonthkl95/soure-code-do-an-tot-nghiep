@@ -1,6 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: bff-user }
+metadata: { name: bff-user, namespace: techshop }
 spec:
   template:
     spec:
@@ -12,7 +12,7 @@ spec:
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: bff-admin }
+metadata: { name: bff-admin, namespace: techshop }
 spec:
   template:
     spec:

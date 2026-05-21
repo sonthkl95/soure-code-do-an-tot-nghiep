@@ -1,3 +1,6 @@
 ---
 # Path tới file JSON key của SA sa-gar-puller (trên bastion / controller)
 gar_key_file: "~/secrets/gar-puller-key.json"
+
+# Registry host được map vào dockerconfigjson auths.
+gar_registry_host: "asia-southeast1-docker.pkg.dev"

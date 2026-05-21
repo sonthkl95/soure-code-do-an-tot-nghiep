@@ -11,6 +11,9 @@
 #   2. Copy key lên bastion: ~/secrets/gar-puller-key.json
 #
 # Role này chỉ chạy trên 1 master mỗi cluster (vì kubectl chỉ cần 1 lần).
+# Ghi chú: dùng `template` thay cho `set_fact` + dict literal vì Ansible
+# KHÔNG render Jinja trong dict KEYS của set_fact -> sẽ ra literal
+# "{{ gar_registry_host }}" trong manifest.
 # =============================================================
 
 - name: Read GAR puller JSON key from controller (bastion)
@@ -18,23 +21,6 @@
     gar_key_content: "{{ lookup('file', gar_key_file) }}"
   run_once: true
   delegate_to: localhost
-  no_log: true
-
-- name: Build dockerconfigjson (auth = base64(_json_key:<keycontent>))
-  set_fact:
-    gar_dockerconfigjson: >-
-      {{
-        {
-          'auths': {
-            'asia-southeast1-docker.pkg.dev': {
-              'username': '_json_key',
-              'password': gar_key_content,
-              'email': 'admin@techshop.local',
-              'auth': ('_json_key:' ~ gar_key_content) | b64encode
-            }
-          }
-        } | to_json
-      }}
   no_log: true
 
 - name: Ensure namespace techshop exists
@@ -48,18 +34,10 @@
   when: ns_check.rc != 0
 
 - name: Render gar-pull-secret manifest to remote
-  copy:
+  template:
+    src: gar-pull-secret.yaml.j2
     dest: /tmp/gar-pull-secret.yaml
-    mode: '0600'
-    content: |
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: gar-pull-secret
-        namespace: techshop
-      type: kubernetes.io/dockerconfigjson
-      data:
-        .dockerconfigjson: {{ gar_dockerconfigjson | b64encode }}
+    mode: "0600"
   no_log: true
 
 - name: Apply gar-pull-secret

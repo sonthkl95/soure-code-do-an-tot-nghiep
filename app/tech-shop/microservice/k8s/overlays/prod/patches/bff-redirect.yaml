@@ -1,6 +1,9 @@
+# Override redirect URI cho OAuth2 client của BFF (prod)
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: bff-user, namespace: techshop }
+metadata:
+  name: bff-user
+  namespace: techshop
 spec:
   template:
     spec:
@@ -8,11 +11,13 @@ spec:
         - name: bff-user
           env:
             - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_USER_IDP_REDIRECT_URI
-              value: "https://shop.techshop.io/login/oauth2/code/user-idp"
+              value: "https://shop.techshop.local/login/oauth2/code/user-idp"
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: bff-admin, namespace: techshop }
+metadata:
+  name: bff-admin
+  namespace: techshop
 spec:
   template:
     spec:
@@ -20,4 +25,4 @@ spec:
         - name: bff-admin
           env:
             - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ADMIN_IDP_REDIRECT_URI
-              value: "https://admin.techshop.io/login/oauth2/code/admin-idp"
+              value: "https://admin.techshop.local/login/oauth2/code/admin-idp"

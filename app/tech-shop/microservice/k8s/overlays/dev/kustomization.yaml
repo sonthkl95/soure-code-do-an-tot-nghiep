@@ -44,10 +44,29 @@ images:
     newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/bff-admin
     newTag: dev
 
+# Dev: chạy 1 replica cho tất cả service (tiết kiệm tài nguyên)
+replicas:
+  - name: identity-service
+    count: 1
+  - name: catalog-service
+    count: 1
+  - name: order-service
+    count: 1
+  - name: inventory-service
+    count: 1
+  - name: payment-service
+    count: 1
+  - name: search-service
+    count: 1
+  - name: bff-user
+    count: 1
+  - name: bff-admin
+    count: 1
+
 patches:
-  - path: patches/replicas.yaml
   - path: patches/ingress-hosts.yaml
-  - path: patches/bff-redirect.yaml
+  - path: patches/bff-user-redirect.yaml
+  - path: patches/bff-admin-redirect.yaml
   - target:
       kind: ConfigMap
       name: app-config

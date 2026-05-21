@@ -1,0 +1,14 @@
+# Override redirect URI cho bff-user (dev)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bff-user
+  namespace: techshop
+spec:
+  template:
+    spec:
+      containers:
+        - name: bff-user
+          env:
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_USER_IDP_REDIRECT_URI
+              value: "http://shop.dev.techshop.local/login/oauth2/code/user-idp"

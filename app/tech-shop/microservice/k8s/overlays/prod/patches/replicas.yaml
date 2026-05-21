@@ -1,40 +1,64 @@
-# Prod: tăng replicas cho high-availability + load
+# Prod: scale replicas — service quan trọng = 2, còn lại = 1
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: identity-service, namespace: techshop }
-spec: { replicas: 2 }
+metadata:
+  name: identity-service
+  namespace: techshop
+spec:
+  replicas: 2
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: catalog-service, namespace: techshop }
-spec: { replicas: 3 }
+metadata:
+  name: catalog-service
+  namespace: techshop
+spec:
+  replicas: 2
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: order-service, namespace: techshop }
-spec: { replicas: 3 }
+metadata:
+  name: order-service
+  namespace: techshop
+spec:
+  replicas: 2
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: inventory-service, namespace: techshop }
-spec: { replicas: 2 }
+metadata:
+  name: inventory-service
+  namespace: techshop
+spec:
+  replicas: 1
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: payment-service, namespace: techshop }
-spec: { replicas: 2 }
+metadata:
+  name: payment-service
+  namespace: techshop
+spec:
+  replicas: 2
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: search-service, namespace: techshop }
-spec: { replicas: 2 }
+metadata:
+  name: search-service
+  namespace: techshop
+spec:
+  replicas: 1
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: bff-user, namespace: techshop }
-spec: { replicas: 3 }
+metadata:
+  name: bff-user
+  namespace: techshop
+spec:
+  replicas: 2
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: { name: bff-admin, namespace: techshop }
-spec: { replicas: 2 }
+metadata:
+  name: bff-admin
+  namespace: techshop
+spec:
+  replicas: 1

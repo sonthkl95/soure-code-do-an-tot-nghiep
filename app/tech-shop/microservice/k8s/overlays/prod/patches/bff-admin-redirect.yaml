@@ -1,0 +1,14 @@
+# Override redirect URI cho bff-admin (prod)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bff-admin
+  namespace: techshop
+spec:
+  template:
+    spec:
+      containers:
+        - name: bff-admin
+          env:
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ADMIN_IDP_REDIRECT_URI
+              value: "https://admin.techshop.local/login/oauth2/code/admin-idp"

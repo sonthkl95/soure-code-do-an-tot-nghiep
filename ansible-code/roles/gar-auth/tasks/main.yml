@@ -20,6 +20,23 @@
   delegate_to: localhost
   no_log: true
 
+- name: Build dockerconfigjson (auth = base64(_json_key:<keycontent>))
+  set_fact:
+    gar_dockerconfigjson: >-
+      {{
+        {
+          'auths': {
+            'asia-southeast1-docker.pkg.dev': {
+              'username': '_json_key',
+              'password': gar_key_content,
+              'email': 'admin@techshop.local',
+              'auth': ('_json_key:' ~ gar_key_content) | b64encode
+            }
+          }
+        } | to_json
+      }}
+  no_log: true
+
 - name: Ensure namespace techshop exists
   command: kubectl get ns techshop
   register: ns_check
@@ -30,19 +47,28 @@
   command: kubectl create namespace techshop
   when: ns_check.rc != 0
 
-- name: Delete existing gar-pull-secret (if any) to refresh key
-  command: kubectl delete secret gar-pull-secret -n techshop --ignore-not-found
-  changed_when: false
-
-- name: Create docker-registry secret for GAR
-  command: >-
-    kubectl create secret docker-registry gar-pull-secret
-    --docker-server=asia-southeast1-docker.pkg.dev
-    --docker-username=_json_key
-    --docker-password={{ gar_key_content | quote }}
-    --docker-email=admin@techshop.local
-    -n techshop
+- name: Render gar-pull-secret manifest to remote
+  copy:
+    dest: /tmp/gar-pull-secret.yaml
+    mode: '0600'
+    content: |
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: gar-pull-secret
+        namespace: techshop
+      type: kubernetes.io/dockerconfigjson
+      data:
+        .dockerconfigjson: {{ gar_dockerconfigjson | b64encode }}
   no_log: true
+
+- name: Apply gar-pull-secret
+  command: kubectl apply -f /tmp/gar-pull-secret.yaml
+
+- name: Remove temp manifest
+  file:
+    path: /tmp/gar-pull-secret.yaml
+    state: absent
 
 - name: Patch default ServiceAccount to use gar-pull-secret
   command: >-

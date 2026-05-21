@@ -7,7 +7,8 @@ namespace: techshop
 resources:
   - ../../base
   - app-secrets.yaml      # giá trị thật, KHÔNG commit (xem .gitignore)
-  - patches/hpa.yaml      # HPA mới (không có trong base) — add làm resource
+  - patches/bff-user-hpa.yaml   # HPA mới (không có trong base) — add làm resource
+  - patches/bff-admin-hpa.yaml
 
 commonAnnotations:
   techshop.io/env: prod
@@ -41,10 +42,29 @@ images:
     newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/bff-admin
     newTag: prod
 
+# Prod: scale replicas — service quan trọng = 2, còn lại = 1
+replicas:
+  - name: identity-service
+    count: 2
+  - name: catalog-service
+    count: 2
+  - name: order-service
+    count: 2
+  - name: inventory-service
+    count: 1
+  - name: payment-service
+    count: 2
+  - name: search-service
+    count: 1
+  - name: bff-user
+    count: 2
+  - name: bff-admin
+    count: 1
+
 patches:
-  - path: patches/replicas.yaml
   - path: patches/ingress-hosts.yaml
-  - path: patches/bff-redirect.yaml
+  - path: patches/bff-user-redirect.yaml
+  - path: patches/bff-admin-redirect.yaml
   - target:
       kind: ConfigMap
       name: app-config

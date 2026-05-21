@@ -89,3 +89,6 @@ patches:
       - op: add
         path: /data/OTEL_SDK_DISABLED
         value: "true"
+      - op: add
+        path: /data/OTEL_JAVAAGENT_ENABLED
+        value: "false"

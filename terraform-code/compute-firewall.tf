@@ -64,6 +64,7 @@ resource "google_compute_firewall" "gcp-asia-southeast1-fw-allow-internal-dev-00
   allow { protocol = "tcp" }
   allow { protocol = "udp" }
   allow { protocol = "icmp" }
+  allow { protocol = "ipip" } # Calico IPIP (proto 4) for K8s pod-to-pod overlay
 }
 
 # ── Internal: Prod VPC ────────────────────────────────────────────────────────
@@ -76,6 +77,7 @@ resource "google_compute_firewall" "gcp-asia-southeast1-fw-allow-internal-prod-0
   allow { protocol = "tcp" }
   allow { protocol = "udp" }
   allow { protocol = "icmp" }
+  allow { protocol = "ipip" } # Calico IPIP (proto 4) for K8s pod-to-pod overlay
 }
 
 # ── Internal: Observability VPC (receives telemetry from all spokes) ──────────

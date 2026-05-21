@@ -92,3 +92,22 @@ patches:
       - op: add
         path: /data/OTEL_JAVAAGENT_ENABLED
         value: "false"
+  # Dev: slow startup (Java 21 + small CPU) + RAM thiếu khi rolling
+  #  -> Recreate strategy (kill old trước khi tạo new) để khỏi double pods
+  #  -> startupProbe cho phép app khởi động tới 10 phút
+  - target:
+      kind: Deployment
+    patch: |-
+      - op: replace
+        path: /spec/strategy
+        value:
+          type: Recreate
+      - op: add
+        path: /spec/template/spec/containers/0/startupProbe
+        value:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8088
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 60

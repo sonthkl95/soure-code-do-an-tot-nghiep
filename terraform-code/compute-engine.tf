@@ -82,6 +82,41 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-dev-worker-1" {
   depends_on = [google_compute_shared_vpc_service_project.gcp-asia-southeast1-shared-vpc-service-dev-003]
 }
 
+# Dev K8s worker 2 (10.10.1.21)
+resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-dev-worker-2" {
+  name         = "gcp-asia-southeast1-vm-k8s-dev-worker-2"
+  machine_type = "e2-medium" # 2 vCPUs, 4GB RAM
+  zone         = "asia-southeast1-b"
+  project      = data.google_project.gcp-apse1-prj-dev-env-003.project_id
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+      size  = 40
+      type  = "pd-standard"
+    }
+  }
+
+  network_interface {
+    network            = google_compute_network.gcp-asia-southeast1-vpc-shared-dev-003.id
+    subnetwork         = google_compute_subnetwork.gcp-asia-southeast1-subnet-dev-app-003.id
+    subnetwork_project = data.google_project.gcp-apse1-prj-sh-vpc-dev-003.project_id
+    network_ip         = "10.10.1.21"
+  }
+
+  service_account {
+    email  = google_service_account.sa-dev-env.email
+    scopes = ["cloud-platform"]
+  }
+
+  metadata = { enable-oslogin = "TRUE" }
+  metadata_startup_script = local.ops_agent_startup_script
+  labels   = { vm_name = "k8s-dev-worker-2", env = "dev", role = "worker" }
+  tags     = ["k8s-worker", "k8s-dev", "allow-internal"]
+
+  depends_on = [google_compute_shared_vpc_service_project.gcp-asia-southeast1-shared-vpc-service-dev-003]
+}
+
 # Prod K8s master (10.20.1.10)
 resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-prod-master-1" {
   name         = "gcp-asia-southeast1-vm-k8s-prod-master-1"

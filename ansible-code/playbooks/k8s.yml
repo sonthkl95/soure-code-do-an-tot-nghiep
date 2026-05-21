@@ -41,9 +41,9 @@
   roles:
     - k8s-worker-join
 
-# Step 6: Configure kubelet to pull from GCP Artifact Registry
-# via VM Service Account (no JSON key, no imagePullSecrets needed)
-- name: Configure GAR image pull auth on all K8s nodes
-  hosts: k8s
+# Step 6: Tạo imagePullSecret cho techshop namespace để pull image từ GAR
+# Chạy trên master (cần kubectl). JSON key đã copy về bastion tại ~/secrets/gar-puller-key.json
+- name: Configure GAR imagePullSecret in techshop namespace
+  hosts: k8s_master
   roles:
     - gar-auth

@@ -1,0 +1,3 @@
+---
+# Path tới file JSON key của SA sa-gar-puller (trên bastion / controller)
+gar_key_file: "~/secrets/gar-puller-key.json"

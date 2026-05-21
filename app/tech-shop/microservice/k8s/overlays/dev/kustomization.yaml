@@ -77,3 +77,15 @@ patches:
       - op: add
         path: /data/LOGGING_LEVEL_ROOT
         value: "INFO"
+      - op: replace
+        path: /data/OTEL_TRACES_EXPORTER
+        value: "none"
+      - op: replace
+        path: /data/OTEL_METRICS_EXPORTER
+        value: "none"
+      - op: replace
+        path: /data/OTEL_LOGS_EXPORTER
+        value: "none"
+      - op: add
+        path: /data/OTEL_SDK_DISABLED
+        value: "true"

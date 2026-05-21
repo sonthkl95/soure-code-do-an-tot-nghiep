@@ -67,3 +67,14 @@ bff:
   internal-jwt:
     issuer: http://localhost:8088
     ttl-seconds: 300
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when_authorized

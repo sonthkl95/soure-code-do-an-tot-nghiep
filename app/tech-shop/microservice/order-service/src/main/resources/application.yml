@@ -53,3 +53,14 @@ application:
     identity-url: http://localhost:8085
     payment-url: http://localhost:8090
 
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when_authorized

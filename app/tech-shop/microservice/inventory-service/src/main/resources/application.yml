@@ -55,3 +55,14 @@ logging:
   file:
     name: ${LOG_FILE:./logs/app.log}
 
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when_authorized

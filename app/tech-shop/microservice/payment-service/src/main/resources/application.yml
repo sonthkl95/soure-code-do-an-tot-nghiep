@@ -60,3 +60,14 @@ vnpay:
   version: 2.1.0
   command: pay
 
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when_authorized

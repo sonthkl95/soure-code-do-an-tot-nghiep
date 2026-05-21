@@ -94,7 +94,9 @@ patches:
         value: "false"
   # Dev: slow startup (Java 21 + small CPU) + RAM thiếu khi rolling
   #  -> Recreate strategy (kill old trước khi tạo new) để khỏi double pods
-  #  -> startupProbe cho phép app khởi động tới 10 phút
+  #  -> Spring Security trong các service đang chặn /actuator/health/** -> 401,
+  #     dẫn tới kubelet HTTP probe fail. Tạm thời dùng TCP probe (chỉ kiểm tra
+  #     port mở) cho startup/readiness/liveness ở dev tới khi fix code.
   - target:
       kind: Deployment
     patch: |-
@@ -105,9 +107,22 @@ patches:
       - op: add
         path: /spec/template/spec/containers/0/startupProbe
         value:
-          httpGet:
-            path: /actuator/health/liveness
+          tcpSocket:
             port: http
           initialDelaySeconds: 30
           periodSeconds: 10
           failureThreshold: 60
+      - op: replace
+        path: /spec/template/spec/containers/0/readinessProbe
+        value:
+          tcpSocket:
+            port: http
+          periodSeconds: 10
+          failureThreshold: 3
+      - op: replace
+        path: /spec/template/spec/containers/0/livenessProbe
+        value:
+          tcpSocket:
+            port: http
+          periodSeconds: 20
+          failureThreshold: 5

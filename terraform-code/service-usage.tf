@@ -67,6 +67,7 @@ resource "google_project_service" "gcp-apse1-apis-sh-access-003" {
     "oslogin.googleapis.com",
     "artifactregistry.googleapis.com",
     "cloudbuild.googleapis.com",
+    "orgpolicy.googleapis.com",
   ])
 
   project                    = data.google_project.gcp-apse1-prj-sh-access-003.project_id

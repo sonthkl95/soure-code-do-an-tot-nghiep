@@ -27,6 +27,7 @@ public class WebConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
                         auth
+                                .requestMatchers("/actuator/health/**", "/actuator/info", "/actuator/prometheus").permitAll()
                                 .requestMatchers("/api/sepay/webhook",
                                         "/vnpay/vnpay_ipn", "/vnpay/vnpay-return").permitAll()
                                 .anyRequest().authenticated())

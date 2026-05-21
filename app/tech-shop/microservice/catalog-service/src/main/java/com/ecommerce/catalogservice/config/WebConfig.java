@@ -27,6 +27,7 @@ public class WebConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
                         auth
+                                .requestMatchers("/actuator/health/**", "/actuator/info", "/actuator/prometheus").permitAll()
                                 .requestMatchers("/menu/**", "/products/detail/**", "/categories/filters/**").permitAll()
                                 .anyRequest().authenticated())
                 .cors(Customizer.withDefaults())

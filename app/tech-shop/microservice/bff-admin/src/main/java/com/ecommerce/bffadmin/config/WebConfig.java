@@ -72,6 +72,7 @@ public class WebConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeExchange(auth -> auth
+                        .pathMatchers("/actuator/health/**", "/actuator/info", "/actuator/prometheus").permitAll()
                         .pathMatchers("/favicon.ico", "/logout").permitAll()
                         .anyExchange().authenticated())
                 .cors(Customizer.withDefaults())

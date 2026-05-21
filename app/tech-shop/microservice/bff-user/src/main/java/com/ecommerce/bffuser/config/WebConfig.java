@@ -52,6 +52,7 @@ public class WebConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 .authorizeExchange(auth -> auth
+                        .pathMatchers("/actuator/health/**", "/actuator/info", "/actuator/prometheus").permitAll()
                         .pathMatchers("/favicon.ico", "/api/public/**", "/api/search/**", "/logout").permitAll()
                         .anyExchange().authenticated())
                 .cors(Customizer.withDefaults())

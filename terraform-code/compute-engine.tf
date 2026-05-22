@@ -187,6 +187,41 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-prod-worker-1" {
   depends_on = [google_compute_shared_vpc_service_project.gcp-asia-southeast1-shared-vpc-service-prod-003]
 }
 
+# Prod K8s worker 2 (10.20.1.21)
+resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-prod-worker-2" {
+  name         = "gcp-asia-southeast1-vm-k8s-prod-worker-2"
+  machine_type = "e2-medium" # 2 vCPUs, 4GB RAM - optimized for quota compliance
+  zone         = "asia-southeast1-b"
+  project      = data.google_project.gcp-apse1-prj-prd-env-003.project_id
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+      size  = 40
+      type  = "pd-standard" # Changed to standard disk to avoid SSD quota limits
+    }
+  }
+
+  network_interface {
+    network            = google_compute_network.gcp-asia-southeast1-vpc-shared-prod-003.id
+    subnetwork         = google_compute_subnetwork.gcp-asia-southeast1-subnet-prod-app-003.id
+    subnetwork_project = data.google_project.gcp-apse1-prj-sh-vpc-prd-003.project_id
+    network_ip         = "10.20.1.21"
+  }
+
+  service_account {
+    email  = google_service_account.sa-prd-env.email
+    scopes = ["cloud-platform"]
+  }
+
+  metadata                = { enable-oslogin = "TRUE" }
+  metadata_startup_script = local.ops_agent_startup_script
+  labels                  = { vm_name = "k8s-prod-worker-2", env = "prod", role = "worker" }
+  tags                    = ["k8s-worker", "k8s-prod", "allow-internal"]
+
+  depends_on = [google_compute_shared_vpc_service_project.gcp-asia-southeast1-shared-vpc-service-prod-003]
+}
+
 # Bastion Host (10.50.1.100, has public IP)
 resource "google_compute_instance" "gcp-asia-southeast1-vm-bastion-003" {
   name         = "gcp-asia-southeast1-vm-bastion-003"

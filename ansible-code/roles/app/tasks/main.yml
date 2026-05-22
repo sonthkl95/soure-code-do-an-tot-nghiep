@@ -1,52 +1,139 @@
 ---
 # =============================================================
-# App role - Apply ConfigMap "data-endpoints" lên K8s cluster
-# ConfigMap này chứa env vars trỏ tới data-vm (10.60.1.20):
-#   - SPRING_KAFKA_BOOTSTRAP_SERVERS
-#   - SPRING_DATA_MONGODB_URI
-#   - SPRING_DATA_REDIS_HOST / PORT
-#   - SPRING_ELASTICSEARCH_URIS
+# Role: app — Deploy toàn bộ stack microservice TechShop lên K8s
+# Hỗ trợ cả Dev và Prod (chọn qua biến `app_env` set trong playbook).
 #
-# Các Deployment microservice (catalog, payment, order, search, ...)
-# dùng envFrom.configMapRef: data-endpoints để Spring Boot tự bind
-# (env var có priority cao hơn application.yml literal).
+# Flow:
+#   1. Tạo namespace `techshop`
+#   2. Render + apply ConfigMap `data-endpoints` + Secret `data-credentials`
+#      (data-endpoints-configmap.yaml.j2 — pull từ vault MySQL passwords)
+#   3. Sync folder k8s/ (base + overlays/<env>) từ controller lên master
+#      vào {{ app_k8s_remote_dir }}
+#   4. Render `overlays/<env>/app-secrets.yaml` từ vault TRỰC TIẾP lên master
+#      (file này .gitignore, không sync từ local)
+#   5. `kubectl apply -k overlays/<env>/`
+#   6. Wait rollout cho tất cả Deployment + StatefulSet
 #
-# Lưu ý: role này chạy trên K8s master node (group `k8s_master`).
-# Source code Deployment/Helm chart sẽ được bổ sung sau.
+# Yêu cầu:
+#   - Vault file: inventory/group_vars/all/vault.yml (đã encrypt) — chứa
+#     vault_mysql_* + vault_cloudinary_* + vault_google_app_password +
+#     vault_sepay_* + vault_vnpay_* + vault_bff_*
+#   - Trên master: kubeconfig /etc/kubernetes/admin.conf (có sẵn sau kubeadm)
 # =============================================================
 
-- name: Ensure namespace 'techshop' exists
-  command: kubectl create namespace techshop --dry-run=client -o yaml
+# ─── 1. Namespace ───────────────────────────────────────────────
+- name: Ensure namespace '{{ app_namespace }}' exists
+  command: kubectl create namespace {{ app_namespace }} --dry-run=client -o yaml
   register: ns_yaml
   changed_when: false
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
 
-- name: Apply namespace 'techshop'
+- name: Apply namespace '{{ app_namespace }}'
   shell: echo '{{ ns_yaml.stdout }}' | kubectl apply -f -
   register: ns_apply
   changed_when: "'created' in ns_apply.stdout"
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
 
-- name: Render data-endpoints ConfigMap manifest
+# ─── 2. data-endpoints ConfigMap + data-credentials Secret ──────
+- name: Render data-endpoints ConfigMap + data-credentials Secret
   template:
     src: data-endpoints-configmap.yaml.j2
     dest: /tmp/data-endpoints-configmap.yaml
-    mode: '0644'
+    mode: '0600'
+  no_log: true
 
-- name: Apply data-endpoints ConfigMap via kubectl
+- name: Apply data-endpoints + data-credentials
   command: kubectl apply -f /tmp/data-endpoints-configmap.yaml
   register: cm_apply
   changed_when: "'configured' in cm_apply.stdout or 'created' in cm_apply.stdout"
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
 
-- name: App role placeholder - microservice Deployments
+- name: Cleanup rendered data manifest
+  file:
+    path: /tmp/data-endpoints-configmap.yaml
+    state: absent
+
+# ─── 3. Sync k8s/ folder từ controller lên master ───────────────
+- name: Ensure remote k8s dir {{ app_k8s_remote_dir }} exists
+  file:
+    path: "{{ app_k8s_remote_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy k8s/base/ to master
+  copy:
+    src: "{{ app_k8s_src_dir }}/base/"
+    dest: "{{ app_k8s_remote_dir }}/base/"
+    mode: preserve
+    directory_mode: '0755'
+
+- name: Copy k8s/overlays/{{ app_env }}/ to master (app-secrets sẽ overwrite ở bước sau)
+  copy:
+    src: "{{ app_k8s_src_dir }}/overlays/{{ app_env }}/"
+    dest: "{{ app_k8s_remote_dir }}/overlays/{{ app_env }}/"
+    mode: preserve
+    directory_mode: '0755'
+
+# ─── 4. Render app-secrets.yaml từ vault TRỰC TIẾP lên master ───
+- name: Render app-secrets.yaml from vault to master overlay dir
+  template:
+    src: app-secrets.yaml.j2
+    dest: "{{ app_k8s_remote_dir }}/overlays/{{ app_env }}/app-secrets.yaml"
+    mode: '0600'
+  no_log: true
+
+# ─── 5. kubectl apply -k overlays/<env> ─────────────────────────
+- name: Apply kustomize overlay '{{ app_env }}'
+  command: >
+    kubectl apply -k {{ app_k8s_remote_dir }}/overlays/{{ app_env }}/
+  register: kustomize_apply
+  changed_when: >
+    'configured' in kustomize_apply.stdout
+    or 'created' in kustomize_apply.stdout
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Show kustomize apply summary
   debug:
-    msg: >
-      ConfigMap 'data-endpoints' đã được apply.
-      Khi viết Deployment cho microservices, dùng:
-        envFrom:
-          - configMapRef: { name: data-endpoints }
-      → Spring Boot tự override application.yml bằng env vars.
+    var: kustomize_apply.stdout_lines
+
+# ─── 6. Wait rollout ────────────────────────────────────────────
+- name: Wait for Deployment rollouts to finish (timeout {{ app_rollout_timeout }}s each)
+  command: >
+    kubectl -n {{ app_namespace }}
+    rollout status deployment/{{ item }}
+    --timeout={{ app_rollout_timeout }}s
+  loop: "{{ app_workloads_deployments }}"
+  loop_control:
+    label: "deployment/{{ item }}"
+  register: deploy_rollout
+  changed_when: false
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Wait for StatefulSet rollouts to finish (timeout {{ app_rollout_timeout }}s each)
+  command: >
+    kubectl -n {{ app_namespace }}
+    rollout status statefulset/{{ item }}
+    --timeout={{ app_rollout_timeout }}s
+  loop: "{{ app_workloads_statefulsets }}"
+  loop_control:
+    label: "statefulset/{{ item }}"
+  register: sts_rollout
+  changed_when: false
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Final pod status
+  command: kubectl -n {{ app_namespace }} get pods -o wide
+  register: final_pods
+  changed_when: false
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Show final pod status
+  debug:
+    var: final_pods.stdout_lines

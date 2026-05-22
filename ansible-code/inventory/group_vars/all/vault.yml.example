@@ -21,3 +21,35 @@ vault_mysql_payment_password:   "CHANGE_ME_payment_strong_password"
 vault_mysql_inventory_password: "CHANGE_ME_inventory_strong_password"
 vault_mysql_order_password:     "CHANGE_ME_order_strong_password"
 vault_mysql_identity_password:  "CHANGE_ME_identity_strong_password"
+
+# =============================================================
+# App-level secrets — render thành K8s Secret `app-secrets`
+# (roles/app/templates/app-secrets.yaml.j2)
+# =============================================================
+
+# Cloudinary (catalog-service image upload)
+vault_cloudinary_cloud_name: "REPLACE_ME"
+vault_cloudinary_api_key:    "REPLACE_ME"
+vault_cloudinary_api_secret: "REPLACE_ME"
+
+# Gmail SMTP (identity-service OTP/verification email)
+vault_google_app_password: "REPLACE_ME"
+
+# SePay (payment-service)
+vault_sepay_apikey:      "REPLACE_ME"
+vault_sepay_bank_name:   "REPLACE_ME"
+vault_sepay_bank_number: "REPLACE_ME"
+vault_sepay_content:     "REPLACE_ME"
+
+# VNPay (payment-service)
+vault_vnpay_url:     "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html"
+vault_vnpay_return:  "REPLACE_ME"
+vault_vnpay_tmncode: "REPLACE_ME"
+vault_vnpay_secret:  "REPLACE_ME"
+vault_vnpay_apiurl:  "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction"
+
+# OAuth2 BFF clients (registered trong identity-service)
+vault_bff_user_client_id:      "user-client"
+vault_bff_user_client_secret:  "REPLACE_ME"
+vault_bff_admin_client_id:     "admin-client"
+vault_bff_admin_client_secret: "REPLACE_ME"

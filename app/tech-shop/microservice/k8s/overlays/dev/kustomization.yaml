@@ -115,3 +115,20 @@ patches:
           initialDelaySeconds: 30
           periodSeconds: 10
           failureThreshold: 60
+  # StatefulSet (discovery-service) cũng cần imagePullPolicy: Always + startupProbe TCP
+  #  -> tránh stale image khi rollout với tag :dev (bug đã gặp)
+  #  -> startupProbe TCP đệm thời gian Eureka khởi động chậm trước khi readiness HTTP kick in
+  - target:
+      kind: StatefulSet
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always
+      - op: add
+        path: /spec/template/spec/containers/0/startupProbe
+        value:
+          tcpSocket:
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          failureThreshold: 60

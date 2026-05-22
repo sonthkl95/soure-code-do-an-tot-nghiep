@@ -1,19 +1,31 @@
 ---
 # =============================================================
-# Playbook: App Deployment
-# Apply ConfigMap 'data-endpoints' (trỏ tới data-vm 10.60.1.20)
-# lên K8s Dev + Prod cluster qua master node đầu tiên của mỗi cluster.
-# Source code microservice Deployment sẽ được bổ sung sau.
+# Playbook: App Deployment (full microservice stack)
+#
+# Mỗi play chạy trên master node đầu tiên của cluster tương ứng và:
+#   - Apply ConfigMap `data-endpoints` + Secret `data-credentials`
+#   - Sync folder k8s/ (base + overlays/<env>) lên master
+#   - Render `app-secrets.yaml` từ Ansible Vault (no_log)
+#   - `kubectl apply -k overlays/<env>/`
+#   - Wait rollout cho tất cả 8 Deployment + 1 StatefulSet
+#
+# Yêu cầu chạy:
+#   ansible-playbook playbooks/app.yml --ask-vault-pass
+#   # hoặc --vault-password-file <path>
 # =============================================================
 
-- name: Deploy app config on Dev cluster
+- name: Deploy TechShop microservices on Dev cluster
   hosts: k8s_dev_master[0]
   become: true
+  vars:
+    app_env: "dev"
   roles:
     - app
 
-- name: Deploy app config on Prod cluster
+- name: Deploy TechShop microservices on Prod cluster
   hosts: k8s_prod_master[0]
   become: true
+  vars:
+    app_env: "prod"
   roles:
     - app

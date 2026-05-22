@@ -1,0 +1,39 @@
+---
+# =============================================================
+# Defaults cho role `app`
+# =============================================================
+
+# Môi trường K8s: "dev" hoặc "prod". Set qua play vars trong playbooks/app.yml.
+app_env: "dev"
+
+# Thư mục source K8s manifests trên Ansible controller (bastion).
+# playbook_dir = ansible-code/playbooks → đi lên 2 cấp ra repo root.
+app_k8s_src_dir: "{{ playbook_dir }}/../../app/tech-shop/microservice/k8s"
+
+# Thư mục đích trên K8s master node (nơi `kubectl apply -k` sẽ chạy).
+app_k8s_remote_dir: "/opt/techshop-k8s"
+
+# Namespace cố định (matches base/namespace.yaml + tất cả overlay).
+app_namespace: "techshop"
+
+# Danh sách workload cần wait rollout sau khi apply.
+# StatefulSet: discovery-service. Còn lại là Deployment.
+app_workloads_deployments:
+  - identity-service
+  - catalog-service
+  - order-service
+  - payment-service
+  - inventory-service
+  - search-service
+  - bff-user
+  - bff-admin
+
+app_workloads_statefulsets:
+  - discovery-service
+
+# Timeout chờ rollout từng workload (giây).
+# Java 21 + image lần đầu pull có thể ~3-5 phút.
+app_rollout_timeout: 600
+
+# Timeout chờ namespace + pull image sẵn sàng trước khi rollout status.
+app_kubectl_apply_timeout: 120

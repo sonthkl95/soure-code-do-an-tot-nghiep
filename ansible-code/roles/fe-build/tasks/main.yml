@@ -1,0 +1,37 @@
+---
+# =============================================================
+# Role: fe-build — submit Cloud Build để build & push 2 FE images
+# Chạy trên controller (bastion) — KHÔNG cần docker local.
+# =============================================================
+
+- name: Kiểm tra gcloud đã cài
+  command: gcloud --version
+  register: gcloud_check
+  changed_when: false
+  failed_when: gcloud_check.rc != 0
+
+- name: Kiểm tra source FE tồn tại
+  stat:
+    path: "{{ fe_source_dir }}/cloudbuild-fe.yaml"
+  register: fe_src
+
+- name: Fail nếu thiếu cloudbuild-fe.yaml
+  fail:
+    msg: "Không tìm thấy {{ fe_source_dir }}/cloudbuild-fe.yaml — đã `git pull` trên bastion chưa?"
+  when: not fe_src.stat.exists
+
+- name: "Submit Cloud Build FE — env={{ fe_env }}, tag={{ fe_image_tag }}"
+  command: >
+    gcloud builds submit .
+    --project={{ fe_gcp_project }}
+    --config=cloudbuild-fe.yaml
+    --substitutions=_TAG={{ fe_image_tag }},_CUSTOMER_API={{ fe_customer_api }},_ADMIN_API={{ fe_admin_api }},_REGISTRY={{ fe_registry }}
+    --timeout={{ fe_build_timeout }}s
+  args:
+    chdir: "{{ fe_source_dir }}"
+  register: fe_build
+  changed_when: "'SUCCESS' in fe_build.stdout or 'SUCCESS' in fe_build.stderr"
+
+- name: Hiển thị kết quả build (tail)
+  debug:
+    msg: "{{ fe_build.stdout_lines[-15:] | default([]) }}"

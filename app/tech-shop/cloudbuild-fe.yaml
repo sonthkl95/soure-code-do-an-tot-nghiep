@@ -1,0 +1,62 @@
+# =============================================================
+# Cloud Build — Build & push 2 FE images (ecommerce-customer + techshop-admin)
+# Tham số substitution:
+#   _TAG                       — image tag (vd: dev, prod)
+#   _CUSTOMER_API              — VITE_API_BASE_URL cho ecommerce-customer
+#   _ADMIN_API                 — VITE_API_BASE_URL cho techshop-admin
+#
+# Usage:
+#   gcloud builds submit . \
+#     --config=cloudbuild-fe.yaml \
+#     --substitutions=_TAG=dev,_CUSTOMER_API=http://shop.dev.techshop.local,_ADMIN_API=http://admin.dev.techshop.local
+# =============================================================
+options:
+  machineType: E2_HIGHCPU_8
+  logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _TAG: dev
+  _CUSTOMER_API: ""
+  _ADMIN_API: ""
+  _REGISTRY: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop
+
+steps:
+  # ---------- ecommerce-customer ----------
+  - id: build-customer
+    name: gcr.io/cloud-builders/docker
+    dir: ecommerce-customer
+    args:
+      - build
+      - --build-arg
+      - VITE_API_BASE_URL=${_CUSTOMER_API}
+      - -t
+      - ${_REGISTRY}/ecommerce-customer:${_TAG}
+      - .
+
+  - id: push-customer
+    name: gcr.io/cloud-builders/docker
+    args: [push, "${_REGISTRY}/ecommerce-customer:${_TAG}"]
+    waitFor: [build-customer]
+
+  # ---------- techshop-admin ----------
+  - id: build-admin
+    name: gcr.io/cloud-builders/docker
+    dir: techshop
+    args:
+      - build
+      - --build-arg
+      - VITE_API_BASE_URL=${_ADMIN_API}
+      - -t
+      - ${_REGISTRY}/techshop-admin:${_TAG}
+      - .
+
+  - id: push-admin
+    name: gcr.io/cloud-builders/docker
+    args: [push, "${_REGISTRY}/techshop-admin:${_TAG}"]
+    waitFor: [build-admin]
+
+images:
+  - ${_REGISTRY}/ecommerce-customer:${_TAG}
+  - ${_REGISTRY}/techshop-admin:${_TAG}
+
+timeout: 1800s

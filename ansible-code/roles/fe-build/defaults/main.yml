@@ -1,0 +1,30 @@
+---
+# =============================================================
+# Defaults cho role `fe-build`
+# Build 2 FE images (ecommerce-customer + techshop-admin) qua Cloud Build,
+# push lên GCP Artifact Registry.
+# =============================================================
+
+# Môi trường: "dev" hoặc "prod" (set qua play vars trong playbook).
+fe_env: "dev"
+
+# GCP project chứa Cloud Build + Artifact Registry (sh-access).
+fe_gcp_project: "gcp-apse1-prj-sh-access-003"
+
+# Artifact Registry (full path tới repo, KHÔNG kèm image name).
+fe_registry: "asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop"
+
+# Thư mục source FE trên Ansible controller (bastion).
+# playbook_dir = ansible-code/playbooks → ../.. = repo root → app/tech-shop
+fe_source_dir: "{{ playbook_dir }}/../../app/tech-shop"
+
+# Tag image: mặc định trùng env (dev|prod).
+fe_image_tag: "{{ fe_env }}"
+
+# VITE_API_BASE_URL được bake vào bundle tại build time.
+# Trỏ tới BFF Ingress host (bff-user cho customer, bff-admin cho admin).
+fe_customer_api: "http://shop{{ '.dev' if fe_env == 'dev' else '' }}.techshop.local"
+fe_admin_api:    "http://admin{{ '.dev' if fe_env == 'dev' else '' }}.techshop.local"
+
+# Cloud Build timeout (giây) — pass vào --timeout.
+fe_build_timeout: 1800

@@ -4,6 +4,13 @@ kind: Ingress
 metadata:
   name: techshop-ingress
   namespace: techshop
+  annotations:
+    # Cho phép FE (www / cms) gọi BFF (shop / admin) kèm cookie
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "http://www.techshop.local, http://cms.techshop.local"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Content-Type, Authorization, X-Requested-With, X-CSRF-TOKEN"
 spec:
   rules:
     - host: shop.techshop.local

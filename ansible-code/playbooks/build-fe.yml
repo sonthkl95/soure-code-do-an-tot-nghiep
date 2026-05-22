@@ -1,0 +1,22 @@
+---
+# =============================================================
+# Playbook: build-fe.yml — Build 2 FE images qua GCP Cloud Build
+# Chạy trên controller (bastion) — không cần ssh tới worker.
+#
+# Usage:
+#   # Build cho dev (tag: dev, VITE_API_BASE_URL = shop.dev.techshop.local …)
+#   ansible-playbook playbooks/build-fe.yml -e fe_env=dev
+#
+#   # Build cho prod (tag: prod, VITE_API_BASE_URL = shop.techshop.local …)
+#   ansible-playbook playbooks/build-fe.yml -e fe_env=prod
+#
+# Sau khi build xong → chạy `playbooks/app.yml` để rollout image mới.
+# =============================================================
+- name: Build & push FE images qua Cloud Build
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    fe_env: "{{ fe_env | default('dev') }}"
+  roles:
+    - fe-build

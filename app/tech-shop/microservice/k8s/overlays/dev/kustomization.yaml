@@ -87,6 +87,11 @@ patches:
       - op: add
         path: /data/LOGGING_LEVEL_ROOT
         value: "INFO"
+      # Override JWT issuer-uri sang public URL — để OIDC discovery trả về
+      # endpoints có hostname public (browser resolve được qua Cloudflare DNS).
+      - op: replace
+        path: /data/SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+        value: "http://identity.dev.sontx.online"
       - op: replace
         path: /data/OTEL_TRACES_EXPORTER
         value: "none"

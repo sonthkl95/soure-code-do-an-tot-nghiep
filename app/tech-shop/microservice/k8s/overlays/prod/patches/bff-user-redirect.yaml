@@ -12,3 +12,7 @@ spec:
           env:
             - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_USER_IDP_REDIRECT_URI
               value: "http://shop.sontx.online/login/oauth2/code/user-idp"
+            # OIDC discovery phải đi qua public URL để authorization_endpoint
+            # trong discovery doc là public (browser redirect được).
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_MY_IDENTITY_PROVIDER_ISSUER_URI
+              value: "http://identity.sontx.online"

@@ -7,6 +7,13 @@
     state: present
     update_cache: true
 
+- name: Disable bind-address trong Debian default config (tránh override 60-data-vm.cnf)
+  replace:
+    path: /etc/mysql/mariadb.conf.d/50-server.cnf
+    regexp: '^(\s*bind-address\s*=.*)$'
+    replace: '# \1   # disabled by ansible: see 60-data-vm.cnf'
+  notify: restart mariadb
+
 - name: Deploy MariaDB custom config (bind 0.0.0.0 + tuning)
   template:
     src: 60-data-vm.cnf.j2
@@ -22,6 +29,9 @@
     enabled: true
     state: started
     daemon_reload: true
+
+- name: Flush handlers ngay để restart MariaDB trước khi tạo db/user (đảm bảo bind 0.0.0.0)
+  meta: flush_handlers
 
 - name: Wait for MariaDB port
   wait_for:

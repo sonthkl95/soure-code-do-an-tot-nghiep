@@ -94,10 +94,16 @@ patches:
         value: "false"
   # Prod: imagePullPolicy: Always để rollout luôn pull image mới nhất.
   # Giữ startupProbe TCP cho Java startup chậm; readiness/liveness HTTP (từ base)
-  # sẽ kick in sau khi startup pass. Giữ RollingUpdate ở prod (replicas>=2).
+  # sẽ kick in sau khi startup pass.
+  # strategy: Recreate -> kill toàn bộ pod cũ trước khi tạo pod mới
+  # (replicas=1, cluster RAM hạn chế -> tránh stuck old pods chiếm memory).
   - target:
       kind: Deployment
     patch: |-
+      - op: replace
+        path: /spec/strategy
+        value:
+          type: Recreate
       - op: add
         path: /spec/template/spec/containers/0/imagePullPolicy
         value: Always

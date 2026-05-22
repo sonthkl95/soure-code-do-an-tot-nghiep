@@ -1,7 +1,0 @@
----
-# DEPRECATED — file này đã được di chuyển sang scope `all` để cả
-# k8s_dev_master / k8s_prod_master cũng load được (vì role `app` render
-# Secret data-credentials trên K8s master).
-#
-# → Dùng: group_vars/all/vault.yml.example
-# Có thể xoá file này sau khi xác nhận không còn tham chiếu.

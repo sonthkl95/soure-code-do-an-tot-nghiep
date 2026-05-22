@@ -45,19 +45,19 @@ images:
 # Prod: scale replicas — service quan trọng = 2, còn lại = 1
 replicas:
   - name: identity-service
-    count: 2
+    count: 1
   - name: catalog-service
-    count: 2
+    count: 1
   - name: order-service
-    count: 2
+    count: 1
   - name: inventory-service
     count: 1
   - name: payment-service
-    count: 2
+    count: 1
   - name: search-service
     count: 1
   - name: bff-user
-    count: 2
+    count: 1
   - name: bff-admin
     count: 1
 

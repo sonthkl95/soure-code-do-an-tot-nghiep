@@ -1,0 +1,38 @@
+# Cloud Build ad-hoc: chỉ build discovery-service + search-service
+# Dùng khi 2 service đó thay đổi mà không cần rebuild 7 service còn lại.
+# Submit: gcloud builds submit --config=cloudbuild-partial.yaml --substitutions=_TAG=dev .
+substitutions:
+  _REGION: asia-southeast1
+  _REPO: techshop
+  _TAG: dev
+
+options:
+  machineType: E2_HIGHCPU_8
+  logging: CLOUD_LOGGING_ONLY
+
+images:
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/discovery-service:${_TAG}"
+  - "${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/search-service:${_TAG}"
+
+timeout: 1800s
+
+steps:
+  - id: build-discovery
+    name: gcr.io/cloud-builders/docker
+    env:
+      - DOCKER_BUILDKIT=1
+    args:
+      - build
+      - --build-arg=SERVICE_NAME=discovery-service
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/discovery-service:${_TAG}
+      - .
+
+  - id: build-search
+    name: gcr.io/cloud-builders/docker
+    env:
+      - DOCKER_BUILDKIT=1
+    args:
+      - build
+      - --build-arg=SERVICE_NAME=search-service
+      - -t=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/search-service:${_TAG}
+      - .

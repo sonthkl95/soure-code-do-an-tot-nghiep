@@ -92,13 +92,15 @@ patches:
       - op: add
         path: /data/OTEL_JAVAAGENT_ENABLED
         value: "false"
-  # Spring Security trong các service đang trả 401 cho /actuator/health/**
-  # nên kubelet HTTP probe luôn fail. Tạm thời chuyển sang TCP probe (chỉ
-  # kiểm tra port mở) tới khi fix permitAll() trong SecurityFilterChain.
-  # Giữ RollingUpdate ở prod (có nhiều node + replica >=2) để không downtime.
+  # Prod: imagePullPolicy: Always để rollout luôn pull image mới nhất.
+  # Giữ startupProbe TCP cho Java startup chậm; readiness/liveness HTTP (từ base)
+  # sẽ kick in sau khi startup pass. Giữ RollingUpdate ở prod (replicas>=2).
   - target:
       kind: Deployment
     patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: Always
       - op: add
         path: /spec/template/spec/containers/0/startupProbe
         value:
@@ -107,17 +109,3 @@ patches:
           initialDelaySeconds: 30
           periodSeconds: 10
           failureThreshold: 60
-      - op: replace
-        path: /spec/template/spec/containers/0/readinessProbe
-        value:
-          tcpSocket:
-            port: http
-          periodSeconds: 10
-          failureThreshold: 3
-      - op: replace
-        path: /spec/template/spec/containers/0/livenessProbe
-        value:
-          tcpSocket:
-            port: http
-          periodSeconds: 20
-          failureThreshold: 5

@@ -34,3 +34,13 @@ app:
     host: localhost
     port: 9200
     index: products
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when_authorized

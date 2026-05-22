@@ -3,6 +3,7 @@ package com.ecommerce.bffadmin.config;
 //import com.ecommerce.authservice.security.HttpCookieOAuth2AuthorizationRequestRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -42,10 +43,12 @@ import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -53,7 +56,14 @@ import java.util.UUID;
 @Slf4j
 public class WebConfig {
 
-    private static final String POST_LOGOUT_REDIRECT = "http://localhost:5173";
+    // ENV: APP_FRONTEND_URL  (default localhost cho local dev)
+    @Value("${app.frontend.url:http://localhost:5173}")
+    private String frontendUrl;
+
+    // ENV: APP_FRONTEND_ALLOWED_ORIGINS  (CSV, default localhost cho local dev)
+    @Value("${app.frontend.allowed-origins:http://localhost:5173}")
+    private String allowedOriginsCsv;
+
     @Autowired
     private ReactiveClientRegistrationRepository clientRegistrationRepository;
     @Autowired
@@ -62,7 +72,7 @@ public class WebConfig {
         OidcClientInitiatedServerLogoutSuccessHandler oidcLogoutSuccessHandler =
                 new OidcClientInitiatedServerLogoutSuccessHandler(this.clientRegistrationRepository);
 
-        oidcLogoutSuccessHandler.setPostLogoutRedirectUri(POST_LOGOUT_REDIRECT);
+        oidcLogoutSuccessHandler.setPostLogoutRedirectUri(frontendUrl);
 
         return oidcLogoutSuccessHandler;
     }
@@ -95,7 +105,7 @@ public class WebConfig {
                             log.error(exception.getMessage(), exception);
                             var response = webFilterExchange.getExchange().getResponse();
                             response.setStatusCode(HttpStatus.FOUND);
-                            response.getHeaders().setLocation(URI.create("http://localhost:5173/login?error=" + exception.getMessage()));
+                            response.getHeaders().setLocation(URI.create(frontendUrl + "/login?error=" + exception.getMessage()));
                             return response.setComplete();
                         }))
                 .logout(logout -> logout.logoutUrl("/logout")
@@ -112,7 +122,7 @@ public class WebConfig {
 
         // ĐÂY LÀ NƠI IDP SẼ TRẢ NGƯỜI DÙNG VỀ (Phải trùng khớp cấu hình tại IDP)
         // Bạn có thể để trang chủ React của bạn
-        oidcHandler.setPostLogoutRedirectUri("http://localhost:5174/");
+        oidcHandler.setPostLogoutRedirectUri(frontendUrl);
 
         return oidcHandler;
     }
@@ -123,7 +133,9 @@ public class WebConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        List<String> origins = Arrays.stream(allowedOriginsCsv.split(","))
+                .map(String::trim).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+        configuration.setAllowedOrigins(origins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

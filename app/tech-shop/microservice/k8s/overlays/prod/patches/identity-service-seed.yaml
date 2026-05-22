@@ -1,0 +1,27 @@
+# Seed OAuth2 RegisteredClient rows (bff-user, bff-admin) on identity-service startup (prod).
+# Plaintext client-secret được lấy từ Secret app-secrets (BFF_USER_CLIENT_SECRET /
+# BFF_ADMIN_CLIENT_SECRET) — cùng giá trị mà bff-user / bff-admin gửi qua HTTP Basic
+# trong /oauth2/token, nên hash do seeder ghi vào DB sẽ match.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-service
+  namespace: techshop
+spec:
+  template:
+    spec:
+      containers:
+        - name: identity-service
+          env:
+            - { name: APP_SEED_BFF_USER_CLIENT_ID,      value: "$(BFF_USER_CLIENT_ID)" }
+            - { name: APP_SEED_BFF_USER_CLIENT_SECRET,  value: "$(BFF_USER_CLIENT_SECRET)" }
+            - name: APP_SEED_BFF_USER_REDIRECT_URIS
+              value: "http://shop.sontx.online/login/oauth2/code/user-idp"
+            - name: APP_SEED_BFF_USER_POST_LOGOUT_URIS
+              value: "http://www.sontx.online,http://www.sontx.online/,http://sontx.online,http://sontx.online/"
+            - { name: APP_SEED_BFF_ADMIN_CLIENT_ID,     value: "$(BFF_ADMIN_CLIENT_ID)" }
+            - { name: APP_SEED_BFF_ADMIN_CLIENT_SECRET, value: "$(BFF_ADMIN_CLIENT_SECRET)" }
+            - name: APP_SEED_BFF_ADMIN_REDIRECT_URIS
+              value: "http://admin.sontx.online/login/oauth2/code/admin-idp"
+            - name: APP_SEED_BFF_ADMIN_POST_LOGOUT_URIS
+              value: "http://cms.sontx.online,http://cms.sontx.online/"

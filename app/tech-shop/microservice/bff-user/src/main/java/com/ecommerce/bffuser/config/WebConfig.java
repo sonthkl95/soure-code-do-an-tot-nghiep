@@ -4,6 +4,7 @@ package com.ecommerce.bffuser.config;
 import com.ecommerce.bffuser.config.OAuth2AuthenticationSuccessHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -23,16 +24,25 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
 @Slf4j
 public class WebConfig {
-    private static final String IDP_LOGOUT_URL = "http://localhost:8085/logout";
-    // App URL sau khi logout xong ở IdP quay lại
-    private static final String POST_LOGOUT_REDIRECT = "http://localhost:5174";
+    // URL FE quay về sau khi logout / login fail / OIDC end-session.
+    // ENV: APP_FRONTEND_URL  (default localhost cho local dev)
+    @Value("${app.frontend.url:http://localhost:5174}")
+    private String frontendUrl;
+
+    // CSV các origin được phép gọi BFF (CORS).
+    // ENV: APP_FRONTEND_ALLOWED_ORIGINS (default localhost cho local dev)
+    @Value("${app.frontend.allowed-origins:http://localhost:5174}")
+    private String allowedOriginsCsv;
+
     @Autowired
     private ReactiveClientRegistrationRepository clientRegistrationRepository;
     @Autowired
@@ -41,7 +51,7 @@ public class WebConfig {
         OidcClientInitiatedServerLogoutSuccessHandler oidcLogoutSuccessHandler =
                 new OidcClientInitiatedServerLogoutSuccessHandler(this.clientRegistrationRepository);
 
-        oidcLogoutSuccessHandler.setPostLogoutRedirectUri(POST_LOGOUT_REDIRECT);
+        oidcLogoutSuccessHandler.setPostLogoutRedirectUri(frontendUrl);
 
         return oidcLogoutSuccessHandler;
     }
@@ -71,7 +81,7 @@ public class WebConfig {
                             log.error(exception.getMessage(), exception);
                             var response = webFilterExchange.getExchange().getResponse();
                             response.setStatusCode(HttpStatus.FOUND);
-                            response.getHeaders().setLocation(URI.create("http://localhost:5174/login?error=" + exception.getMessage()));
+                            response.getHeaders().setLocation(URI.create(frontendUrl + "/login?error=" + exception.getMessage()));
                             return response.setComplete();
                         }))
                 .logout(logout -> logout.logoutUrl("/logout")
@@ -86,7 +96,9 @@ public class WebConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5174"));
+        List<String> origins = Arrays.stream(allowedOriginsCsv.split(","))
+                .map(String::trim).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+        configuration.setAllowedOrigins(origins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

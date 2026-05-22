@@ -2,6 +2,7 @@ package com.ecommerce.bffadmin.config;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.core.Authentication;
@@ -25,16 +26,15 @@ import java.util.stream.Collectors;
 
 @Component
 public class OAuth2AuthenticationSuccessHandler extends RedirectServerAuthenticationSuccessHandler {
-    private static final String ADMIN_FE_URL = "http://localhost:5173/";
-
-
-
+    // ENV: APP_FRONTEND_URL (default localhost cho local dev)
+    @Value("${app.frontend.url:http://localhost:5173/}")
+    private String frontendUrl;
 
     @Override
     public Mono<Void> onAuthenticationSuccess(WebFilterExchange webFilterExchange, Authentication authentication) {
         ServerHttpResponse response = webFilterExchange.getExchange().getResponse();
         response.setStatusCode(HttpStatus.FOUND);
-        response.getHeaders().setLocation(URI.create(ADMIN_FE_URL));
+        response.getHeaders().setLocation(URI.create(frontendUrl));
         return response.setComplete();
     }
 }

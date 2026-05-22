@@ -16,3 +16,9 @@ spec:
             # trong discovery doc là public (browser redirect được).
             - name: SPRING_SECURITY_OAUTH2_CLIENT_PROVIDER_MY_IDENTITY_PROVIDER_ISSUER_URI
               value: "http://identity.dev.sontx.online"
+            # FE customer ở www.dev/dev.sontx.online — BFF redirect về sau login-success,
+            # post-logout và allow CORS cho calls từ FE.
+            - name: APP_FRONTEND_URL
+              value: "http://www.dev.sontx.online"
+            - name: APP_FRONTEND_ALLOWED_ORIGINS
+              value: "http://www.dev.sontx.online,http://dev.sontx.online,http://shop.dev.sontx.online"

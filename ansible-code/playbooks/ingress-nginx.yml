@@ -1,0 +1,15 @@
+---
+# =============================================================
+# Playbook: ingress-nginx.yml — Cài ingress-nginx controller
+# trên dev/prod K8s master, expose NodePort 30080/30443.
+#
+# Usage:
+#   ansible-playbook playbooks/ingress-nginx.yml --limit k8s_dev_master
+#   ansible-playbook playbooks/ingress-nginx.yml --limit k8s_prod_master
+# =============================================================
+- name: Install ingress-nginx controller
+  hosts: k8s_master
+  become: true
+  gather_facts: false
+  roles:
+    - ingress-nginx

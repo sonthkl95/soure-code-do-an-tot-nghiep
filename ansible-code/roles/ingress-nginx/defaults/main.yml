@@ -1,0 +1,14 @@
+---
+# Defaults cho role ingress-nginx
+ingress_nginx_version: "controller-v1.11.3"
+ingress_nginx_manifest_url: "https://raw.githubusercontent.com/kubernetes/ingress-nginx/{{ ingress_nginx_version }}/deploy/static/provider/baremetal/deploy.yaml"
+ingress_nginx_namespace: "ingress-nginx"
+
+# NodePort cố định để GCP LB nhắm tới (đã mở firewall 30000-32767 sẵn)
+ingress_nginx_http_nodeport: 30080
+ingress_nginx_https_nodeport: 30443
+
+# externalTrafficPolicy: Local giữ source IP nhưng yêu cầu pod chạy trên node có
+# traffic. Cluster có 2 worker + HA daemonset (default 1 Deployment) → để Cluster
+# cho đơn giản (mất source IP nhưng route được bất cứ worker nào).
+ingress_nginx_external_traffic_policy: "Cluster"

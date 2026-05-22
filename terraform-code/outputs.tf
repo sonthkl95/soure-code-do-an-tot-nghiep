@@ -17,6 +17,16 @@ output "load_balancer_ip" {
   value       = google_compute_global_address.gcp-asia-southeast1-lb-grafana-ip-003.address
 }
 
+output "techshop_dev_lb_ip" {
+  description = "Global IP for TechShop DEV cluster (map /etc/hosts: www.dev.techshop.local, shop.dev.techshop.local, ... → IP này)"
+  value       = google_compute_global_address.gcp-asia-southeast1-lb-k8s-dev-techshop-ip-003.address
+}
+
+output "techshop_prod_lb_ip" {
+  description = "Global IP for TechShop PROD cluster (map /etc/hosts: www.techshop.local, shop.techshop.local, ... → IP này)"
+  value       = google_compute_global_address.gcp-asia-southeast1-lb-k8s-prod-techshop-ip-003.address
+}
+
 # ─── NETWORK (HA VPN) ───────────────────────────────────────────────────────────
 
 # TEMPORARILY DISABLED - VPN outputs commented out

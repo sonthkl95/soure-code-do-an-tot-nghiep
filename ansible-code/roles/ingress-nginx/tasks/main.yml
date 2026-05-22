@@ -1,0 +1,53 @@
+---
+# =============================================================
+# Role: ingress-nginx — Cài ingress-nginx controller trên k8s master
+# (kubeadm bare-metal), expose qua NodePort cố định để GCP External
+# HTTP LB nhắm tới.
+# =============================================================
+
+- name: Download ingress-nginx baremetal manifest về master
+  get_url:
+    url: "{{ ingress_nginx_manifest_url }}"
+    dest: "/tmp/ingress-nginx-{{ ingress_nginx_version }}.yaml"
+    mode: "0644"
+    force: true
+
+- name: Apply ingress-nginx controller manifest
+  command: kubectl apply -f /tmp/ingress-nginx-{{ ingress_nginx_version }}.yaml
+  register: ing_apply
+  changed_when: "'created' in ing_apply.stdout or 'configured' in ing_apply.stdout"
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Patch ingress-nginx-controller Service → NodePort cố định
+  shell: |
+    kubectl -n {{ ingress_nginx_namespace }} patch svc ingress-nginx-controller \
+      --type='json' -p='[
+        {"op":"replace","path":"/spec/type","value":"NodePort"},
+        {"op":"replace","path":"/spec/externalTrafficPolicy","value":"{{ ingress_nginx_external_traffic_policy }}"},
+        {"op":"replace","path":"/spec/ports/0/nodePort","value":{{ ingress_nginx_http_nodeport }}},
+        {"op":"replace","path":"/spec/ports/1/nodePort","value":{{ ingress_nginx_https_nodeport }}}
+      ]'
+  register: svc_patch
+  changed_when: "'patched' in svc_patch.stdout"
+  failed_when: svc_patch.rc != 0 and 'no change' not in svc_patch.stderr|lower
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Wait controller Deployment rollout
+  command: >
+    kubectl -n {{ ingress_nginx_namespace }}
+    rollout status deploy/ingress-nginx-controller --timeout=300s
+  changed_when: false
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Show ingress-nginx Service
+  command: kubectl -n {{ ingress_nginx_namespace }} get svc ingress-nginx-controller -o wide
+  register: ing_svc
+  changed_when: false
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- debug:
+    var: ing_svc.stdout_lines

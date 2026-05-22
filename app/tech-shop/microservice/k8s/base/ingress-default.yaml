@@ -1,0 +1,17 @@
+# =============================================================
+# Catch-all Ingress: request đến LB IP (không khớp Host nào)
+# sẽ được route về FE customer (ecommerce-customer:80).
+# Production: cho phép truy cập trang chủ qua IP/domain mặc định.
+# =============================================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: techshop-default-catchall
+  namespace: techshop
+spec:
+  ingressClassName: nginx
+  defaultBackend:
+    service:
+      name: ecommerce-customer
+      port:
+        number: 80

@@ -31,5 +31,6 @@ resources:
   - ecommerce-customer.yaml
   - techshop-admin.yaml
   - ingress.yaml
+  - ingress-default.yaml
   # app-secrets.example.yaml KHÔNG include — overlay tự copy thành
   # app-secrets.yaml (giá trị thật) hoặc dùng SealedSecret/ExternalSecret.

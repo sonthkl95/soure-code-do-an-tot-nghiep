@@ -12,6 +12,12 @@ metadata:
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-headers: "Content-Type, Authorization, X-Requested-With, X-CSRF-TOKEN"
 spec:
+  # Truy cập trực tiếp qua LB IP (không có Host khớp) -> trả về FE customer
+  defaultBackend:
+    service:
+      name: ecommerce-customer
+      port:
+        number: 80
   rules:
     - host: shop.techshop.local
       http:

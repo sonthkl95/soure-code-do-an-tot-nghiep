@@ -16,3 +16,13 @@ logging:
     com.netflix.eureka: DEBUG
     com.netflix.discovery: DEBUG
     org.springframework.cloud: DEBUG
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when_authorized

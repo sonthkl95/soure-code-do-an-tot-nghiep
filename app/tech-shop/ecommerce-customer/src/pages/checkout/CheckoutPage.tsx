@@ -80,7 +80,7 @@ const CheckoutPage = () => {
     const watchPaymentSuccess = (orderNumber: string) => {
         // Chỉ lắng nghe sự kiện THÀNH CÔNG sau khi đã có mã QR
         const eventSource = new EventSource(
-            `http://localhost:8081/api/orders/customer-order/sse/${orderNumber}`,
+            `${import.meta.env.VITE_API_BASE_URL}/api/orders/customer-order/sse/${orderNumber}`,
             { withCredentials: true }
         );
 

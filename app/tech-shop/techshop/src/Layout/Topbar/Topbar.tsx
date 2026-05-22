@@ -29,7 +29,7 @@ const Topbar = () => {
     const handleLogout = () => {
         const form = document.createElement("form");
         form.method = "POST";
-        form.action = "http://localhost:8088/logout";
+        form.action = `${import.meta.env.VITE_API_BASE_URL}/logout`;
         document.body.appendChild(form);
         form.submit();
         dispatch(logout())
@@ -88,7 +88,7 @@ const Topbar = () => {
                         )
                         : (
                             <MenuItem>
-                                <a href="http://localhost:8082/auth/oauth2/authorization/admin-idp" className="d-flex align-items-center gap-2 text-decoration-none text-dark">
+                                <a href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/admin-idp`} className="d-flex align-items-center gap-2 text-decoration-none text-dark">
                                     <RiLoginBoxLine />
                                     <span>Đăng nhập</span>
                                 </a>

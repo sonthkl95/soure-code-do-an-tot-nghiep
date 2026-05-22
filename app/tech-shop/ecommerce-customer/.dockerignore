@@ -1,0 +1,10 @@
+# Loại trừ file rác khỏi Docker build context (giảm context size + build time)
+node_modules
+dist
+.git
+.gitignore
+.vscode
+.idea
+README.md
+*.log
+.env*

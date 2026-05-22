@@ -19,7 +19,7 @@ const Login = () => {
             Trang quản trị này bị hạn chế. Vui lòng đăng nhập bằng tài khoản tổ chức của bạn để tiếp tục.
           </p>
 
-          <a href="http://localhost:8088/oauth2/authorization/admin-idp" className="btn-app btn-app--default w-100 login-btn">
+          <a href={`${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/admin-idp`} className="btn-app btn-app--default w-100 login-btn">
             Đăng nhập với SSO
           </a>
         </div>

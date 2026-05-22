@@ -43,6 +43,12 @@ images:
   - name: ghcr.io/pham-van-khiem-toan-tin/bff-admin
     newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/bff-admin
     newTag: dev
+  - name: ghcr.io/pham-van-khiem-toan-tin/ecommerce-customer
+    newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/ecommerce-customer
+    newTag: dev
+  - name: ghcr.io/pham-van-khiem-toan-tin/techshop-admin
+    newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/techshop-admin
+    newTag: dev
 
 # Dev: chạy 1 replica cho tất cả service (tiết kiệm tài nguyên)
 replicas:
@@ -61,6 +67,10 @@ replicas:
   - name: bff-user
     count: 1
   - name: bff-admin
+    count: 1
+  - name: ecommerce-customer
+    count: 1
+  - name: techshop-admin
     count: 1
 
 patches:

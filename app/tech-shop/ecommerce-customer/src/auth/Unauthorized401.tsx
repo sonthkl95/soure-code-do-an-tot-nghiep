@@ -9,7 +9,7 @@ export default function Unauthorized401() {
     // const redirectTo = encodeURIComponent(
     //   from ? `${window.location.origin}${from}` : window.location.href
     // );
-    window.location.href = `http://localhost:8081/oauth2/authorization/user-idp`;
+    window.location.href = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/user-idp`;
   };
 
   return (

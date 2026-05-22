@@ -28,6 +28,8 @@ resources:
   - search-service.yaml
   - bff-user.yaml
   - bff-admin.yaml
+  - ecommerce-customer.yaml
+  - techshop-admin.yaml
   - ingress.yaml
   # app-secrets.example.yaml KHÔNG include — overlay tự copy thành
   # app-secrets.yaml (giá trị thật) hoặc dùng SealedSecret/ExternalSecret.

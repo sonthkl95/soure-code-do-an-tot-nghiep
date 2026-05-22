@@ -24,7 +24,7 @@ const Profile = () => {
   const handleLogout = () => {
     const form = document.createElement("form");
     form.method = "POST";
-    form.action = "http://localhost:8081/logout";
+    form.action = `${import.meta.env.VITE_API_BASE_URL}/logout`;
     document.body.appendChild(form);
     form.submit();
     dispatch(logout())

@@ -27,6 +27,8 @@ app_workloads_deployments:
   - search-service
   - bff-user
   - bff-admin
+  - ecommerce-customer
+  - techshop-admin
 
 app_workloads_statefulsets:
   - discovery-service

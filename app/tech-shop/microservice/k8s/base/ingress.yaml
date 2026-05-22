@@ -1,8 +1,10 @@
 # =============================================================
-# Ingress — phơi BFF ra ngoài qua NGINX Ingress (hoặc GCP LB)
-# - shop.example.com   ⇒ bff-user (8081)
-# - admin.example.com  ⇒ bff-admin (8088)
+# Ingress — phơi BFF + FE ra ngoài qua NGINX Ingress
+# - shop.example.com     ⇒ bff-user (8081)        [API]
+# - admin.example.com    ⇒ bff-admin (8088)       [API admin]
 # - identity.example.com ⇒ identity-service (8085) [login/oauth2 callback]
+# - www.example.com      ⇒ ecommerce-customer (80) [FE customer]
+# - cms.example.com      ⇒ techshop-admin (80)     [FE admin]
 #
 # Overlay dev/prod đổi `host:` + annotation TLS cho phù hợp.
 # =============================================================
@@ -45,6 +47,24 @@ spec:
               service:
                 name: identity-service
                 port: { number: 8085 }
+    - host: www.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ecommerce-customer
+                port: { number: 80 }
+    - host: cms.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: techshop-admin
+                port: { number: 80 }
   # tls:
-  #   - hosts: [shop.example.com, admin.example.com, identity.example.com]
+  #   - hosts: [shop.example.com, admin.example.com, identity.example.com, www.example.com, cms.example.com]
   #     secretName: techshop-tls

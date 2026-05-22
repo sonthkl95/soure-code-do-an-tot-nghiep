@@ -1,0 +1,51 @@
+# =============================================================
+# techshop-admin (FE admin SPA — nginx static)
+# - Phục vụ qua Ingress host: cms.<env>.techshop.local
+# - Build-time inject VITE_API_BASE_URL = URL bff-admin (Ingress)
+# =============================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: techshop-admin
+  namespace: techshop
+  labels: { app: techshop-admin }
+spec:
+  type: ClusterIP
+  selector: { app: techshop-admin }
+  ports:
+    - { name: http, port: 80, targetPort: 80 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: techshop-admin
+  namespace: techshop
+  labels: { app: techshop-admin }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: techshop-admin }
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+  template:
+    metadata:
+      labels: { app: techshop-admin }
+    spec:
+      containers:
+        - name: web
+          image: ghcr.io/pham-van-khiem-toan-tin/techshop-admin:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 80 }
+          resources:
+            requests: { cpu: "20m",  memory: "32Mi" }
+            limits:   { cpu: "200m", memory: "128Mi" }
+          readinessProbe:
+            httpGet: { path: /, port: 80 }
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /, port: 80 }
+            initialDelaySeconds: 10
+            periodSeconds: 30

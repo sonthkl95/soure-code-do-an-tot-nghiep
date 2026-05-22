@@ -1,0 +1,51 @@
+# =============================================================
+# ecommerce-customer (FE customer SPA — nginx static)
+# - Phục vụ qua Ingress host: www.<env>.techshop.local
+# - Build-time inject VITE_API_BASE_URL = URL bff-user (Ingress)
+# =============================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: ecommerce-customer
+  namespace: techshop
+  labels: { app: ecommerce-customer }
+spec:
+  type: ClusterIP
+  selector: { app: ecommerce-customer }
+  ports:
+    - { name: http, port: 80, targetPort: 80 }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ecommerce-customer
+  namespace: techshop
+  labels: { app: ecommerce-customer }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: ecommerce-customer }
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+  template:
+    metadata:
+      labels: { app: ecommerce-customer }
+    spec:
+      containers:
+        - name: web
+          image: ghcr.io/pham-van-khiem-toan-tin/ecommerce-customer:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - { name: http, containerPort: 80 }
+          resources:
+            requests: { cpu: "20m",  memory: "32Mi" }
+            limits:   { cpu: "200m", memory: "128Mi" }
+          readinessProbe:
+            httpGet: { path: /, port: 80 }
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /, port: 80 }
+            initialDelaySeconds: 10
+            periodSeconds: 30

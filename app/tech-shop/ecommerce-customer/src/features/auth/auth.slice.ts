@@ -25,7 +25,7 @@ export const fetchMe = createAsyncThunk<User>(
       // 401 => chưa login
       const is_login_success = localStorage.getItem("is_login_success")
       if (is_login_success != null && JSON.parse(is_login_success)) {
-        window.location.href = "http://localhost:8081/oauth2/authorization/user-idp";
+        window.location.href = `${import.meta.env.VITE_API_BASE_URL}/oauth2/authorization/user-idp`;
       }
       localStorage.setItem("is_login_success","false");
       return rejectWithValue(e);

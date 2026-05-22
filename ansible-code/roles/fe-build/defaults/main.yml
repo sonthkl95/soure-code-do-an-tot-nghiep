@@ -23,8 +23,8 @@ fe_image_tag: "{{ fe_env }}"
 
 # VITE_API_BASE_URL được bake vào bundle tại build time.
 # Trỏ tới BFF Ingress host (bff-user cho customer, bff-admin cho admin).
-fe_customer_api: "http://shop{{ '.dev' if fe_env == 'dev' else '' }}.techshop.local"
-fe_admin_api:    "http://admin{{ '.dev' if fe_env == 'dev' else '' }}.techshop.local"
+fe_customer_api: "http://shop{{ '.dev' if fe_env == 'dev' else '' }}.sontx.online"
+fe_admin_api:    "http://admin{{ '.dev' if fe_env == 'dev' else '' }}.sontx.online"
 
 # Cloud Build timeout (giây) — pass vào --timeout.
 fe_build_timeout: 1800

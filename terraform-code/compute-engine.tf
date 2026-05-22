@@ -223,6 +223,16 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-k8s-prod-worker-2" {
 }
 
 # Bastion Host (10.50.1.100, has public IP)
+
+# Static external IP cho Bastion (giữ nguyên IP sau mỗi lần recreate)
+resource "google_compute_address" "gcp-asia-southeast1-bastion-ip-003" {
+  name         = "gcp-asia-southeast1-bastion-ip-003"
+  project      = data.google_project.gcp-apse1-prj-sh-access-003.project_id
+  region       = "asia-southeast1"
+  address_type = "EXTERNAL"
+  network_tier = "PREMIUM"
+}
+
 resource "google_compute_instance" "gcp-asia-southeast1-vm-bastion-003" {
   name         = "gcp-asia-southeast1-vm-bastion-003"
   machine_type = "e2-micro" # 2 shared vCPUs, 1GB RAM - extremely small footprint for quotas
@@ -244,6 +254,7 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-bastion-003" {
     network_ip         = "10.50.1.100"
 
     access_config {
+      nat_ip       = google_compute_address.gcp-asia-southeast1-bastion-ip-003.address
       network_tier = "PREMIUM"
     }
   }

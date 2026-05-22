@@ -11,4 +11,4 @@ spec:
         - name: bff-user
           env:
             - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_USER_IDP_REDIRECT_URI
-              value: "https://shop.techshop.local/login/oauth2/code/user-idp"
+              value: "http://shop.sontx.online/login/oauth2/code/user-idp"

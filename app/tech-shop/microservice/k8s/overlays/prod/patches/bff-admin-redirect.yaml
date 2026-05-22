@@ -11,4 +11,4 @@ spec:
         - name: bff-admin
           env:
             - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ADMIN_IDP_REDIRECT_URI
-              value: "https://admin.techshop.local/login/oauth2/code/admin-idp"
+              value: "http://admin.sontx.online/login/oauth2/code/admin-idp"

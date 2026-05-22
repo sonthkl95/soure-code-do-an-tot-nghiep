@@ -13,17 +13,17 @@ output "observability_vm_private_ip" {
 # ─── SERVICES & ENDPOINTS ───────────────────────────────────────────────────────
 
 output "load_balancer_ip" {
-  description = "Global IP for Grafana Dashboard (http://<ip>)"
+  description = "Global IP for Grafana (Cloudflare: grafana.sontx.online -> IP này)"
   value       = google_compute_global_address.gcp-asia-southeast1-lb-grafana-ip-003.address
 }
 
 output "techshop_dev_lb_ip" {
-  description = "Global IP for TechShop DEV cluster (map /etc/hosts: www.dev.techshop.local, shop.dev.techshop.local, ... → IP này)"
+  description = "Global IP for TechShop DEV (Cloudflare: *.dev.sontx.online -> IP này)"
   value       = google_compute_global_address.gcp-asia-southeast1-lb-k8s-dev-techshop-ip-003.address
 }
 
 output "techshop_prod_lb_ip" {
-  description = "Global IP for TechShop PROD cluster (map /etc/hosts: www.techshop.local, shop.techshop.local, ... → IP này)"
+  description = "Global IP for TechShop PROD (Cloudflare: sontx.online + *.sontx.online -> IP này)"
   value       = google_compute_global_address.gcp-asia-southeast1-lb-k8s-prod-techshop-ip-003.address
 }
 

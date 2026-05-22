@@ -8,7 +8,7 @@ metadata:
     # Cho phép FE (www / cms) gọi BFF (shop / admin) kèm cookie
     nginx.ingress.kubernetes.io/enable-cors: "true"
     nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
-    nginx.ingress.kubernetes.io/cors-allow-origin: "http://www.techshop.local, http://cms.techshop.local"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "http://www.sontx.online, http://sontx.online, http://cms.sontx.online"
     nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, PATCH, DELETE, OPTIONS"
     nginx.ingress.kubernetes.io/cors-allow-headers: "Content-Type, Authorization, X-Requested-With, X-CSRF-TOKEN"
 spec:
@@ -19,7 +19,7 @@ spec:
       port:
         number: 80
   rules:
-    - host: shop.techshop.local
+    - host: shop.sontx.online
       http:
         paths:
           - path: /
@@ -29,7 +29,7 @@ spec:
                 name: bff-user
                 port:
                   number: 8081
-    - host: admin.techshop.local
+    - host: admin.sontx.online
       http:
         paths:
           - path: /
@@ -39,7 +39,7 @@ spec:
                 name: bff-admin
                 port:
                   number: 8088
-    - host: identity.techshop.local
+    - host: identity.sontx.online
       http:
         paths:
           - path: /
@@ -49,7 +49,7 @@ spec:
                 name: identity-service
                 port:
                   number: 8085
-    - host: www.techshop.local
+    - host: www.sontx.online
       http:
         paths:
           - path: /
@@ -59,7 +59,7 @@ spec:
                 name: ecommerce-customer
                 port:
                   number: 80
-    - host: cms.techshop.local
+    - host: cms.sontx.online
       http:
         paths:
           - path: /

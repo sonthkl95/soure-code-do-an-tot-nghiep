@@ -131,7 +131,7 @@
     var: kustomize_apply.stdout_lines
 
 # ─── 6. Wait rollout ────────────────────────────────────────────
-- name: Wait for Deployment rollouts to finish (timeout {{ app_rollout_timeout }}s each)
+- name: Wait for Deployment rollouts to finish (timeout {{ app_rollout_timeout }}s each, retry {{ app_rollout_retries }}x)
   command: >
     kubectl -n {{ app_namespace }}
     rollout status deployment/{{ item }}
@@ -140,11 +140,14 @@
   loop_control:
     label: "deployment/{{ item }}"
   register: deploy_rollout
+  retries: "{{ app_rollout_retries }}"
+  delay: "{{ app_rollout_retry_delay }}"
+  until: deploy_rollout.rc == 0
   changed_when: false
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
 
-- name: Wait for StatefulSet rollouts to finish (timeout {{ app_rollout_timeout }}s each)
+- name: Wait for StatefulSet rollouts to finish (timeout {{ app_rollout_timeout }}s each, retry {{ app_rollout_retries }}x)
   command: >
     kubectl -n {{ app_namespace }}
     rollout status statefulset/{{ item }}
@@ -153,6 +156,9 @@
   loop_control:
     label: "statefulset/{{ item }}"
   register: sts_rollout
+  retries: "{{ app_rollout_retries }}"
+  delay: "{{ app_rollout_retry_delay }}"
+  until: sts_rollout.rc == 0
   changed_when: false
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf

@@ -62,7 +62,7 @@
 # Register 1 MongoDB source connector per environment (dev + prod)
 # Mỗi connector dùng topic prefix riêng (dev.* / prod.*) để cô lập.
 # ──────────────────────────────────────────────────────────────────
-- name: Render MongoDB connector configs (per env)
+- name: Render MongoDB connector configs (per env) — copy lên data-vm để debug/audit
   template:
     src: mongo-connector.json.j2
     dest: "/tmp/mongo-{{ item.env_name }}-source.json"
@@ -77,17 +77,21 @@
 - name: Register/Update MongoDB connectors via Kafka Connect REST
   uri:
     # PUT /connectors/<name>/config chỉ nhận phần `config` (không bọc {name, config}).
-    # Đọc từ file đã render ở task trước để đảm bảo vars của loop được giữ đúng.
+    # Dùng lookup('template') để render template TRÊN CONTROLLER (file ở /tmp/
+    # data-vm không truy cập được từ bastion qua lookup('file')).
     url: "http://localhost:{{ debezium_rest_port }}/connectors/mongo-{{ item.env_name }}-source/config"
     method: PUT
     body_format: json
-    body: "{{ (lookup('file', '/tmp/mongo-' ~ item.env_name ~ '-source.json') | from_json).config }}"
+    body: "{{ (lookup('template', 'mongo-connector.json.j2') | from_json).config }}"
     status_code: [200, 201]
     headers:
       Content-Type: "application/json"
   loop: "{{ debezium_mongo_sources | default([]) }}"
   loop_control:
     label: "mongo-{{ item.env_name }}-source"
+  vars:
+    env_name: "{{ item.env_name }}"
+    env_db_host: "{{ item.env_db_host }}"
   retries: 5
   delay: 10
   register: connector_result

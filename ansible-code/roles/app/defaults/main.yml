@@ -34,8 +34,12 @@ app_workloads_statefulsets:
   - discovery-service
 
 # Timeout chờ rollout từng workload (giây).
-# Java 21 + image lần đầu pull có thể ~3-5 phút.
-app_rollout_timeout: 600
+# Fresh deploy: GAR pull ~10 image 200-500MB có thể tốn 10-15 phút ở node mới.
+app_rollout_timeout: 900
+
+# Retry rollout nếu fail (vd: pull image slow burst), 2 lần nữa, mỗi lần cách 30s.
+app_rollout_retries: 3
+app_rollout_retry_delay: 30
 
 # Timeout chờ namespace + pull image sẵn sàng trước khi rollout status.
 app_kubectl_apply_timeout: 120

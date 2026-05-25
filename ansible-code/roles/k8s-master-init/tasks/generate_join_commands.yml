@@ -1,11 +1,16 @@
 ---
+# Skip toàn bộ block này khi chạy --check (dry-run) vì:
+#   - `command` module mặc định skip ở check mode -> stdout_lines rỗng -> [-1] fail
+#   - `kubeadm token create` / `upload-certs` có side-effect, không nên giả lập
 - name: Get certificate key for additional masters
   command: kubeadm init phase upload-certs --upload-certs
   register: cert_key_output
+  when: not ansible_check_mode
 
 - name: Get join command for workers
   command: kubeadm token create --print-join-command
   register: worker_join_command
+  when: not ansible_check_mode
 
 - name: Store worker join command on bastion
   delegate_to: localhost
@@ -13,6 +18,7 @@
     content: "{{ worker_join_command.stdout }}"
     dest: /tmp/k8s_worker_join_command.sh
     mode: '0700'
+  when: not ansible_check_mode
 
 - name: Store master join command on bastion
   delegate_to: localhost
@@ -20,3 +26,4 @@
     content: "{{ worker_join_command.stdout }} --control-plane --certificate-key {{ cert_key_output.stdout_lines[-1] }}"
     dest: /tmp/k8s_master_join_command.sh
     mode: '0700'
+  when: not ansible_check_mode

@@ -21,6 +21,36 @@
 #   - Trên master: kubeconfig /etc/kubernetes/admin.conf (có sẵn sau kubeadm)
 # =============================================================
 
+# ─── 0. Wait dependencies (DB + Kafka + Redis + ES + Debezium) ──
+# Đảm bảo data stack đã READY trước khi deploy app, tránh CrashLoopBackOff.
+- name: Wait for data stack endpoints ({{ app_wait_data_host }})
+  wait_for:
+    host: "{{ app_wait_data_host }}"
+    port: "{{ item.port }}"
+    timeout: "{{ app_wait_endpoint_timeout }}"
+    state: started
+  loop:
+    - { name: "Kafka",         port: 9092 }
+    - { name: "Redis",         port: 6379 }
+    - { name: "Elasticsearch", port: 9200 }
+    - { name: "Debezium",      port: 8083 }
+  loop_control:
+    label: "{{ item.name }}:{{ item.port }}"
+  delegate_to: localhost
+
+- name: Wait for DB endpoints ({{ app_wait_db_host }} for env={{ app_env }})
+  wait_for:
+    host: "{{ app_wait_db_host }}"
+    port: "{{ item.port }}"
+    timeout: "{{ app_wait_endpoint_timeout }}"
+    state: started
+  loop:
+    - { name: "MySQL",   port: 3306 }
+    - { name: "MongoDB", port: 27017 }
+  loop_control:
+    label: "{{ item.name }}:{{ item.port }}"
+  delegate_to: localhost
+
 # ─── 1. Namespace ───────────────────────────────────────────────
 - name: Ensure namespace '{{ app_namespace }}' exists
   command: kubectl create namespace {{ app_namespace }} --dry-run=client -o yaml

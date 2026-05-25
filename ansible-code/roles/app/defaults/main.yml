@@ -39,3 +39,17 @@ app_rollout_timeout: 600
 
 # Timeout chờ namespace + pull image sẵn sàng trước khi rollout status.
 app_kubectl_apply_timeout: 120
+
+# ─── Wait dependencies trước khi apply manifest ─────────────────
+# Host data dùng chung (Kafka, Redis, Elasticsearch, Debezium).
+app_wait_data_host: "10.60.1.20"
+
+# Host DB theo môi trường (MySQL + Mongo).
+# Khớp inventory: db_dev=10.10.1.30, db_prod=10.20.1.30
+app_wait_db_host_map:
+  dev: "10.10.1.30"
+  prod: "10.20.1.30"
+app_wait_db_host: "{{ app_wait_db_host_map[app_env] }}"
+
+# Timeout (giây) chờ mỗi endpoint trước khi fail.
+app_wait_endpoint_timeout: 180

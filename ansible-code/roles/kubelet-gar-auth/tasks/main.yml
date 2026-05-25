@@ -13,11 +13,12 @@
 # theo định dạng dockercfg để xác thực khi kubelet yêu cầu pull.
 # =============================================================
 
+# NOTE: KHÔNG dùng run_once vì set_fact + delegate_to: localhost với run_once
+# chỉ gán fact cho host đầu tiên -> các worker khác sẽ undefined khi render.
 - name: Read GAR puller JSON key from controller (bastion)
   set_fact:
     _gar_key_content: "{{ lookup('file', gar_key_file) }}"
   delegate_to: localhost
-  run_once: true
   no_log: true
 
 - name: Ensure kubelet directory exists

@@ -16,10 +16,13 @@
 # "{{ gar_registry_host }}" trong manifest.
 # =============================================================
 
+# NOTE: KHÔNG dùng run_once vì set_fact + delegate_to: localhost với run_once
+# sẽ chỉ gán fact cho host đầu tiên trong play -> các host khác sẽ thấy
+# `gar_key_content` undefined khi render template. Bỏ run_once để mỗi host
+# trong play đều có fact (lookup vẫn chạy trên controller nên không tốn IO).
 - name: Read GAR puller JSON key from controller (bastion)
   set_fact:
     gar_key_content: "{{ lookup('file', gar_key_file) }}"
-  run_once: true
   delegate_to: localhost
   no_log: true
 

@@ -1,10 +1,15 @@
 ---
 # =============================================================
-# Master Playbook - runs all plays in correct order
-# Run: ansible-playbook site.yml
+# Master Playbook - chạy toàn bộ stack 1 lệnh:
+#   ansible-galaxy collection install -r requirements.yml
+#   ansible-playbook site.yml
+# Thứ tự: preflight → k8s → data/db → observability → ingress → app → collectors → metrics → ops-agent
 # =============================================================
 
-# Step 0: Ensure baseline utilities (Vim, curl, etc.) are installed on all servers
+# Step 0a: Preflight — kiểm tra GAR key, vault, SSH key, kết nối host
+- import_playbook: playbooks/preflight.yml
+
+# Step 0b: Ensure baseline utilities (Vim, curl, etc.) are installed on all servers
 - name: Ensure baseline packages are installed on all servers
   hosts: k8s, observability, data, db
   become: true
@@ -24,20 +29,24 @@
 - import_playbook: playbooks/k8s.yml
 
 # Step 2: Deploy data stack on data-vm + db-vm (Kafka, Redis, ES, Debezium / Mongo, MySQL)
-# Phải chạy TRƯỚC app.yml vì microservice Deployment sẽ phụ thuộc các endpoint này.
+# Chạy TRƯỚC app.yml vì microservice Deployment phụ thuộc các endpoint này.
 - import_playbook: playbooks/data.yml
 
-# Step 3: Deploy app (microservices ConfigMap + Deployments) on K8s
-- import_playbook: playbooks/app.yml
-
-# Step 4: Deploy core observability stack on observability-vm
+# Step 3: Deploy core observability stack on observability-vm
 - import_playbook: playbooks/observability.yml
 
-# Step 5: Deploy data collectors on K8s nodes and VMs (traces + logs + node metrics)
+# Step 4: Cài ingress-nginx controller trên K8s master (app dùng ingressClassName=nginx)
+- import_playbook: playbooks/ingress-nginx.yml
+
+# Step 5: Deploy app (microservices ConfigMap + Deployments) on K8s
+# Role app sẽ tự wait_for DB/Kafka/Redis ready trước khi apply manifest.
+- import_playbook: playbooks/app.yml
+
+# Step 6: Deploy data collectors on K8s nodes and VMs (traces + logs + node metrics)
 - import_playbook: playbooks/collectors.yml
 
-# Step 6: Deploy K8s metrics pipeline (Prometheus Agent + kube-state-metrics)
+# Step 7: Deploy K8s metrics pipeline (Prometheus Agent + kube-state-metrics)
 - import_playbook: playbooks/metrics-k8s.yml
 
-# Step 7: Deploy Google Cloud Ops Agent on all instances
+# Step 8: Deploy Google Cloud Ops Agent on all instances
 - import_playbook: playbooks/install-ops-agent.yml

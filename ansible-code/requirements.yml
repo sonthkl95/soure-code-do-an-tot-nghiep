@@ -1,0 +1,17 @@
+---
+# =============================================================
+# Ansible Galaxy collection dependencies.
+# Cài đặt trước khi chạy site.yml:
+#   ansible-galaxy collection install -r requirements.yml
+# =============================================================
+collections:
+  - name: kubernetes.core
+    version: ">=2.4.0"
+  - name: community.mysql
+    version: ">=3.5.0"
+  - name: community.general
+    version: ">=7.0.0"
+  - name: community.docker
+    version: ">=3.4.0"
+  - name: ansible.posix
+    version: ">=1.5.0"

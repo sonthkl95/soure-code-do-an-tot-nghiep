@@ -1,0 +1,99 @@
+---
+# =============================================================
+# Playbook: preflight.yml — Kiểm tra điều kiện tiên quyết trước
+# khi chạy toàn bộ stack. Fail SỚM với thông báo rõ ràng.
+#
+# Kiểm tra:
+#   1. File GAR puller key tồn tại trên bastion/controller
+#   2. Vault password file tồn tại (hoặc người chạy đã dùng --ask-vault-pass)
+#   3. SSH private key tồn tại
+#   4. Vault thật (group_vars/all/vault.yml) đã có, không phải placeholder
+#   5. Ping được toàn bộ hosts qua SSH
+# =============================================================
+
+- name: Preflight checks (chạy trên controller/bastion)
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  vars:
+    gar_key_file_path: "{{ gar_key_file | default('~/secrets/gar-puller-key.json') }}"
+    ssh_key_path: "~/.ssh/gcp_sontx_key"
+    vault_password_file_path: "~/.vault_pass"
+    vault_file_path: "{{ inventory_dir }}/group_vars/all/vault.yml"
+  tasks:
+    - name: Check GAR puller JSON key exists
+      stat:
+        path: "{{ gar_key_file_path | expanduser }}"
+      register: gar_key_stat
+
+    - name: Fail if GAR key missing
+      fail:
+        msg: |
+          GAR puller key file KHÔNG TỒN TẠI: {{ gar_key_file_path }}
+          Tạo bằng:
+            gcloud iam service-accounts keys create ~/secrets/gar-puller-key.json \
+              --iam-account=sa-gar-puller@<PROJECT>.iam.gserviceaccount.com
+      when: not gar_key_stat.stat.exists
+
+    - name: Check SSH private key exists
+      stat:
+        path: "{{ ssh_key_path | expanduser }}"
+      register: ssh_key_stat
+
+    - name: Fail if SSH key missing
+      fail:
+        msg: "SSH private key KHÔNG TỒN TẠI: {{ ssh_key_path }} — cần để Ansible SSH sang các VM."
+      when: not ssh_key_stat.stat.exists
+
+    - name: Check vault password file (chỉ cảnh báo nếu không có)
+      stat:
+        path: "{{ vault_password_file_path | expanduser }}"
+      register: vault_pass_stat
+
+    - name: Warn if vault password file missing
+      debug:
+        msg: |
+          CẢNH BÁO: Không tìm thấy {{ vault_password_file_path }}.
+          Nếu vault.yml đã encrypt, hãy chạy ansible-playbook với --ask-vault-pass
+          hoặc tạo file {{ vault_password_file_path }} (chmod 600).
+      when: not vault_pass_stat.stat.exists
+
+    - name: Check vault file exists
+      stat:
+        path: "{{ vault_file_path }}"
+      register: vault_file_stat
+
+    - name: Fail if vault.yml missing
+      fail:
+        msg: |
+          Vault file KHÔNG TỒN TẠI: {{ vault_file_path }}
+          Copy từ mẫu rồi điền secret thật + encrypt:
+            cp {{ vault_file_path }}.example {{ vault_file_path }}
+            # sửa nội dung, sau đó:
+            ansible-vault encrypt {{ vault_file_path }}
+      when: not vault_file_stat.stat.exists
+
+    - name: Check vault.yml has no placeholder values
+      shell: |
+        grep -E "CHANGE_ME|REPLACE_ME" "{{ vault_file_path }}" || true
+      register: vault_placeholder_check
+      changed_when: false
+      when: vault_file_stat.stat.exists
+
+    - name: Fail if vault.yml still has placeholders (only when not encrypted)
+      fail:
+        msg: |
+          Vault file {{ vault_file_path }} vẫn còn placeholder CHANGE_ME/REPLACE_ME.
+          Hãy điền giá trị thật rồi encrypt bằng ansible-vault encrypt.
+      when:
+        - vault_file_stat.stat.exists
+        - vault_placeholder_check.stdout is defined
+        - vault_placeholder_check.stdout | length > 0
+        - "'$ANSIBLE_VAULT' not in (lookup('file', vault_file_path, errors='ignore') | default(''))"
+
+- name: SSH reachability check (ping toàn bộ hosts)
+  hosts: k8s:observability:data:db
+  gather_facts: false
+  tasks:
+    - name: Ping host
+      ansible.builtin.ping:

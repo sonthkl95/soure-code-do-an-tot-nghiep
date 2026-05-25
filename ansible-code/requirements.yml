@@ -1,17 +1,23 @@
 ---
 # =============================================================
 # Ansible Galaxy collection dependencies.
-# Cài đặt trước khi chạy site.yml:
-#   ansible-galaxy collection install -r requirements.yml
+# Pin version tương thích với ansible-core 2.14.x (bản có sẵn trên bastion Debian/Ubuntu LTS).
+# Cài đặt:
+#   ansible-galaxy collection install -r requirements.yml --force
 # =============================================================
 collections:
+  # kubernetes.core 2.x hỗ trợ ansible-core 2.12+
   - name: kubernetes.core
-    version: ">=2.4.0"
+    version: ">=2.4.0,<3.0.0"
+  # community.mysql 3.x: ansible-core 2.12+; 4.x yêu cầu 2.15+
   - name: community.mysql
-    version: ">=3.5.0"
+    version: ">=3.5.0,<4.0.0"
+  # community.general 7.x: ansible-core 2.13+; 8.x+ yêu cầu 2.15+
   - name: community.general
-    version: ">=7.0.0"
+    version: ">=7.0.0,<8.0.0"
+  # community.docker 3.x: ansible-core 2.13+
   - name: community.docker
-    version: ">=3.4.0"
+    version: ">=3.4.0,<4.0.0"
+  # ansible.posix 1.5.x: ansible-core 2.11+; 1.6.x+ yêu cầu 2.15+
   - name: ansible.posix
-    version: ">=1.5.0"
+    version: ">=1.5.0,<1.6.0"

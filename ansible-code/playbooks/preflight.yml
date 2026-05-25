@@ -19,7 +19,8 @@
     gar_key_file_path: "{{ gar_key_file | default('~/secrets/gar-puller-key.json') }}"
     ssh_key_path: "~/.ssh/gcp_sontx_key"
     vault_password_file_path: "~/.vault_pass"
-    vault_file_path: "{{ inventory_dir }}/group_vars/all/vault.yml"
+    # playbook_dir = ansible-code/playbooks -> đi lên 1 cấp ra ansible-code/
+    vault_file_path: "{{ playbook_dir }}/../inventory/group_vars/all/vault.yml"
   tasks:
     - name: Check GAR puller JSON key exists
       stat:

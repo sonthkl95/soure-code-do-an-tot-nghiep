@@ -91,10 +91,25 @@ resource "google_storage_bucket_iam_member" "gcp-asia-southeast1-loki-storage-ia
   member = "serviceAccount:${google_service_account.sa-obs.email}"
 }
 
+# Loki cần đọc bucket metadata (storage.buckets.get) -> thêm legacyBucketReader.
+resource "google_storage_bucket_iam_member" "gcp-asia-southeast1-loki-storage-bucket-reader-003" {
+  bucket = google_storage_bucket.gcp-asia-southeast1-loki-storage-003.name
+  role   = "roles/storage.legacyBucketReader"
+  member = "serviceAccount:${google_service_account.sa-obs.email}"
+}
+
 # Grant Tempo bucket full access to observability SA
 resource "google_storage_bucket_iam_member" "gcp-asia-southeast1-tempo-storage-iam-003" {
   bucket = google_storage_bucket.gcp-asia-southeast1-tempo-storage-003.name
   role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.sa-obs.email}"
+}
+
+# Tempo cần `storage.buckets.get` để kiểm tra bucket tồn tại trước khi write.
+# `storage.objectAdmin` chỉ cho phép thao tác object, không có bucket-level perm.
+resource "google_storage_bucket_iam_member" "gcp-asia-southeast1-tempo-storage-bucket-reader-003" {
+  bucket = google_storage_bucket.gcp-asia-southeast1-tempo-storage-003.name
+  role   = "roles/storage.legacyBucketReader"
   member = "serviceAccount:${google_service_account.sa-obs.email}"
 }
 

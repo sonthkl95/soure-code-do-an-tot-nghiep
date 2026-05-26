@@ -23,6 +23,8 @@
 
 # ─── 0. Wait dependencies (DB + Kafka + Redis + ES + Debezium) ──
 # Đảm bảo data stack đã READY trước khi deploy app, tránh CrashLoopBackOff.
+# Chạy wait_for TRÊN HOST CỦA PLAY (k8s_*_master) vì master ở cùng VPC
+# với db-vm và có peering tới data-vm. Bastion KHÔNG có route trực tiếp.
 - name: Wait for data stack endpoints ({{ app_wait_data_host }})
   wait_for:
     host: "{{ app_wait_data_host }}"
@@ -36,7 +38,6 @@
     - { name: "Debezium",      port: 8083 }
   loop_control:
     label: "{{ item.name }}:{{ item.port }}"
-  delegate_to: localhost
 
 - name: Wait for DB endpoints ({{ app_wait_db_host }} for env={{ app_env }})
   wait_for:
@@ -49,7 +50,6 @@
     - { name: "MongoDB", port: 27017 }
   loop_control:
     label: "{{ item.name }}:{{ item.port }}"
-  delegate_to: localhost
 
 # ─── 1. Namespace ───────────────────────────────────────────────
 - name: Ensure namespace '{{ app_namespace }}' exists

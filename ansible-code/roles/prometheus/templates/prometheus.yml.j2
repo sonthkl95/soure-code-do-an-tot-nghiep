@@ -48,9 +48,6 @@ scrape_configs:
 #    sẽ tự động xuất hiện trong Grafana, có thể filter bằng label `cluster`.
 # =============================================================
 
-# Storage config - 7 days retention (per architecture: Retention Time 7d)
-storage:
-  tsdb:
-    path: "{{ prometheus_data_dir }}"
-    retention.time: "{{ prometheus_retention_time }}"
-    wal-compression: true
+# NOTE: storage.tsdb.path / retention.time / wal-compression là CLI flags,
+# KHÔNG phải config file fields. Đã được pass qua systemd ExecStart
+# (xem prometheus.service.j2). Không khai báo ở đây để tránh "field not found".

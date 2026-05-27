@@ -1,3 +1,29 @@
+{# Lọc receiver đã có credential thực (bỏ qua placeholder REPLACE_WITH_*)
+   để Alertmanager không crash với lỗi "unsupported scheme" / invalid URL. #}
+{% set valid_receivers = [] %}
+{% for r in alertmanager_receivers %}
+{%   if r.type == 'telegram' and r.telegram_bot_token is defined
+        and not (r.telegram_bot_token | string).startswith('REPLACE_WITH')
+        and not (r.telegram_chat_id | string).startswith('REPLACE_WITH') %}
+{%     set _ = valid_receivers.append(r) %}
+{%   elif r.type == 'slack' and r.slack_webhook_url is defined
+        and (r.slack_webhook_url | string).startswith('http') %}
+{%     set _ = valid_receivers.append(r) %}
+{%   elif r.type == 'email' and r.email_to is defined
+        and not (r.email_to | string).startswith('REPLACE_WITH') %}
+{%     set _ = valid_receivers.append(r) %}
+{%   endif %}
+{% endfor %}
+{% set receiver_names = valid_receivers | map(attribute='name') | list %}
+{% if 'telegram' in receiver_names %}
+{%   set default_receiver = 'telegram' %}
+{% elif 'slack' in receiver_names %}
+{%   set default_receiver = 'slack' %}
+{% elif 'email' in receiver_names %}
+{%   set default_receiver = 'email' %}
+{% else %}
+{%   set default_receiver = 'null' %}
+{% endif %}
 # Alertmanager config - Grouping, Deduplication & Routing (per architecture)
 global:
   resolve_timeout: 5m
@@ -7,17 +33,23 @@ route:
   group_wait: {{ alertmanager_group_wait }}
   group_interval: {{ alertmanager_group_interval }}
   repeat_interval: {{ alertmanager_repeat_interval }}
-  receiver: 'telegram'
+  receiver: '{{ default_receiver }}'
   routes:
+{% if 'telegram' in receiver_names %}
     - match:
         severity: critical
       receiver: 'telegram'
+{% endif %}
+{% if 'slack' in receiver_names %}
     - match:
         severity: warning
       receiver: 'slack'
+{% endif %}
 
 receivers:
-{% for receiver in alertmanager_receivers %}
+  # Null receiver: fallback khi chưa có channel nào được cấu hình credential thực
+  - name: 'null'
+{% for receiver in valid_receivers %}
 {% if receiver.type == 'telegram' %}
   - name: '{{ receiver.name }}'
     telegram_configs:

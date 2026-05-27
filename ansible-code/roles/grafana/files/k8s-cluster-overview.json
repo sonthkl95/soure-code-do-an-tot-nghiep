@@ -25,7 +25,7 @@
 
     { "id": 1, "type": "stat", "title": "Cluster Health Summary",
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
-      "gridPos": { "x": 0, "y": 1, "w": 24, "h": 5 },
+      "gridPos": { "x": 0, "y": 1, "w": 24, "h": 7 },
       "targets": [
         { "refId": "A", "expr": "sum(kube_node_status_condition{cluster=~\"$cluster\",condition=\"Ready\",status=\"true\"})", "legendFormat": "Nodes Ready", "instant": true },
         { "refId": "B", "expr": "count(kube_node_info{cluster=~\"$cluster\"})", "legendFormat": "Nodes Total", "instant": true },
@@ -36,7 +36,7 @@
         { "refId": "G", "expr": "sum(kube_deployment_status_replicas_unavailable{cluster=~\"$cluster\",namespace=~\"$namespace\"}) or vector(0)", "legendFormat": "Replicas Unavailable", "instant": true },
         { "refId": "H", "expr": "sum(increase(kube_pod_container_status_terminated_reason{cluster=~\"$cluster\",namespace=~\"$namespace\",reason=\"OOMKilled\"}[1h])) or vector(0)", "legendFormat": "OOMKilled (1h)", "instant": true }
       ],
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "" }, "textMode": "value_and_name", "colorMode": "background_solid", "graphMode": "none", "orientation": "horizontal", "wideLayout": true, "justifyMode": "center" },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "" }, "textMode": "value_and_name", "colorMode": "background", "graphMode": "area", "orientation": "auto", "wideLayout": false, "justifyMode": "center", "percentChangeColorMode": "standard" },
       "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null } ] } },
         "overrides": [
           { "matcher": { "id": "byName", "options": "Pods Pending" }, "properties": [ { "id": "thresholds", "value": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 1 }, { "color": "red", "value": 5 } ] } } ] },

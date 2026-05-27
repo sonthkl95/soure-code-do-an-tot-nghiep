@@ -22,10 +22,35 @@ scrape_configs:
       - targets: ["localhost:9090"]
 
   # Scrape Node Exporter on all VMs (Infra metrics: CPU/RAM/Disk/Net của host)
+  # Gắn label `cluster` theo dải IP / inventory group để Grafana có thể filter
+  #   dev   = k8s_dev   + db_dev   (10.10.x.x)
+  #   prod  = k8s_prod  + db_prod  (10.20.x.x)
+  #   infra = observability + data (10.60.x.x)
   - job_name: "node-exporter"
     static_configs:
-      - targets:
-{% for host in groups['all'] %}
+{% set dev_hosts   = (groups.get('k8s_dev', [])   + groups.get('db_dev', [])) %}
+{% set prod_hosts  = (groups.get('k8s_prod', [])  + groups.get('db_prod', [])) %}
+{% set infra_hosts = (groups.get('observability', []) + groups.get('data', [])) %}
+      - labels:
+          cluster: dev
+        targets:
+{% for host in dev_hosts %}
+{% if hostvars[host]['ansible_host'] is defined %}
+          - "{{ hostvars[host]['ansible_host'] }}:9100"
+{% endif %}
+{% endfor %}
+      - labels:
+          cluster: prod
+        targets:
+{% for host in prod_hosts %}
+{% if hostvars[host]['ansible_host'] is defined %}
+          - "{{ hostvars[host]['ansible_host'] }}:9100"
+{% endif %}
+{% endfor %}
+      - labels:
+          cluster: infra
+        targets:
+{% for host in infra_hosts %}
 {% if hostvars[host]['ansible_host'] is defined %}
           - "{{ hostvars[host]['ansible_host'] }}:9100"
 {% endif %}

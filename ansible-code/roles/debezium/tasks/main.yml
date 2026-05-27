@@ -112,7 +112,10 @@
     url: "http://localhost:{{ debezium_rest_port }}/connector-plugins/MongoDbConnector/config/validate"
     method: PUT
     body_format: json
-    body: "{{ (item.content | b64decode | from_json).config }}"
+    # Endpoint validate yêu cầu flat map chứa cả `name` (khác với PUT /connectors/<n>/config).
+    body: >-
+      {{ (item.content | b64decode | from_json).config
+         | combine({'name': 'mongo-' ~ item.item.env_name ~ '-source'}) }}
     status_code: 200
     return_content: true
     timeout: 60

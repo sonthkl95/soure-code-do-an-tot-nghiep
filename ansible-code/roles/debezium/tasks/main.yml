@@ -98,6 +98,7 @@
   vars:
     env_name: "{{ item.env_name }}"
     env_db_host: "{{ item.env_db_host }}"
+  tags: [connectors]
 
 - name: Slurp rendered connector JSON từ data-vm
   slurp:
@@ -106,6 +107,7 @@
   loop_control:
     label: "{{ item.env_name }}"
   register: connector_files
+  tags: [connectors]
 
 - name: Validate connector config trước khi register (in error rõ ràng nếu sai)
   uri:
@@ -128,6 +130,7 @@
   retries: 6
   delay: 10
   until: connector_validate is succeeded
+  tags: [connectors]
 
 - name: Fail nếu validate báo có field error
   fail:
@@ -142,6 +145,7 @@
   loop_control:
     label: "mongo-{{ item.item.item.env_name }}-source"
   when: item.json.error_count | default(0) | int > 0
+  tags: [connectors]
 
 - name: Register/Update MongoDB connectors via Kafka Connect REST
   uri:
@@ -162,6 +166,7 @@
   delay: 15
   register: connector_result
   until: connector_result is succeeded
+  tags: [connectors]
 
 - name: Show connector register response (debug)
   debug:
@@ -172,3 +177,4 @@
   loop: "{{ connector_result.results }}"
   loop_control:
     label: "mongo-{{ item.item.item.env_name }}-source"
+  tags: [connectors]

@@ -16,14 +16,91 @@
   ],
   "timezone": "Asia/Ho_Chi_Minh",
   "schemaVersion": 39,
-  "version": 4,
+  "version": 5,
   "refresh": "1m",
   "time": {
     "from": "now-1h",
     "to": "now"
   },
   "templating": {
-    "list": []
+    "list": [
+      {
+        "name": "vm",
+        "label": "VM",
+        "type": "custom",
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*",
+        "query": "db-dev-001 (dev) : 328954610542706869,k8s-dev-master-1 (dev) : 4569611950595990175,k8s-dev-worker-1 (dev) : 5103349834277413504,k8s-dev-worker-2 (dev) : 2189392941177543906,db-prod-001 (prod) : 5168638194784141493,k8s-prod-master-1 (prod) : 7039545516793225856,k8s-prod-worker-1 (prod) : 6848196125231899264,k8s-prod-worker-2 (prod) : 295138262847196415,data-001 (obs) : 6082929864726282421,observability-003 (obs) : 8666026859871826636",
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ],
+          "selected": true
+        },
+        "options": [
+          {
+            "text": "All",
+            "value": "$__all",
+            "selected": true
+          },
+          {
+            "text": "db-dev-001 (dev)",
+            "value": "328954610542706869",
+            "selected": false
+          },
+          {
+            "text": "k8s-dev-master-1 (dev)",
+            "value": "4569611950595990175",
+            "selected": false
+          },
+          {
+            "text": "k8s-dev-worker-1 (dev)",
+            "value": "5103349834277413504",
+            "selected": false
+          },
+          {
+            "text": "k8s-dev-worker-2 (dev)",
+            "value": "2189392941177543906",
+            "selected": false
+          },
+          {
+            "text": "db-prod-001 (prod)",
+            "value": "5168638194784141493",
+            "selected": false
+          },
+          {
+            "text": "k8s-prod-master-1 (prod)",
+            "value": "7039545516793225856",
+            "selected": false
+          },
+          {
+            "text": "k8s-prod-worker-1 (prod)",
+            "value": "6848196125231899264",
+            "selected": false
+          },
+          {
+            "text": "k8s-prod-worker-2 (prod)",
+            "value": "295138262847196415",
+            "selected": false
+          },
+          {
+            "text": "data-001 (obs)",
+            "value": "6082929864726282421",
+            "selected": false
+          },
+          {
+            "text": "observability-003 (obs)",
+            "value": "8666026859871826636",
+            "selected": false
+          }
+        ],
+        "hide": 0
+      }
+    ]
   },
   "panels": [
     {
@@ -238,7 +315,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/cpu/utilization",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -260,7 +341,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/cpu/utilization",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -282,7 +367,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/cpu/utilization",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -300,7 +389,7 @@
     {
       "id": 2,
       "type": "stat",
-      "title": "CPU Utilization \u2014 Current (10 VMs)",
+      "title": "CPU Utilization \u2014 Current",
       "datasource": {
         "type": "stackdriver",
         "uid": "google-cloud-monitoring"
@@ -309,7 +398,7 @@
         "x": 0,
         "y": 10,
         "w": 24,
-        "h": 10
+        "h": 8
       },
       "fieldConfig": {
         "defaults": {
@@ -471,8 +560,8 @@
         "textMode": "value_and_name",
         "colorMode": "background",
         "graphMode": "area",
-        "orientation": "horizontal",
-        "wideLayout": true,
+        "orientation": "auto",
+        "wideLayout": false,
         "justifyMode": "center"
       },
       "targets": [
@@ -485,7 +574,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/cpu/utilization",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -507,7 +600,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/cpu/utilization",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -529,7 +626,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/cpu/utilization",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -551,7 +652,7 @@
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 20,
+        "y": 18,
         "w": 24,
         "h": 1
       }
@@ -566,7 +667,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 21,
+        "y": 19,
         "w": 24,
         "h": 8
       },
@@ -756,7 +857,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "agent.googleapis.com/memory/percent_used",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -779,7 +884,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "agent.googleapis.com/memory/percent_used",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -802,7 +911,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "agent.googleapis.com/memory/percent_used",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -828,7 +941,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 29,
+        "y": 27,
         "w": 24,
         "h": 8
       },
@@ -996,7 +1109,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "agent.googleapis.com/memory/bytes_used",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -1019,7 +1136,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "agent.googleapis.com/memory/bytes_used",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -1042,7 +1163,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "agent.googleapis.com/memory/bytes_used",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -1065,7 +1190,7 @@
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 37,
+        "y": 35,
         "w": 24,
         "h": 1
       }
@@ -1080,7 +1205,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 38,
+        "y": 36,
         "w": 24,
         "h": 7
       },
@@ -1248,7 +1373,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/disk/read_bytes_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -1270,7 +1399,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/disk/read_bytes_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -1292,7 +1425,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/disk/read_bytes_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -1317,7 +1454,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 45,
+        "y": 43,
         "w": 24,
         "h": 7
       },
@@ -1485,7 +1622,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/disk/write_bytes_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -1507,7 +1648,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/disk/write_bytes_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -1529,7 +1674,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/disk/write_bytes_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -1554,7 +1703,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 52,
+        "y": 50,
         "w": 24,
         "h": 7
       },
@@ -1722,7 +1871,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/disk/read_ops_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -1744,7 +1897,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/disk/read_ops_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -1766,7 +1923,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/disk/read_ops_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -1791,7 +1952,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 59,
+        "y": 57,
         "w": 24,
         "h": 7
       },
@@ -1959,7 +2120,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/disk/write_ops_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -1981,7 +2146,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/disk/write_ops_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -2003,7 +2172,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/disk/write_ops_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -2028,7 +2201,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 66,
+        "y": 64,
         "w": 24,
         "h": 7
       },
@@ -2218,7 +2391,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "agent.googleapis.com/disk/percent_used",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} {{metric.label.device}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -2242,7 +2419,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "agent.googleapis.com/disk/percent_used",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} {{metric.label.device}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -2266,7 +2447,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "agent.googleapis.com/disk/percent_used",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} {{metric.label.device}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -2290,7 +2475,7 @@
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 73,
+        "y": 71,
         "w": 24,
         "h": 1
       }
@@ -2305,7 +2490,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 74,
+        "y": 72,
         "w": 24,
         "h": 7
       },
@@ -2473,7 +2658,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/network/received_bytes_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "RX {{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -2495,7 +2684,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/network/received_bytes_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "RX {{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -2517,7 +2710,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/network/received_bytes_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "RX {{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -2542,7 +2739,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 81,
+        "y": 79,
         "w": 24,
         "h": 7
       },
@@ -2710,7 +2907,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/network/sent_bytes_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "TX {{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -2732,7 +2933,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/network/sent_bytes_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "TX {{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -2754,7 +2959,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/network/sent_bytes_count",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "TX {{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -2779,7 +2988,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 88,
+        "y": 86,
         "w": 24,
         "h": 7
       },
@@ -2895,7 +3104,7 @@
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 95,
+        "y": 93,
         "w": 24,
         "h": 1
       }
@@ -2910,7 +3119,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 96,
+        "y": 94,
         "w": 24,
         "h": 7
       },
@@ -3078,7 +3287,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "agent.googleapis.com/system/cpu/load_1m",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -3100,7 +3313,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "agent.googleapis.com/system/cpu/load_1m",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -3122,7 +3339,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "agent.googleapis.com/system/cpu/load_1m",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -3147,7 +3368,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 103,
+        "y": 101,
         "w": 24,
         "h": 8
       },
@@ -3315,7 +3536,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "agent.googleapis.com/processes/cpu_time",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} \u2014 {{metric.label.command}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -3338,7 +3563,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "agent.googleapis.com/processes/cpu_time",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} \u2014 {{metric.label.command}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -3361,7 +3590,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "agent.googleapis.com/processes/cpu_time",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} \u2014 {{metric.label.command}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
@@ -3387,7 +3620,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 111,
+        "y": 109,
         "w": 24,
         "h": 8
       },
@@ -3555,7 +3788,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "agent.googleapis.com/processes/rss_usage",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} \u2014 {{metric.label.command}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -3578,7 +3815,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "agent.googleapis.com/processes/rss_usage",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} \u2014 {{metric.label.command}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -3601,7 +3842,11 @@
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "agent.googleapis.com/processes/rss_usage",
-            "filters": [],
+            "filters": [
+              "resource.label.instance_id",
+              "=~",
+              "${vm:regex}"
+            ],
             "aliasBy": "{{resource.label.instance_id}} \u2014 {{metric.label.command}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
@@ -3624,7 +3869,7 @@
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 119,
+        "y": 117,
         "w": 24,
         "h": 1
       }
@@ -3639,7 +3884,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 120,
+        "y": 118,
         "w": 24,
         "h": 8
       },

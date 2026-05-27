@@ -18,7 +18,7 @@
   "id": null,
   "uid": "techshop-overview",
   "title": "TechShop Application Metrics (Spring Boot)",
-  "description": "Application-tier dashboard cho TechShop microservices: Spring Boot Actuator, JVM, HikariCP, HTTP, Logs. Mỗi panel hiển thị full-width để tối ưu cho màn hình nhỏ.",
+  "description": "Application-tier metrics cho TechShop microservices: Spring Boot Actuator, JVM, HikariCP, HTTP. Logs xem ở Grafana Explore (Loki datasource).",
   "tags": ["techshop", "app", "spring-boot"],
   "timezone": "Asia/Ho_Chi_Minh",
   "schemaVersion": 39,
@@ -33,14 +33,6 @@
         "type": "datasource",
         "query": "prometheus",
         "current": { "text": "Prometheus", "value": "prometheus" },
-        "hide": 0
-      },
-      {
-        "name": "loki_ds",
-        "label": "Loki DS",
-        "type": "datasource",
-        "query": "loki",
-        "current": { "text": "Loki", "value": "loki" },
         "hide": 0
       },
       {
@@ -138,9 +130,10 @@
         "reduceOptions": { "calcs": ["lastNotNull"] },
         "colorMode": "background",
         "graphMode": "none",
-        "textMode": "value_and_name",
-        "orientation": "horizontal",
-        "justifyMode": "center"
+        "textMode": "name",
+        "orientation": "auto",
+        "justifyMode": "center",
+        "wideLayout": true
       },
       "fieldConfig": {
         "defaults": {
@@ -553,37 +546,6 @@
       "options": {
         "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "calcs": ["mean", "max", "lastNotNull"] },
         "tooltip": { "mode": "multi", "sort": "desc" }
-      }
-    },
-
-    {
-      "type": "row",
-      "title": "📜 Logs (Loki)",
-      "gridPos": { "x": 0, "y": 101, "w": 24, "h": 1 },
-      "id": 104,
-      "collapsed": false
-    },
-    {
-      "id": 40,
-      "type": "logs",
-      "title": "TechShop Logs (ERROR / WARN / Exception)",
-      "gridPos": { "x": 0, "y": 102, "w": 24, "h": 14 },
-      "datasource": { "type": "loki", "uid": "${loki_ds}" },
-      "targets": [
-        {
-          "expr": "{service_name=~\".*\"} |~ \"(?i)error|warn|exception\"",
-          "refId": "A"
-        }
-      ],
-      "options": {
-        "showTime": true,
-        "showLabels": false,
-        "showCommonLabels": false,
-        "wrapLogMessage": true,
-        "prettifyLogMessage": true,
-        "enableLogDetails": true,
-        "dedupStrategy": "none",
-        "sortOrder": "Descending"
       }
     }
   ]

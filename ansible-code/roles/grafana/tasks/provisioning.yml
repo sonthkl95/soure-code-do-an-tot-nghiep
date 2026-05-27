@@ -27,36 +27,28 @@
     group: grafana
   notify: restart grafana
 
-- name: Download K8s Cluster dashboard (CPU/RAM/Network per architecture)
-  get_url:
-    url: "https://grafana.com/api/dashboards/315/revisions/3/download"
-    dest: /var/lib/grafana/dashboards/k8s-cluster.json
-    owner: grafana
-    group: grafana
+# Remove obsolete dashboards from earlier revisions (downloaded by gnet_id or renamed files)
+# BEFORE copying new ones, to avoid transient duplicate-UID warnings during provisioning reload.
+- name: Remove obsolete dashboards from earlier revisions
+  file:
+    path: "/var/lib/grafana/dashboards/{{ item }}"
+    state: absent
+  loop:
+    - k8s-cluster.json   # legacy 315 / 13770 / 15661 download (now k8s-cluster-overview.json)
+    - app-nginx.json     # legacy gnet_id 9614 (removed)
+    - loki-logs.json     # legacy gnet_id 13639 (removed - logs covered in TechShop dashboard)
+  notify: restart grafana
 
-- name: Download App Performance / Nginx dashboard
-  get_url:
-    url: "https://grafana.com/api/dashboards/9614/revisions/1/download"
-    dest: /var/lib/grafana/dashboards/app-nginx.json
-    owner: grafana
-    group: grafana
-
-- name: Download Loki Log Aggregation dashboard
-  get_url:
-    url: "https://grafana.com/api/dashboards/13639/revisions/2/download"
-    dest: /var/lib/grafana/dashboards/loki-logs.json
-    owner: grafana
-    group: grafana
-
-# NOTE: Tempo trace waterfall is available natively in Grafana Explore > Tempo datasource
-# NOTE: GCP GCE VMs dashboard (ID 10940) no longer exists on Grafana.com — build manually via UI
-
-- name: Deploy GCP Cloud Monitoring dashboard (custom - GCE CPU/Disk/Network)
+# All dashboards are custom JSON in roles/grafana/files/. See defaults/main.yml for
+# the rationale (upstream Grafana.com K8s dashboards target legacy KSM v1 metric names).
+# Tempo trace waterfall is available natively via Grafana Explore > Tempo (no dashboard needed).
+- name: Deploy Grafana dashboards (custom JSON)
   copy:
-    src: gcp-cloud-monitoring.json
-    dest: /var/lib/grafana/dashboards/gcp-cloud-monitoring.json
+    src: "{{ item }}"
+    dest: "/var/lib/grafana/dashboards/{{ item }}"
     owner: grafana
     group: grafana
     mode: '0644'
+  loop: "{{ grafana_dashboard_files }}"
   notify: restart grafana
 

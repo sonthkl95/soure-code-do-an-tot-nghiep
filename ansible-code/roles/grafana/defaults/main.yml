@@ -7,16 +7,20 @@ grafana_admin_user: "admin"
 grafana_admin_password: "REPLACE_WITH_SECURE_PASSWORD"
 
 # Data Sources - auto-provisioned via IaC (no manual click needed)
+# Note: explicit `uid` values let dashboards reference datasources by stable UID across re-provisioning.
 grafana_datasources:
   - name: "Prometheus"
     type: "prometheus"
+    uid: "prometheus"
     url: "http://10.60.1.10:9090"
     is_default: true
   - name: "Loki"
     type: "loki"
+    uid: "loki"
     url: "http://10.60.1.10:3100"
   - name: "Tempo"
     type: "tempo"
+    uid: "tempo"
     url: "http://10.60.1.10:3200"
   - name: "Google Cloud Monitoring"
     type: "stackdriver"
@@ -25,14 +29,13 @@ grafana_datasources:
     default_project: "gcp-apse1-prj-dev-env-003"
 
 
-# Dashboards to auto-provision (per architecture Visualization block)
-grafana_dashboards:
-  - name: "K8s Cluster & Node Metrics"        # Monitor CPU/RAM/Network
-    gnet_id: 315                               # Kubernetes cluster monitoring dashboard
-  - name: "App Performance / Nginx"            # Monitor Request Rate & 5xx Errors
-    gnet_id: 9614
-  - name: "Log Aggregation View"               # Real-time Log search (Loki)
-    gnet_id: 13639
-  # Tempo trace waterfall: use Grafana Explore > Tempo datasource (built-in, no dashboard needed)
-  # GCP GCE VMs: dashboard ID 10940 removed from Grafana.com — create manually via Grafana UI
+# Dashboards auto-provisioned via roles/grafana/files/*.json (see tasks/provisioning.yml).
+# All dashboards are custom (Prometheus / Loki / Stackdriver) because upstream Grafana.com
+# K8s dashboards (315/13770/15661/6417/12740/13332) reference legacy KSM v1 metric names
+# (kube_*_cpu_cores, kube_*_pods, kubernetes_io_hostname, id="/", ...) that do not exist in
+# our stack (KSM v2 + node-exporter modern + containerd + cgroup v2).
+grafana_dashboard_files:
+  - k8s-cluster-overview.json     # Kubernetes Cluster Overview (KSM v2 + node-exporter + cadvisor)
+  - gcp-cloud-monitoring.json     # GCP GCE VMs (Stackdriver)
+  - techshop-microservices.json   # TechShop App (Spring Boot Actuator + HikariCP + Loki)
 

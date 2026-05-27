@@ -22,7 +22,7 @@
   "tags": ["techshop", "app", "spring-boot"],
   "timezone": "Asia/Ho_Chi_Minh",
   "schemaVersion": 39,
-  "version": 3,
+  "version": 4,
   "refresh": "30s",
   "time": { "from": "now-1h", "to": "now" },
   "templating": {
@@ -113,8 +113,8 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
-          "expr": "100 * (1 - (sum by (app) (rate(http_server_requests_seconds_count{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\", status=~\"5..\"}[5m])) / clamp_min(sum by (app) (rate(http_server_requests_seconds_count{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m])), 0.0001)))",
-          "legendFormat": "{{app}}",
+          "expr": "100 * (1 - (sum by (app, cluster) (rate(http_server_requests_seconds_count{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\", status=~\"5..\"}[5m])) / clamp_min(sum by (app, cluster) (rate(http_server_requests_seconds_count{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m])), 0.0001)))",
+          "legendFormat": "{{cluster}}/{{app}}",
           "refId": "A"
         }
       ],
@@ -145,8 +145,8 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
-          "expr": "sum by (app) (rate(http_server_requests_seconds_count{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m]))",
-          "legendFormat": "{{app}}",
+          "expr": "sum by (app, cluster) (rate(http_server_requests_seconds_count{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m]))",
+          "legendFormat": "{{cluster}}/{{app}}",
           "refId": "A"
         }
       ],
@@ -170,13 +170,13 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
-          "expr": "sum by (app) (rate(http_server_requests_seconds_count{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\", status=~\"4..\"}[5m]))",
-          "legendFormat": "{{app}} 4xx",
+          "expr": "sum by (app, cluster) (rate(http_server_requests_seconds_count{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\", status=~\"4..\"}[5m]))",
+          "legendFormat": "{{cluster}}/{{app}} 4xx",
           "refId": "A"
         },
         {
-          "expr": "sum by (app) (rate(http_server_requests_seconds_count{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\", status=~\"5..\"}[5m]))",
-          "legendFormat": "{{app}} 5xx",
+          "expr": "sum by (app, cluster) (rate(http_server_requests_seconds_count{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\", status=~\"5..\"}[5m]))",
+          "legendFormat": "{{cluster}}/{{app}} 5xx",
           "refId": "B"
         }
       ],
@@ -214,18 +214,18 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
-          "expr": "histogram_quantile(0.50, sum by (app, le) (rate(http_server_requests_seconds_bucket{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m])))",
-          "legendFormat": "{{app}} p50",
+          "expr": "histogram_quantile(0.50, sum by (app, cluster, le) (rate(http_server_requests_seconds_bucket{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m])))",
+          "legendFormat": "{{cluster}}/{{app}} p50",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.95, sum by (app, le) (rate(http_server_requests_seconds_bucket{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m])))",
-          "legendFormat": "{{app}} p95",
+          "expr": "histogram_quantile(0.95, sum by (app, cluster, le) (rate(http_server_requests_seconds_bucket{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m])))",
+          "legendFormat": "{{cluster}}/{{app}} p95",
           "refId": "B"
         },
         {
-          "expr": "histogram_quantile(0.99, sum by (app, le) (rate(http_server_requests_seconds_bucket{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m])))",
-          "legendFormat": "{{app}} p99",
+          "expr": "histogram_quantile(0.99, sum by (app, cluster, le) (rate(http_server_requests_seconds_bucket{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m])))",
+          "legendFormat": "{{cluster}}/{{app}} p99",
           "refId": "C"
         }
       ],
@@ -249,7 +249,7 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
-          "expr": "topk(10, histogram_quantile(0.95, sum by (app, uri, method, le) (rate(http_server_requests_seconds_bucket{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m]))))",
+          "expr": "topk(10, histogram_quantile(0.95, sum by (app, cluster, uri, method, le) (rate(http_server_requests_seconds_bucket{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m]))))",
           "legendFormat": "",
           "refId": "A",
           "format": "table",
@@ -290,7 +290,7 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
-          "expr": "topk(10, sum by (app, uri, method, status) (rate(http_server_requests_seconds_count{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\", status=~\"5..\"}[5m])))",
+          "expr": "topk(10, sum by (app, cluster, uri, method, status) (rate(http_server_requests_seconds_count{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\", status=~\"5..\"}[5m])))",
           "legendFormat": "",
           "refId": "A",
           "format": "table",
@@ -335,8 +335,8 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
-          "expr": "100 * sum by (app) (jvm_memory_used_bytes{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\", area=\"heap\"}) / clamp_min(sum by (app) (jvm_memory_max_bytes{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\", area=\"heap\"}), 1)",
-          "legendFormat": "{{app}}",
+          "expr": "100 * sum by (app, cluster) (jvm_memory_used_bytes{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\", area=\"heap\"}) / clamp_min(sum by (app, cluster) (jvm_memory_max_bytes{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\", area=\"heap\"}), 1)",
+          "legendFormat": "{{cluster}}/{{app}}",
           "refId": "A"
         }
       ],
@@ -363,8 +363,8 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
-          "expr": "sum by (app) (process_cpu_usage{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"})",
-          "legendFormat": "{{app}}",
+          "expr": "sum by (app, cluster) (process_cpu_usage{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"})",
+          "legendFormat": "{{cluster}}/{{app}}",
           "refId": "A"
         }
       ],
@@ -391,8 +391,8 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
-          "expr": "sum by (app) (rate(jvm_gc_pause_seconds_sum{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m]))",
-          "legendFormat": "{{app}}",
+          "expr": "sum by (app, cluster) (rate(jvm_gc_pause_seconds_sum{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m]))",
+          "legendFormat": "{{cluster}}/{{app}}",
           "refId": "A"
         }
       ],
@@ -424,8 +424,8 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
-          "expr": "100 * sum by (app, pool) (hikaricp_connections_active{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}) / clamp_min(sum by (app, pool) (hikaricp_connections_max{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}), 1)",
-          "legendFormat": "{{app}} / {{pool}}",
+          "expr": "100 * sum by (app, cluster, pool) (hikaricp_connections_active{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}) / clamp_min(sum by (app, cluster, pool) (hikaricp_connections_max{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}), 1)",
+          "legendFormat": "{{cluster}}/{{app}} / {{pool}}",
           "refId": "A"
         }
       ],
@@ -452,8 +452,8 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
-          "expr": "sum by (app, pool) (hikaricp_connections_pending{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"})",
-          "legendFormat": "{{app}} / {{pool}}",
+          "expr": "sum by (app, cluster, pool) (hikaricp_connections_pending{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"})",
+          "legendFormat": "{{cluster}}/{{app}} / {{pool}}",
           "refId": "A"
         }
       ],
@@ -478,8 +478,8 @@
       "datasource": { "type": "prometheus", "uid": "${datasource}" },
       "targets": [
         {
-          "expr": "sum by (app) (rate(hikaricp_connections_timeout_total{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m]))",
-          "legendFormat": "{{app}}",
+          "expr": "sum by (app, cluster) (rate(hikaricp_connections_timeout_total{namespace=\"techshop\", cluster=~\"$cluster\", app=~\"$app\"}[5m]))",
+          "legendFormat": "{{cluster}}/{{app}}",
           "refId": "A"
         }
       ],

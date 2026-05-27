@@ -8,7 +8,7 @@ Type=simple
 User={{ debezium_user }}
 Group={{ debezium_user }}
 Environment=JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-Environment=KAFKA_HEAP_OPTS={{ debezium_heap }}
+Environment="KAFKA_HEAP_OPTS={{ debezium_heap }}"
 ExecStart={{ debezium_install_dir }}/bin/connect-distributed.sh {{ debezium_install_dir }}/config/connect-distributed.properties
 Restart=on-failure
 RestartSec=5

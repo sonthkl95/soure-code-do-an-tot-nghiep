@@ -52,11 +52,36 @@
     state: started
     daemon_reload: true
 
-- name: Wait for Debezium REST API
+- name: Wait for Debezium REST API (Jetty port mở)
   wait_for:
     port: "{{ debezium_rest_port }}"
     delay: 10
     timeout: 120
+
+# Quan trọng: port 8083 mở không đồng nghĩa herder distributed đã READY.
+# Connect cần đọc xong `my_connect_configs` + rebalance + bầu leader thì
+# /connectors mới trả 200. Nếu PUT sớm sẽ bị treo ~90s → 500 timeout.
+- name: Wait for Kafka Connect herder READY (GET /connectors trả 200)
+  uri:
+    url: "http://localhost:{{ debezium_rest_port }}/connectors"
+    method: GET
+    status_code: 200
+    timeout: 5
+  register: connect_ready
+  retries: 60
+  delay: 5
+  until: connect_ready.status == 200
+
+- name: Sanity check — MongoDB connector plugin đã load
+  uri:
+    url: "http://localhost:{{ debezium_rest_port }}/connector-plugins"
+    method: GET
+    return_content: true
+    status_code: 200
+  register: connect_plugins
+  failed_when: >-
+    'io.debezium.connector.mongodb.MongoDbConnector'
+    not in (connect_plugins.json | map(attribute='class') | list)
 
 # ──────────────────────────────────────────────────────────────────
 # Register 1 MongoDB source connector per environment (dev + prod)
@@ -82,22 +107,65 @@
     label: "{{ item.env_name }}"
   register: connector_files
 
-- name: Register/Update MongoDB connectors via Kafka Connect REST
+- name: Validate connector config trước khi register (in error rõ ràng nếu sai)
   uri:
-    # PUT /connectors/<name>/config chỉ nhận phần `config` (không bọc {name, config}).
-    # Đọc file đã render ở task trên (slurp) để tránh re-render với
-    # jinja2_native (lookup('template') trả về dict, không parse được từ json).
-    url: "http://localhost:{{ debezium_rest_port }}/connectors/mongo-{{ item.item.env_name }}-source/config"
+    url: "http://localhost:{{ debezium_rest_port }}/connector-plugins/MongoDbConnector/config/validate"
     method: PUT
     body_format: json
     body: "{{ (item.content | b64decode | from_json).config }}"
-    status_code: [200, 201]
+    status_code: 200
+    return_content: true
+    timeout: 60
     headers:
       Content-Type: "application/json"
   loop: "{{ connector_files.results }}"
   loop_control:
     label: "mongo-{{ item.item.env_name }}-source"
-  retries: 5
+  register: connector_validate
+  retries: 6
   delay: 10
+  until: connector_validate is succeeded
+
+- name: Fail nếu validate báo có field error
+  fail:
+    msg: >-
+      Connector mongo-{{ item.item.item.env_name }}-source validate FAIL:
+      {{ item.json.configs
+         | selectattr('value.errors','defined')
+         | rejectattr('value.errors','equalto',[])
+         | map(attribute='value')
+         | list }}
+  loop: "{{ connector_validate.results }}"
+  loop_control:
+    label: "mongo-{{ item.item.item.env_name }}-source"
+  when: item.json.error_count | default(0) | int > 0
+
+- name: Register/Update MongoDB connectors via Kafka Connect REST
+  uri:
+    # PUT /connectors/<name>/config chỉ nhận phần `config` (không bọc {name, config}).
+    url: "http://localhost:{{ debezium_rest_port }}/connectors/mongo-{{ item.item.env_name }}-source/config"
+    method: PUT
+    body_format: json
+    body: "{{ (item.content | b64decode | from_json).config }}"
+    status_code: [200, 201]
+    return_content: true
+    timeout: 120
+    headers:
+      Content-Type: "application/json"
+  loop: "{{ connector_files.results }}"
+  loop_control:
+    label: "mongo-{{ item.item.env_name }}-source"
+  retries: 6
+  delay: 15
   register: connector_result
   until: connector_result is succeeded
+
+- name: Show connector register response (debug)
+  debug:
+    msg:
+      name: "mongo-{{ item.item.item.env_name }}-source"
+      status: "{{ item.status | default('n/a') }}"
+      tasks: "{{ item.json.tasks | default([]) }}"
+  loop: "{{ connector_result.results }}"
+  loop_control:
+    label: "mongo-{{ item.item.item.env_name }}-source"

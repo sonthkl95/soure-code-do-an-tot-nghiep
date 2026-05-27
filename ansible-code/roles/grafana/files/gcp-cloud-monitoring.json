@@ -16,7 +16,7 @@
   ],
   "timezone": "Asia/Ho_Chi_Minh",
   "schemaVersion": 39,
-  "version": 3,
+  "version": 4,
   "refresh": "1m",
   "time": {
     "from": "now-1h",
@@ -50,7 +50,7 @@
         "x": 0,
         "y": 1,
         "w": 24,
-        "h": 8
+        "h": 9
       },
       "fieldConfig": {
         "defaults": {
@@ -90,7 +90,128 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*328954610542706869.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-dev-001 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*4569611950595990175.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-master-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5103349834277413504.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*2189392941177543906.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-2 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5168638194784141493.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-prod-001 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*7039545516793225856.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-master-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6848196125231899264.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*295138262847196415.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-2 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6082929864726282421.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "data-001 (obs)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*8666026859871826636.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "observability-003 (obs)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -118,15 +239,15 @@
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/cpu/utilization",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -140,15 +261,15 @@
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/cpu/utilization",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -162,15 +283,15 @@
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/cpu/utilization",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -179,16 +300,16 @@
     {
       "id": 2,
       "type": "stat",
-      "title": "CPU Utilization \u2014 Current",
+      "title": "CPU Utilization \u2014 Current (10 VMs)",
       "datasource": {
         "type": "stackdriver",
         "uid": "google-cloud-monitoring"
       },
       "gridPos": {
         "x": 0,
-        "y": 9,
+        "y": 10,
         "w": 24,
-        "h": 5
+        "h": 10
       },
       "fieldConfig": {
         "defaults": {
@@ -216,7 +337,128 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*328954610542706869.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-dev-001 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*4569611950595990175.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-master-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5103349834277413504.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*2189392941177543906.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-2 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5168638194784141493.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-prod-001 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*7039545516793225856.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-master-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6848196125231899264.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*295138262847196415.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-2 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6082929864726282421.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "data-001 (obs)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*8666026859871826636.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "observability-003 (obs)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "reduceOptions": {
@@ -229,8 +471,8 @@
         "textMode": "value_and_name",
         "colorMode": "background",
         "graphMode": "area",
-        "orientation": "auto",
-        "wideLayout": false,
+        "orientation": "horizontal",
+        "wideLayout": true,
         "justifyMode": "center"
       },
       "targets": [
@@ -244,15 +486,15 @@
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/cpu/utilization",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -266,15 +508,15 @@
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/cpu/utilization",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -288,15 +530,15 @@
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/cpu/utilization",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -309,7 +551,7 @@
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 14,
+        "y": 20,
         "w": 24,
         "h": 1
       }
@@ -324,7 +566,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 15,
+        "y": 21,
         "w": 24,
         "h": 8
       },
@@ -366,7 +608,128 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*328954610542706869.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-dev-001 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*4569611950595990175.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-master-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5103349834277413504.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*2189392941177543906.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-2 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5168638194784141493.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-prod-001 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*7039545516793225856.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-master-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6848196125231899264.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*295138262847196415.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-2 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6082929864726282421.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "data-001 (obs)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*8666026859871826636.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "observability-003 (obs)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -394,16 +757,16 @@
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "agent.googleapis.com/memory/percent_used",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}}) {{metric.label.state}}",
+            "aliasBy": "{{resource.label.instance_id}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.state"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -417,16 +780,16 @@
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "agent.googleapis.com/memory/percent_used",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}}) {{metric.label.state}}",
+            "aliasBy": "{{resource.label.instance_id}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.state"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -440,16 +803,16 @@
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "agent.googleapis.com/memory/percent_used",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}}) {{metric.label.state}}",
+            "aliasBy": "{{resource.label.instance_id}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.state"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -465,7 +828,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 23,
+        "y": 29,
         "w": 24,
         "h": 8
       },
@@ -485,7 +848,128 @@
             "spanNulls": true
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*328954610542706869.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-dev-001 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*4569611950595990175.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-master-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5103349834277413504.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*2189392941177543906.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-2 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5168638194784141493.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-prod-001 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*7039545516793225856.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-master-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6848196125231899264.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*295138262847196415.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-2 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6082929864726282421.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "data-001 (obs)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*8666026859871826636.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "observability-003 (obs)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -513,16 +997,16 @@
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "agent.googleapis.com/memory/bytes_used",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}}) {{metric.label.state}}",
+            "aliasBy": "{{resource.label.instance_id}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.state"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -536,16 +1020,16 @@
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "agent.googleapis.com/memory/bytes_used",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}}) {{metric.label.state}}",
+            "aliasBy": "{{resource.label.instance_id}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.state"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -559,16 +1043,16 @@
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "agent.googleapis.com/memory/bytes_used",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}}) {{metric.label.state}}",
+            "aliasBy": "{{resource.label.instance_id}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.state"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -581,7 +1065,7 @@
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 31,
+        "y": 37,
         "w": 24,
         "h": 1
       }
@@ -596,7 +1080,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 32,
+        "y": 38,
         "w": 24,
         "h": 7
       },
@@ -616,7 +1100,128 @@
             "spanNulls": true
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*328954610542706869.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-dev-001 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*4569611950595990175.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-master-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5103349834277413504.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*2189392941177543906.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-2 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5168638194784141493.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-prod-001 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*7039545516793225856.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-master-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6848196125231899264.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*295138262847196415.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-2 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6082929864726282421.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "data-001 (obs)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*8666026859871826636.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "observability-003 (obs)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -644,15 +1249,15 @@
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/disk/read_bytes_count",
             "filters": [],
-            "aliasBy": "READ \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -666,15 +1271,15 @@
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/disk/read_bytes_count",
             "filters": [],
-            "aliasBy": "READ \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -688,15 +1293,15 @@
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/disk/read_bytes_count",
             "filters": [],
-            "aliasBy": "READ \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -712,7 +1317,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 39,
+        "y": 45,
         "w": 24,
         "h": 7
       },
@@ -732,7 +1337,128 @@
             "spanNulls": true
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*328954610542706869.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-dev-001 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*4569611950595990175.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-master-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5103349834277413504.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*2189392941177543906.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-2 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5168638194784141493.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-prod-001 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*7039545516793225856.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-master-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6848196125231899264.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*295138262847196415.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-2 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6082929864726282421.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "data-001 (obs)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*8666026859871826636.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "observability-003 (obs)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -760,15 +1486,15 @@
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/disk/write_bytes_count",
             "filters": [],
-            "aliasBy": "WRITE \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -782,15 +1508,15 @@
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/disk/write_bytes_count",
             "filters": [],
-            "aliasBy": "WRITE \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -804,15 +1530,15 @@
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/disk/write_bytes_count",
             "filters": [],
-            "aliasBy": "WRITE \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -828,7 +1554,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 46,
+        "y": 52,
         "w": 24,
         "h": 7
       },
@@ -848,7 +1574,128 @@
             "spanNulls": true
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*328954610542706869.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-dev-001 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*4569611950595990175.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-master-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5103349834277413504.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*2189392941177543906.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-2 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5168638194784141493.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-prod-001 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*7039545516793225856.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-master-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6848196125231899264.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*295138262847196415.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-2 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6082929864726282421.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "data-001 (obs)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*8666026859871826636.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "observability-003 (obs)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -876,15 +1723,15 @@
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/disk/read_ops_count",
             "filters": [],
-            "aliasBy": "R \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -898,15 +1745,15 @@
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/disk/read_ops_count",
             "filters": [],
-            "aliasBy": "R \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -920,15 +1767,15 @@
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/disk/read_ops_count",
             "filters": [],
-            "aliasBy": "R \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -944,7 +1791,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 53,
+        "y": 59,
         "w": 24,
         "h": 7
       },
@@ -964,7 +1811,128 @@
             "spanNulls": true
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*328954610542706869.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-dev-001 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*4569611950595990175.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-master-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5103349834277413504.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*2189392941177543906.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-2 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5168638194784141493.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-prod-001 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*7039545516793225856.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-master-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6848196125231899264.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*295138262847196415.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-2 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6082929864726282421.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "data-001 (obs)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*8666026859871826636.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "observability-003 (obs)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -992,15 +1960,15 @@
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/disk/write_ops_count",
             "filters": [],
-            "aliasBy": "W \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -1014,15 +1982,15 @@
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/disk/write_ops_count",
             "filters": [],
-            "aliasBy": "W \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -1036,15 +2004,15 @@
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/disk/write_ops_count",
             "filters": [],
-            "aliasBy": "W \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -1060,7 +2028,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 60,
+        "y": 66,
         "w": 24,
         "h": 7
       },
@@ -1102,7 +2070,128 @@
             ]
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*328954610542706869.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-dev-001 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*4569611950595990175.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-master-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5103349834277413504.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*2189392941177543906.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-2 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5168638194784141493.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-prod-001 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*7039545516793225856.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-master-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6848196125231899264.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*295138262847196415.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-2 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6082929864726282421.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "data-001 (obs)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*8666026859871826636.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "observability-003 (obs)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -1130,17 +2219,17 @@
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "agent.googleapis.com/disk/percent_used",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} {{metric.label.device}} {{metric.label.state}}",
+            "aliasBy": "{{resource.label.instance_id}} {{metric.label.device}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.device",
               "metric.label.state"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -1154,17 +2243,17 @@
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "agent.googleapis.com/disk/percent_used",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} {{metric.label.device}} {{metric.label.state}}",
+            "aliasBy": "{{resource.label.instance_id}} {{metric.label.device}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.device",
               "metric.label.state"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -1178,17 +2267,17 @@
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "agent.googleapis.com/disk/percent_used",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} {{metric.label.device}} {{metric.label.state}}",
+            "aliasBy": "{{resource.label.instance_id}} {{metric.label.device}} {{metric.label.state}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.device",
               "metric.label.state"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -1201,7 +2290,7 @@
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 67,
+        "y": 73,
         "w": 24,
         "h": 1
       }
@@ -1216,7 +2305,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 68,
+        "y": 74,
         "w": 24,
         "h": 7
       },
@@ -1236,7 +2325,128 @@
             "spanNulls": true
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*328954610542706869.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-dev-001 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*4569611950595990175.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-master-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5103349834277413504.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*2189392941177543906.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-2 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5168638194784141493.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-prod-001 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*7039545516793225856.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-master-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6848196125231899264.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*295138262847196415.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-2 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6082929864726282421.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "data-001 (obs)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*8666026859871826636.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "observability-003 (obs)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -1264,15 +2474,15 @@
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/network/received_bytes_count",
             "filters": [],
-            "aliasBy": "RX \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "RX {{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -1286,15 +2496,15 @@
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/network/received_bytes_count",
             "filters": [],
-            "aliasBy": "RX \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "RX {{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -1308,15 +2518,15 @@
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/network/received_bytes_count",
             "filters": [],
-            "aliasBy": "RX \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "RX {{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -1332,7 +2542,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 75,
+        "y": 81,
         "w": 24,
         "h": 7
       },
@@ -1352,7 +2562,128 @@
             "spanNulls": true
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*328954610542706869.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-dev-001 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*4569611950595990175.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-master-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5103349834277413504.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*2189392941177543906.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-2 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5168638194784141493.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-prod-001 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*7039545516793225856.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-master-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6848196125231899264.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*295138262847196415.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-2 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6082929864726282421.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "data-001 (obs)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*8666026859871826636.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "observability-003 (obs)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -1380,15 +2711,15 @@
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "compute.googleapis.com/instance/network/sent_bytes_count",
             "filters": [],
-            "aliasBy": "TX \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "TX {{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -1402,15 +2733,15 @@
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "compute.googleapis.com/instance/network/sent_bytes_count",
             "filters": [],
-            "aliasBy": "TX \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "TX {{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -1424,15 +2755,15 @@
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "compute.googleapis.com/instance/network/sent_bytes_count",
             "filters": [],
-            "aliasBy": "TX \u2014 {{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "TX {{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -1441,14 +2772,14 @@
     {
       "id": 12,
       "type": "timeseries",
-      "title": "Network RTT p99 (ms) by Subnet  \u2014 requires VPC Flow Logs",
+      "title": "Network RTT p99 (ms) by Subnet \u2014 requires VPC Flow Logs",
       "datasource": {
         "type": "stackdriver",
         "uid": "google-cloud-monitoring"
       },
       "gridPos": {
         "x": 0,
-        "y": 82,
+        "y": 88,
         "w": 24,
         "h": 7
       },
@@ -1504,7 +2835,8 @@
               "resource.label.subnetwork_name",
               "resource.label.project_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -1526,7 +2858,8 @@
               "resource.label.subnetwork_name",
               "resource.label.project_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -1548,7 +2881,8 @@
               "resource.label.subnetwork_name",
               "resource.label.project_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -1561,7 +2895,7 @@
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 89,
+        "y": 95,
         "w": 24,
         "h": 1
       }
@@ -1576,7 +2910,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 90,
+        "y": 96,
         "w": 24,
         "h": 7
       },
@@ -1596,7 +2930,128 @@
             "spanNulls": true
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*328954610542706869.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-dev-001 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*4569611950595990175.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-master-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5103349834277413504.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*2189392941177543906.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-2 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5168638194784141493.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-prod-001 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*7039545516793225856.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-master-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6848196125231899264.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*295138262847196415.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-2 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6082929864726282421.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "data-001 (obs)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*8666026859871826636.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "observability-003 (obs)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -1624,15 +3079,15 @@
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "agent.googleapis.com/system/cpu/load_1m",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -1646,15 +3101,15 @@
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "agent.googleapis.com/system/cpu/load_1m",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -1668,15 +3123,15 @@
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "agent.googleapis.com/system/cpu/load_1m",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} ({{resource.label.project_id}})",
+            "aliasBy": "{{resource.label.instance_id}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id"
+              "resource.label.instance_id"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -1692,7 +3147,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 97,
+        "y": 103,
         "w": 24,
         "h": 8
       },
@@ -1712,7 +3167,128 @@
             "spanNulls": true
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*328954610542706869.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-dev-001 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*4569611950595990175.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-master-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5103349834277413504.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*2189392941177543906.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-2 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5168638194784141493.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-prod-001 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*7039545516793225856.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-master-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6848196125231899264.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*295138262847196415.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-2 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6082929864726282421.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "data-001 (obs)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*8666026859871826636.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "observability-003 (obs)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -1740,16 +3316,16 @@
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "agent.googleapis.com/processes/cpu_time",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} \u2014 {{metric.label.command}}",
+            "aliasBy": "{{resource.label.instance_id}} \u2014 {{metric.label.command}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.command"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -1763,16 +3339,16 @@
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "agent.googleapis.com/processes/cpu_time",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} \u2014 {{metric.label.command}}",
+            "aliasBy": "{{resource.label.instance_id}} \u2014 {{metric.label.command}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.command"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -1786,16 +3362,16 @@
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "agent.googleapis.com/processes/cpu_time",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} \u2014 {{metric.label.command}}",
+            "aliasBy": "{{resource.label.instance_id}} \u2014 {{metric.label.command}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_RATE",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.command"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -1811,7 +3387,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 105,
+        "y": 111,
         "w": 24,
         "h": 8
       },
@@ -1831,7 +3407,128 @@
             "spanNulls": true
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*328954610542706869.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-dev-001 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*4569611950595990175.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-master-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5103349834277413504.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-1 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*2189392941177543906.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-dev-worker-2 (dev)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*5168638194784141493.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "db-prod-001 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*7039545516793225856.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-master-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6848196125231899264.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-1 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*295138262847196415.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "k8s-prod-worker-2 (prod)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*6082929864726282421.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "data-001 (obs)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": ".*8666026859871826636.*"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "observability-003 (obs)"
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -1859,16 +3556,16 @@
             "projectName": "gcp-apse1-prj-dev-env-003",
             "metricType": "agent.googleapis.com/processes/rss_usage",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} \u2014 {{metric.label.command}}",
+            "aliasBy": "{{resource.label.instance_id}} \u2014 {{metric.label.command}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.command"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -1882,16 +3579,16 @@
             "projectName": "gcp-apse1-prj-prd-env-003",
             "metricType": "agent.googleapis.com/processes/rss_usage",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} \u2014 {{metric.label.command}}",
+            "aliasBy": "{{resource.label.instance_id}} \u2014 {{metric.label.command}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.command"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -1905,16 +3602,16 @@
             "projectName": "gcp-apse1-prj-obs-003",
             "metricType": "agent.googleapis.com/processes/rss_usage",
             "filters": [],
-            "aliasBy": "{{metadata.system_labels.name}} \u2014 {{metric.label.command}}",
+            "aliasBy": "{{resource.label.instance_id}} \u2014 {{metric.label.command}}",
             "alignmentPeriod": "cloud-monitoring-auto",
             "perSeriesAligner": "ALIGN_MEAN",
             "crossSeriesReducer": "REDUCE_NONE",
             "groupBys": [
-              "metadata.system_labels.name",
-              "resource.label.project_id",
+              "resource.label.instance_id",
               "metric.label.command"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }
@@ -1927,7 +3624,7 @@
       "collapsed": false,
       "gridPos": {
         "x": 0,
-        "y": 113,
+        "y": 119,
         "w": 24,
         "h": 1
       }
@@ -1942,7 +3639,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 114,
+        "y": 120,
         "w": 24,
         "h": 8
       },
@@ -2018,7 +3715,8 @@
               "resource.label.project_id",
               "metric.label.rule_name"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "A"
         },
@@ -2040,7 +3738,8 @@
               "resource.label.project_id",
               "metric.label.rule_name"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "B"
         },
@@ -2062,7 +3761,8 @@
               "resource.label.project_id",
               "metric.label.rule_name"
             ],
-            "preprocessor": "none"
+            "preprocessor": "none",
+            "view": "FULL"
           },
           "refId": "C"
         }

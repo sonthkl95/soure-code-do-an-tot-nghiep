@@ -20,22 +20,39 @@ receivers:
     include_file_path: true
     operators:
       # =====================================================================
-      # 0) COMMON — Parse CRI format + extract K8s metadata
+      # 0) COMMON — Parse path, strip CRI prefix, lift K8s attrs lên RESOURCE
       # =====================================================================
-      # `container` operator (OTel >=0.84):
-      #   - Strip CRI prefix: "2026-05-28T... stdout F <body>" → body = nội dung thật
-      #   - Tự extract k8s.namespace.name, k8s.pod.name, k8s.container.name từ filepath
-      #     vào RESOURCE (thay thế cho regex_parser + move thủ công trước đây)
-      - type: container
-        format: containerd
-        add_metadata_from_filepath: true
+      # Parse path: /var/log/pods/<namespace>_<pod>_<uid>/<container>/0.log
+      - type: regex_parser
+        regex: '^/var/log/pods/(?P<namespace>[^_]+)_(?P<pod>[^_]+)_[^/]+/(?P<container>[^/]+)/.*\.log$'
+        parse_from: attributes["log.file.path"]
+
+      # Strip CRI containerd format: "<ts> <stream> <P|F> <log>" → giữ lại phần <log>
+      # (Thay thế cho `container` operator vì distro otelcol-contrib trên node
+      #  chưa register type này — fallback thủ công đảm bảo tương thích.)
+      - type: regex_parser
+        regex: '^[^\s]+\s+(?P<stream>stdout|stderr)\s+[PF]\s+(?P<log_body>.*)$'
+        parse_from: body
+        on_error: send
+      - type: move
+        if: 'attributes["log_body"] != nil'
+        from: attributes.log_body
+        to: body
 
       # Drop health-check noise sớm (tiết kiệm CPU parsing downstream)
       - type: filter
         expr: 'body matches "GET /(health|ping|readyz|livez|metrics)"'
 
-      # service.name / service.namespace = container / namespace
-      # (Loki tự promote service.name thành label)
+      # Lift K8s attrs lên resource (Loki OTLP chỉ promote resource attrs thành label)
+      - type: move
+        from: attributes.namespace
+        to: resource["k8s.namespace.name"]
+      - type: move
+        from: attributes.pod
+        to: resource["k8s.pod.name"]
+      - type: move
+        from: attributes.container
+        to: resource["k8s.container.name"]
       - type: copy
         from: resource["k8s.container.name"]
         to: resource["service.name"]

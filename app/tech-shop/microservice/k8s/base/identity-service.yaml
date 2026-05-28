@@ -57,6 +57,7 @@ spec:
             - { name: SPRING_DATASOURCE_USERNAME, value: "$(IDENTITY_DB_USERNAME)" }
             - { name: SPRING_DATASOURCE_PASSWORD, value: "$(IDENTITY_DB_PASSWORD)" }
             # Gmail SMTP
+            - { name: SPRING_MAIL_USERNAME,       value: "$(GOOGLE_MAIL_USERNAME)" }
             - { name: SPRING_MAIL_PASSWORD,       value: "$(GOOGLE_APP_PASSWORD)" }
           resources:
             requests: { cpu: "200m", memory: "640Mi" }

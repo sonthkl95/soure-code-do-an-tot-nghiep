@@ -33,6 +33,7 @@ vault_cloudinary_api_key:    "REPLACE_ME"
 vault_cloudinary_api_secret: "REPLACE_ME"
 
 # Gmail SMTP (identity-service OTP/verification email)
+vault_google_mail_username: "REPLACE_ME@gmail.com"
 vault_google_app_password: "REPLACE_ME"
 
 # SePay (payment-service)

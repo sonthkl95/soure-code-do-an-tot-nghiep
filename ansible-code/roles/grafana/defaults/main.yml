@@ -27,6 +27,11 @@ grafana_datasources:
     uid: "google-cloud-monitoring"
     url: ""
     default_project: "gcp-apse1-prj-dev-env-003"
+  - name: "Google Cloud Logging"
+    type: "googlecloud-logging-datasource"
+    uid: "google-cloud-logging"
+    url: ""
+    default_project: "gcp-apse1-prj-dev-env-003"
 
 
 # Dashboards auto-provisioned via roles/grafana/files/*.json (see tasks/provisioning.yml).

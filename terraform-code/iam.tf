@@ -247,3 +247,41 @@ resource "google_project_iam_member" "sa-obs-monitoring-sh-vpc-prd" {
   member  = "serviceAccount:${google_service_account.sa-obs.email}"
 }
 
+# Grant cross-project logging.viewer to sa-obs for Grafana GCP Cloud Logging integration
+# (cho phép Explore xem log syslog/audit/VPC flow của tất cả VM ngoài K8s)
+resource "google_project_iam_member" "sa-obs-logging-hub" {
+  project = data.google_project.gcp-apse1-prj-hub-net-003.project_id
+  role    = "roles/logging.viewer"
+  member  = "serviceAccount:${google_service_account.sa-obs.email}"
+}
+
+resource "google_project_iam_member" "sa-obs-logging-dev" {
+  project = data.google_project.gcp-apse1-prj-dev-env-003.project_id
+  role    = "roles/logging.viewer"
+  member  = "serviceAccount:${google_service_account.sa-obs.email}"
+}
+
+resource "google_project_iam_member" "sa-obs-logging-prod" {
+  project = data.google_project.gcp-apse1-prj-prd-env-003.project_id
+  role    = "roles/logging.viewer"
+  member  = "serviceAccount:${google_service_account.sa-obs.email}"
+}
+
+resource "google_project_iam_member" "sa-obs-logging-access" {
+  project = data.google_project.gcp-apse1-prj-sh-access-003.project_id
+  role    = "roles/logging.viewer"
+  member  = "serviceAccount:${google_service_account.sa-obs.email}"
+}
+
+resource "google_project_iam_member" "sa-obs-logging-sh-vpc-dev" {
+  project = data.google_project.gcp-apse1-prj-sh-vpc-dev-003.project_id
+  role    = "roles/logging.viewer"
+  member  = "serviceAccount:${google_service_account.sa-obs.email}"
+}
+
+resource "google_project_iam_member" "sa-obs-logging-sh-vpc-prd" {
+  project = data.google_project.gcp-apse1-prj-sh-vpc-prd-003.project_id
+  role    = "roles/logging.viewer"
+  member  = "serviceAccount:${google_service_account.sa-obs.email}"
+}
+

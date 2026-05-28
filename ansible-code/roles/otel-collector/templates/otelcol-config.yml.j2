@@ -19,19 +19,81 @@ receivers:
     start_at: end
     include_file_path: true
     operators:
-      # Parse path: /var/log/pods/<namespace>_<pod>_<uid>/<container>/0.log
+      # 1) Parse path: /var/log/pods/<namespace>_<pod>_<uid>/<container>/0.log
       - type: regex_parser
         regex: '^/var/log/pods/(?P<namespace>[^_]+)_(?P<pod>[^_]+)_[^/]+/(?P<container>[^/]+)/.*\.log$'
         parse_from: attributes["log.file.path"]
-      # Parse JSON body nếu app log JSON
+
+      # 2) Parse JSON body nếu app log JSON (Spring Boot / Logback JSON encoder)
       - type: json_parser
         parse_from: body
         on_error: send
-      # Drop health-check logs (per architecture: Drop Filter)
+
+      # 3) Drop health-check logs (giảm cardinality và chi phí)
       - type: filter
         expr: 'body matches "GET /(health|ping|readyz|livez)"'
 
+      # 4) Lift K8s attrs lên RESOURCE để Loki promote thành label
+      #    (Loki OTLP chỉ promote resource attrs, không promote log attrs)
+      - type: move
+        from: attributes.namespace
+        to: resource["k8s.namespace.name"]
+      - type: move
+        from: attributes.pod
+        to: resource["k8s.pod.name"]
+      - type: move
+        from: attributes.container
+        to: resource["k8s.container.name"]
+
+      # 5) Đặt service.name = container name (Loki tự promote service.name)
+      #    Cho phép Explore filter {service_name="identity-service"}
+      - type: copy
+        from: resource["k8s.container.name"]
+        to: resource["service.name"]
+      - type: copy
+        from: resource["k8s.namespace.name"]
+        to: resource["service.namespace"]
+
+      # 6) Trích traceId/spanId/level từ JSON body để correlate Logs ↔ Traces
+      #    (cho phép Grafana derivedFields link sang Tempo)
+      - type: move
+        from: attributes.level
+        to: severity_text
+        if: 'attributes.level != nil'
+      - type: move
+        from: attributes.trace_id
+        to: attributes["trace.id"]
+        if: 'attributes.trace_id != nil'
+      - type: move
+        from: attributes.span_id
+        to: attributes["span.id"]
+        if: 'attributes.span_id != nil'
+
 processors:
+  # Resource detection: tự lấy host.name, host.id, os.type, cloud.* từ GCE metadata
+  # (rất hữu ích trong Explore để biết log đến từ node nào)
+  resourcedetection/system:
+    detectors: [env, system, gcp]
+    timeout: 5s
+    override: false
+    system:
+      hostname_sources: [os]
+
+  # Resource enrichment tĩnh — gắn cluster + environment cho TẤT CẢ tín hiệu
+  # `cluster_name` và `deployment_environment` được nạp từ group_vars/k8s_dev.yml
+  # và group_vars/k8s_prod.yml (mỗi cluster có giá trị riêng).
+  resource/enrich:
+    attributes:
+      - key: cluster
+        value: "{{ cluster_name | default('unknown') }}"
+        action: upsert
+      - key: deployment.environment
+        value: "{{ deployment_environment | default('unknown') }}"
+        action: upsert
+      - key: k8s.node.name
+        value: "{{ inventory_hostname }}"
+        action: upsert
+
   # Attach App Version metadata (per architecture: Tag App Version)
   attributes/add_version:
     actions:
@@ -100,9 +162,9 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: [memory_limiter, attributes/add_version, redaction/remove_tokens, tail_sampling, batch]
+      processors: [memory_limiter, resourcedetection/system, resource/enrich, attributes/add_version, redaction/remove_tokens, tail_sampling, batch]
       exporters: [kafka/traces]
     logs:
       receivers: [filelog]
-      processors: [memory_limiter, transform/mask_logs, batch]
+      processors: [memory_limiter, resourcedetection/system, resource/enrich, transform/mask_logs, batch]
       exporters: [kafka/logs]

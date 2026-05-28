@@ -1,0 +1,6 @@
+---
+# Biến chung cho toàn bộ cluster K8s DEV (master + worker)
+# Dùng để gán nhãn `cluster` và `deployment.environment` lên log/metric/trace
+# Giúp phân biệt nguồn log giữa các cluster trong Loki/Tempo/Prometheus.
+cluster_name: "dev"
+deployment_environment: "dev"

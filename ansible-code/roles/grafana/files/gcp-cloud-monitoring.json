@@ -16,7 +16,7 @@
   ],
   "timezone": "Asia/Ho_Chi_Minh",
   "schemaVersion": 39,
-  "version": 7,
+  "version": 8,
   "refresh": "1m",
   "time": {
     "from": "now-1h",
@@ -2887,7 +2887,7 @@
           "queryType": "metrics",
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
-            "metricType": "networking.googleapis.com/vpc_flow/rtt",
+            "metricType": "networking.googleapis.com/vm_flow/rtt",
             "filters": [],
             "aliasBy": "{{resource.label.subnetwork_name}} ({{resource.label.project_id}})",
             "alignmentPeriod": "cloud-monitoring-auto",
@@ -2910,7 +2910,7 @@
           "queryType": "metrics",
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
-            "metricType": "networking.googleapis.com/vpc_flow/rtt",
+            "metricType": "networking.googleapis.com/vm_flow/rtt",
             "filters": [],
             "aliasBy": "{{resource.label.subnetwork_name}} ({{resource.label.project_id}})",
             "alignmentPeriod": "cloud-monitoring-auto",
@@ -2933,7 +2933,7 @@
           "queryType": "metrics",
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
-            "metricType": "networking.googleapis.com/vpc_flow/rtt",
+            "metricType": "networking.googleapis.com/vm_flow/rtt",
             "filters": [],
             "aliasBy": "{{resource.label.subnetwork_name}} ({{resource.label.project_id}})",
             "alignmentPeriod": "cloud-monitoring-auto",
@@ -3139,7 +3139,7 @@
           "queryType": "metrics",
           "metricQuery": {
             "projectName": "gcp-apse1-prj-dev-env-003",
-            "metricType": "agent.googleapis.com/system/cpu/load_1m",
+            "metricType": "agent.googleapis.com/cpu/load_1m",
             "filters": [
               "resource.label.instance_id",
               "=~",
@@ -3165,7 +3165,7 @@
           "queryType": "metrics",
           "metricQuery": {
             "projectName": "gcp-apse1-prj-prd-env-003",
-            "metricType": "agent.googleapis.com/system/cpu/load_1m",
+            "metricType": "agent.googleapis.com/cpu/load_1m",
             "filters": [
               "resource.label.instance_id",
               "=~",
@@ -3191,7 +3191,7 @@
           "queryType": "metrics",
           "metricQuery": {
             "projectName": "gcp-apse1-prj-obs-003",
-            "metricType": "agent.googleapis.com/system/cpu/load_1m",
+            "metricType": "agent.googleapis.com/cpu/load_1m",
             "filters": [
               "resource.label.instance_id",
               "=~",

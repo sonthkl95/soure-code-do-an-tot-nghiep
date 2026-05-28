@@ -81,9 +81,19 @@ limits_config:
             - k8s.pod.name
             - k8s.node.name
             - host.id
-    # Trace correlation: trace.id / span.id lưu thành structured_metadata để filter nhanh
+    # Trace correlation + log category (chuẩn enterprise log classification)
     log_attributes:
+      # Promote log.category → label (cardinality thấp: access/audit/application/system/security)
+      # Cho phép query: {log_category="access"} |= "500"
+      - action: index_label
+        attributes:
+          - log.category
+      # log.type cardinality cao hơn (nginx-access, app-json, app-audit...) → metadata
       - action: structured_metadata
         attributes:
+          - log.type
           - trace.id
           - span.id
+          - http_status
+          - http_method
+          - http_path

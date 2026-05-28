@@ -19,34 +19,23 @@ receivers:
     start_at: end
     include_file_path: true
     operators:
-      # 1) Parse path: /var/log/pods/<namespace>_<pod>_<uid>/<container>/0.log
-      - type: regex_parser
-        regex: '^/var/log/pods/(?P<namespace>[^_]+)_(?P<pod>[^_]+)_[^/]+/(?P<container>[^/]+)/.*\.log$'
-        parse_from: attributes["log.file.path"]
+      # =====================================================================
+      # 0) COMMON — Parse CRI format + extract K8s metadata
+      # =====================================================================
+      # `container` operator (OTel >=0.84):
+      #   - Strip CRI prefix: "2026-05-28T... stdout F <body>" → body = nội dung thật
+      #   - Tự extract k8s.namespace.name, k8s.pod.name, k8s.container.name từ filepath
+      #     vào RESOURCE (thay thế cho regex_parser + move thủ công trước đây)
+      - type: container
+        format: containerd
+        add_metadata_from_filepath: true
 
-      # 2) Parse JSON body nếu app log JSON (Spring Boot / Logback JSON encoder)
-      - type: json_parser
-        parse_from: body
-        on_error: send
-
-      # 3) Drop health-check logs (giảm cardinality và chi phí)
+      # Drop health-check noise sớm (tiết kiệm CPU parsing downstream)
       - type: filter
-        expr: 'body matches "GET /(health|ping|readyz|livez)"'
+        expr: 'body matches "GET /(health|ping|readyz|livez|metrics)"'
 
-      # 4) Lift K8s attrs lên RESOURCE để Loki promote thành label
-      #    (Loki OTLP chỉ promote resource attrs, không promote log attrs)
-      - type: move
-        from: attributes.namespace
-        to: resource["k8s.namespace.name"]
-      - type: move
-        from: attributes.pod
-        to: resource["k8s.pod.name"]
-      - type: move
-        from: attributes.container
-        to: resource["k8s.container.name"]
-
-      # 5) Đặt service.name = container name (Loki tự promote service.name)
-      #    Cho phép Explore filter {service_name="identity-service"}
+      # service.name / service.namespace = container / namespace
+      # (Loki tự promote service.name thành label)
       - type: copy
         from: resource["k8s.container.name"]
         to: resource["service.name"]
@@ -54,14 +43,93 @@ receivers:
         from: resource["k8s.namespace.name"]
         to: resource["service.namespace"]
 
-      # 6) Parse severity từ field `level` của JSON log (Logback / Spring Boot)
-      #    `severity_parser` sẽ set severity_text + severity_number chuẩn OTel.
+      # =====================================================================
+      # 1) ACCESS LOG — ingress-nginx controller (Combined Log Format)
+      #    Map HTTP status → severity (2xx/3xx=INFO, 4xx=WARN, 5xx=ERROR)
+      #    Chuẩn de-facto của Datadog / Splunk / ELK cho web proxy log.
+      # =====================================================================
+      - type: regex_parser
+        if: 'resource["k8s.namespace.name"] == "ingress-nginx" and resource["k8s.container.name"] == "controller"'
+        regex: '"(?P<http_method>\S+)\s(?P<http_path>\S+)\s\S+"\s(?P<http_status>\d{3})\s(?P<http_bytes>\d+)'
+        parse_from: body
+        on_error: send
+      - type: add
+        if: 'attributes["http_status"] != nil'
+        field: attributes["log.category"]
+        value: access
+      - type: add
+        if: 'attributes["http_status"] != nil'
+        field: attributes["log.type"]
+        value: nginx-access
       - type: severity_parser
-        parse_from: attributes.level
-        if: 'attributes.level != nil'
+        if: 'attributes["http_status"] != nil'
+        parse_from: attributes.http_status
+        mapping:
+          error: 5xx
+          warn: 4xx
+          info:
+            - 2xx
+            - 3xx
+        on_error: send
 
-      # 7) Trích traceId/spanId nếu có (cho Loki ↔ Tempo correlation)
-      #    `trace_parser` set trực tiếp lên trace_id/span_id của log record.
+      # =====================================================================
+      # 2) APPLICATION LOG — JSON từ logger (Logback / pino / zap / structlog)
+      #    Parse severity từ field `level`. KHÔNG default INFO nếu không có level.
+      # =====================================================================
+      - type: json_parser
+        if: 'attributes["log.category"] == nil and body matches "^\\s*\\{"'
+        parse_from: body
+        on_error: send
+      - type: add
+        if: 'attributes["log.category"] == nil and attributes["level"] != nil'
+        field: attributes["log.category"]
+        value: application
+      - type: add
+        if: 'attributes["log.category"] == "application"'
+        field: attributes["log.type"]
+        value: app-json
+      - type: severity_parser
+        if: 'attributes["level"] != nil'
+        parse_from: attributes.level
+        on_error: send
+
+      # =====================================================================
+      # 3) AUDIT LOG — nhận diện qua attribute `event_category=audit`
+      #    hoặc namespace có chữ `audit`. Audit luôn INFO trừ khi failed.
+      #    (App đẩy structured log có `event_category` để tag được.)
+      # =====================================================================
+      - type: add
+        if: 'attributes["event_category"] == "audit"'
+        field: attributes["log.category"]
+        value: audit
+      - type: add
+        if: 'attributes["log.category"] == "audit"'
+        field: attributes["log.type"]
+        value: app-audit
+      - type: severity_parser
+        if: 'attributes["log.category"] == "audit" and attributes["event_outcome"] == "failure"'
+        parse_from: attributes.event_outcome
+        mapping:
+          warn: failure
+        on_error: send
+
+      # =====================================================================
+      # 4) SYSTEM LOG — catch-all cho mọi log không phân loại được
+      #    Giữ severity = UNSPECIFIED (severity_number=0) — KHÔNG default INFO
+      #    để biểu đồ volume tách riêng "uncategorized" cho người vận hành biết.
+      # =====================================================================
+      - type: add
+        if: 'attributes["log.category"] == nil'
+        field: attributes["log.category"]
+        value: system
+      - type: add
+        if: 'attributes["log.type"] == nil'
+        field: attributes["log.type"]
+        value: stdout-raw
+
+      # =====================================================================
+      # 5) TRACE CORRELATION — Loki ↔ Tempo (set trace_id/span_id của log record)
+      # =====================================================================
       - type: trace_parser
         trace_id:
           parse_from: attributes.trace_id

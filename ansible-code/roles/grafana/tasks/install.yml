@@ -15,5 +15,17 @@
     state: present
     update_cache: true
 
-# Đã loại plugin googlecloud-logging-datasource — gây lag UI trên obs-vm nhỏ.
-# Xem log GCP infra trực tiếp ở GCP Cloud Console (Logging) thay vì qua Grafana.
+# Gỡ plugin googlecloud-logging-datasource nếu trước đây từng cài
+# (gây lag UI trên obs-vm nhỏ — đã thay bằng GCP Cloud Console direct).
+# Idempotent: `removes:` skip nếu thư mục plugin không tồn tại.
+- name: Remove deprecated Grafana plugin — Google Cloud Logging
+  command: grafana-cli plugins remove googlecloud-logging-datasource
+  args:
+    removes: /var/lib/grafana/plugins/googlecloud-logging-datasource
+  notify: restart grafana
+
+- name: Cleanup deprecated plugin directory (failsafe)
+  file:
+    path: /var/lib/grafana/plugins/googlecloud-logging-datasource
+    state: absent
+  notify: restart grafana

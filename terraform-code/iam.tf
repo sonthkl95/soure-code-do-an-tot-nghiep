@@ -247,8 +247,14 @@ resource "google_project_iam_member" "sa-obs-monitoring-sh-vpc-prd" {
   member  = "serviceAccount:${google_service_account.sa-obs.email}"
 }
 
-# Grant cross-project logging.viewer to sa-obs for Grafana GCP Cloud Logging integration
-# (cho phép Explore xem log syslog/audit/VPC flow của tất cả VM ngoài K8s)
+# Grant cross-project logging.viewer to sa-obs.
+# Lý do giữ binding mặc dù plugin Google Cloud Logging trong Grafana đã bị gỡ:
+#   - "View in Cloud Logging" deep-link từ Grafana Explore vẫn dùng IAM của user (không phải SA),
+#     nhưng SA cần quyền để chạy automation / script truy vấn Cloud Logging API trong tương lai.
+#   - Mở đường cho phương án thay thế (BigQuery log sink → Grafana BigQuery datasource,
+#     hoặc Ops Agent log forwarder → Loki) mà không phải apply lại IAM.
+#   - Read-only (`viewer`) → 0 chi phí, 0 risk.
+# Nếu chắc chắn không bao giờ dùng → có thể xoá block dưới và `terraform apply`.
 resource "google_project_iam_member" "sa-obs-logging-hub" {
   project = data.google_project.gcp-apse1-prj-hub-net-003.project_id
   role    = "roles/logging.viewer"

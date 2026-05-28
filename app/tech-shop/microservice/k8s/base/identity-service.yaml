@@ -59,6 +59,10 @@ spec:
             # Gmail SMTP
             - { name: SPRING_MAIL_USERNAME,       value: "$(GOOGLE_MAIL_USERNAME)" }
             - { name: SPRING_MAIL_PASSWORD,       value: "$(GOOGLE_APP_PASSWORD)" }
+            # SMTP timeouts (override application.yml; tránh treo pod khi Gmail unresponsive)
+            - { name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_CONNECTIONTIMEOUT, value: "10000" }
+            - { name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_TIMEOUT,           value: "10000" }
+            - { name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_WRITETIMEOUT,      value: "10000" }
           resources:
             requests: { cpu: "200m", memory: "640Mi" }
             limits:   { cpu: "1",    memory: "1Gi"   }

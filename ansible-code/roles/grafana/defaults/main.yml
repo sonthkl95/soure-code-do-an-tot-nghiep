@@ -27,11 +27,11 @@ grafana_datasources:
     uid: "google-cloud-monitoring"
     url: ""
     default_project: "gcp-apse1-prj-dev-env-003"
-  - name: "Google Cloud Logging"
-    type: "googlecloud-logging-datasource"
-    uid: "google-cloud-logging"
-    url: ""
-    default_project: "gcp-apse1-prj-dev-env-003"
+  # NOTE: Google Cloud Logging plugin đã bị xóa vì gây lag UI Grafana trên obs-vm
+  # (plugin Go sidecar tốn RAM + gọi list-projects API mỗi page load).
+  # Để xem log GCP infra (syslog VM, audit, VPC flow), dùng trực tiếp:
+  #   https://console.cloud.google.com/logs/query?project=<project-id>
+  # Log app K8s vẫn xem qua Loki như bình thường.
 
 
 # Dashboards auto-provisioned via roles/grafana/files/*.json (see tasks/provisioning.yml).

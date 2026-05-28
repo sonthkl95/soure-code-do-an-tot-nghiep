@@ -32,10 +32,6 @@ datasources:
     jsonData:
       authenticationType: gce
       defaultProject: "{{ ds.default_project }}"
-{% elif ds.type == 'googlecloud-logging-datasource' %}
-    jsonData:
-      authenticationType: gce
-      defaultProject: "{{ ds.default_project }}"
 
 {% endif %}
 {% endfor %}

@@ -30,10 +30,12 @@ receivers:
       # Strip CRI containerd format: "<ts> <stream> <P|F> <log>" → giữ lại phần <log>
       # (Thay thế cho `container` operator vì distro otelcol-contrib trên node
       #  chưa register type này — fallback thủ công đảm bảo tương thích.)
+      # `send_quiet` để không spam stack trace cho mỗi dòng non-CRI
+      # (ví dụ Docker JSON multi-line, app log đã được parse sẵn).
       - type: regex_parser
         regex: '^[^\s]+\s+(?P<stream>stdout|stderr)\s+[PF]\s+(?P<log_body>.*)$'
         parse_from: body
-        on_error: send
+        on_error: send_quiet
       - type: move
         if: 'attributes["log_body"] != nil'
         from: attributes.log_body
@@ -62,22 +64,23 @@ receivers:
 
       # =====================================================================
       # 1) ACCESS LOG — ingress-nginx controller (Combined Log Format)
-      #    Map HTTP status → severity (2xx/3xx=INFO, 4xx=WARN, 5xx=ERROR)
-      #    Chuẩn de-facto của Datadog / Splunk / ELK cho web proxy log.
+      #    Routing chính: namespace == ingress-nginx → log.category=access.
+      #    Parse HTTP status (nếu là access line) để map severity 2xx/3xx=INFO,
+      #    4xx=WARN, 5xx=ERROR — chuẩn de-facto Datadog / Splunk / ELK.
       # =====================================================================
-      - type: regex_parser
-        if: 'resource["k8s.namespace.name"] == "ingress-nginx" and resource["k8s.container.name"] == "controller"'
-        regex: '"(?P<http_method>\S+)\s(?P<http_path>\S+)\s\S+"\s(?P<http_status>\d{3})\s(?P<http_bytes>\d+)'
-        parse_from: body
-        on_error: send
       - type: add
-        if: 'attributes["http_status"] != nil'
+        if: 'resource["k8s.namespace.name"] == "ingress-nginx"'
         field: attributes["log.category"]
         value: access
       - type: add
-        if: 'attributes["http_status"] != nil'
+        if: 'attributes["log.category"] == "access"'
         field: attributes["log.type"]
         value: nginx-access
+      - type: regex_parser
+        if: 'attributes["log.category"] == "access"'
+        regex: '"(?P<http_method>\S+)\s(?P<http_path>\S+)\s\S+"\s(?P<http_status>\d{3})\s(?P<http_bytes>\d+)'
+        parse_from: body
+        on_error: send_quiet
       - type: severity_parser
         if: 'attributes["http_status"] != nil'
         parse_from: attributes.http_status
@@ -87,36 +90,33 @@ receivers:
           info:
             - 2xx
             - 3xx
-        on_error: send
+        on_error: send_quiet
 
       # =====================================================================
-      # 2) APPLICATION LOG — JSON từ logger (Logback / pino / zap / structlog)
-      #    Parse severity từ field `level`. KHÔNG default INFO nếu không có level.
+      # 2) SYSTEM LOG — K8s control-plane / kubelet / system namespaces
+      #    Routing: namespace in {kube-system, kube-public, kube-node-lease}
+      #    Đây là log hạ tầng K8s — không phải app, không phải ingress.
+      # =====================================================================
+      - type: add
+        if: 'attributes["log.category"] == nil and (resource["k8s.namespace.name"] == "kube-system" or resource["k8s.namespace.name"] == "kube-public" or resource["k8s.namespace.name"] == "kube-node-lease")'
+        field: attributes["log.category"]
+        value: system
+      - type: add
+        if: 'attributes["log.category"] == "system"'
+        field: attributes["log.type"]
+        value: k8s-system
+
+      # =====================================================================
+      # 3) AUDIT LOG — nhận diện qua attribute `event_category=audit`
+      #    (App đẩy structured log với field `event_category` để tag.)
+      #    Phải parse JSON trước để có attribute `event_category`.
       # =====================================================================
       - type: json_parser
         if: 'attributes["log.category"] == nil and body matches "^\\s*\\{"'
         parse_from: body
-        on_error: send
+        on_error: send_quiet
       - type: add
-        if: 'attributes["log.category"] == nil and attributes["level"] != nil'
-        field: attributes["log.category"]
-        value: application
-      - type: add
-        if: 'attributes["log.category"] == "application"'
-        field: attributes["log.type"]
-        value: app-json
-      - type: severity_parser
-        if: 'attributes["level"] != nil'
-        parse_from: attributes.level
-        on_error: send
-
-      # =====================================================================
-      # 3) AUDIT LOG — nhận diện qua attribute `event_category=audit`
-      #    hoặc namespace có chữ `audit`. Audit luôn INFO trừ khi failed.
-      #    (App đẩy structured log có `event_category` để tag được.)
-      # =====================================================================
-      - type: add
-        if: 'attributes["event_category"] == "audit"'
+        if: 'attributes["log.category"] == nil and attributes["event_category"] == "audit"'
         field: attributes["log.category"]
         value: audit
       - type: add
@@ -128,21 +128,30 @@ receivers:
         parse_from: attributes.event_outcome
         mapping:
           warn: failure
-        on_error: send
+        on_error: send_quiet
 
       # =====================================================================
-      # 4) SYSTEM LOG — catch-all cho mọi log không phân loại được
-      #    Giữ severity = UNSPECIFIED (severity_number=0) — KHÔNG default INFO
-      #    để biểu đồ volume tách riêng "uncategorized" cho người vận hành biết.
+      # 4) APPLICATION LOG — DEFAULT cho mọi pod log còn lại
+      #    Mọi log của user namespace (techshop, identity, monitoring,...)
+      #    đều là application. JSON parser ở bước 3 đã chạy → nếu có `level`
+      #    thì severity_parser map sang OTel severity chuẩn.
       # =====================================================================
       - type: add
         if: 'attributes["log.category"] == nil'
         field: attributes["log.category"]
-        value: system
+        value: application
       - type: add
-        if: 'attributes["log.type"] == nil'
+        if: 'attributes["log.category"] == "application" and attributes["log.type"] == nil and attributes["level"] != nil'
         field: attributes["log.type"]
-        value: stdout-raw
+        value: app-json
+      - type: add
+        if: 'attributes["log.category"] == "application" and attributes["log.type"] == nil'
+        field: attributes["log.type"]
+        value: app-stdout
+      - type: severity_parser
+        if: 'attributes["level"] != nil'
+        parse_from: attributes.level
+        on_error: send_quiet
 
       # =====================================================================
       # 5) TRACE CORRELATION — Loki ↔ Tempo (set trace_id/span_id của log record)

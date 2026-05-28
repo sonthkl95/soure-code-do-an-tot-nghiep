@@ -54,20 +54,19 @@ receivers:
         from: resource["k8s.namespace.name"]
         to: resource["service.namespace"]
 
-      # 6) Trích traceId/spanId/level từ JSON body để correlate Logs ↔ Traces
-      #    (cho phép Grafana derivedFields link sang Tempo)
-      - type: move
-        from: attributes.level
-        to: severity_text
+      # 6) Parse severity từ field `level` của JSON log (Logback / Spring Boot)
+      #    `severity_parser` sẽ set severity_text + severity_number chuẩn OTel.
+      - type: severity_parser
+        parse_from: attributes.level
         if: 'attributes.level != nil'
-      - type: move
-        from: attributes.trace_id
-        to: attributes["trace.id"]
-        if: 'attributes.trace_id != nil'
-      - type: move
-        from: attributes.span_id
-        to: attributes["span.id"]
-        if: 'attributes.span_id != nil'
+
+      # 7) Trích traceId/spanId nếu có (cho Loki ↔ Tempo correlation)
+      #    `trace_parser` set trực tiếp lên trace_id/span_id của log record.
+      - type: trace_parser
+        trace_id:
+          parse_from: attributes.trace_id
+        span_id:
+          parse_from: attributes.span_id
 
 processors:
   # Resource detection: tự lấy host.name, host.id, os.type, cloud.* từ GCE metadata

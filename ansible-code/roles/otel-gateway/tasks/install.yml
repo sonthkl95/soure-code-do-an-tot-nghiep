@@ -1,19 +1,40 @@
 ---
+# Idempotent version-aware install (cùng pattern với otel-collector role)
+- name: Check installed OTel Gateway version
+  slurp:
+    src: "{{ otelgw_install_dir }}/.version"
+  register: otelgw_installed_version_raw
+  failed_when: false
+  changed_when: false
+
+- name: Set installed version fact
+  set_fact:
+    otelgw_installed_version: "{{ (otelgw_installed_version_raw.content | b64decode | trim) if otelgw_installed_version_raw.content is defined else 'none' }}"
+
 - name: Create OTel Gateway install dir
   file:
     path: "{{ otelgw_install_dir }}"
     state: directory
     mode: '0755'
 
-- name: Download OTel Collector contrib (gateway role)
+- name: Download OTel Collector contrib (only if version mismatch)
   get_url:
     url: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelgw_version }}/otelcol-contrib_{{ otelgw_version }}_linux_amd64.tar.gz"
-    dest: /tmp/otelgw.tar.gz
+    dest: /tmp/otelgw-{{ otelgw_version }}.tar.gz
+  when: otelgw_installed_version != otelgw_version
 
-- name: Extract OTel Gateway binary
+- name: Extract OTel Gateway binary (force when version mismatch)
   unarchive:
-    src: /tmp/otelgw.tar.gz
+    src: /tmp/otelgw-{{ otelgw_version }}.tar.gz
     dest: "{{ otelgw_install_dir }}"
     remote_src: true
     extra_opts: [--strip-components=0]
-    creates: "{{ otelgw_install_dir }}/otelcol-contrib"
+  when: otelgw_installed_version != otelgw_version
+  notify: restart otelgw
+
+- name: Record installed version
+  copy:
+    content: "{{ otelgw_version }}"
+    dest: "{{ otelgw_install_dir }}/.version"
+    mode: '0644'
+  when: otelgw_installed_version != otelgw_version

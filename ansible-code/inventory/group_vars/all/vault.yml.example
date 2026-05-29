@@ -54,3 +54,18 @@ vault_bff_user_client_id:      "user-client"
 vault_bff_user_client_secret:  "REPLACE_ME"
 vault_bff_admin_client_id:     "admin-client"
 vault_bff_admin_client_secret: "REPLACE_ME"
+
+# Identity Service RSA Key pair (persistent across pod restarts).
+# Generate 1 lần:
+#   openssl genrsa -out /tmp/rsa.key 2048
+#   openssl pkcs8 -topk8 -nocrypt -in /tmp/rsa.key -out /tmp/rsa_pkcs8.key
+#   openssl rsa -in /tmp/rsa.key -pubout -out /tmp/rsa.pub
+# Paste nội dung đầy đủ (bao gồm header BEGIN/END) vào đây dưới dạng YAML block:
+vault_idp_rsa_private_key: |
+  -----BEGIN PRIVATE KEY-----
+  REPLACE_ME_PRIVATE_KEY_BASE64
+  -----END PRIVATE KEY-----
+vault_idp_rsa_public_key: |
+  -----BEGIN PUBLIC KEY-----
+  REPLACE_ME_PUBLIC_KEY_BASE64
+  -----END PUBLIC KEY-----

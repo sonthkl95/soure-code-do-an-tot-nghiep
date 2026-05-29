@@ -41,10 +41,8 @@ public class CustomUserDetail implements UserDetails, Serializable {
                 .map(sf -> new SimpleGrantedAuthority(sf.getCode()))
                 .collect(Collectors.toSet());
     }
-    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
         return this.authorities;
     }
     @JsonIgnore

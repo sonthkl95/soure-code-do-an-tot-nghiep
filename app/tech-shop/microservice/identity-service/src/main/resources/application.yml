@@ -99,3 +99,5 @@ application:
   config:
     payment-url: http://localhost:8090
     search-url: http://localhost:8087
+    bff-user-url: http://localhost:8081
+    bff-admin-url: http://localhost:8088

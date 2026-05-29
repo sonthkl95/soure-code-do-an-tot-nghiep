@@ -1,6 +1,5 @@
 package com.ecommerce.identityservice.config;
 
-import com.ecommerce.identityservice.service.impl.CustomUserDetailService;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -32,7 +31,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
-import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.client.RestTemplate;
@@ -116,9 +114,10 @@ public class WebConfig {
                             .successHandler(idpLoginSuccessHandler)
                             // Không lưu exception vào Redis session — tránh SerializationException loop
                             // khi exception class không nằm trong Jackson allowlist.
-                            .failureHandler(new SimpleUrlAuthenticationFailureHandler("/login?error") {{
-                                setSaveException(false);
-                            }});
+                            // Dùng lambda thay vì SimpleUrlAuthenticationFailureHandler để
+                            // hoàn toàn bỏ qua việc lưu exception vào HttpSession.
+                            .failureHandler((request, response, exception) ->
+                                    response.sendRedirect("/login?error"));
                 })
                 .logout(logout -> logout.deleteCookies("IDP_SESSION")
                         .logoutUrl("/logout"))

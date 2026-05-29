@@ -94,8 +94,9 @@ public class AuthServiceImpl implements AuthService {
         if (user.getVerifyEmail()) {
             throw new BusinessException(USER_ALREADY_VERIFIED);
         }
-        if (user.getOtpEmailExpiration().isAfter(Instant.now())) {
-            throw new BusinessException(OTP_EXPIRE);
+        // Chỉ cho resend khi OTP đã expired (isAfter = còn hiệu lực → chưa cần resend)
+        if (user.getOtpEmailExpiration() != null && user.getOtpEmailExpiration().isAfter(Instant.now())) {
+            throw new BusinessException(OTP_EXIST);
         }
         String otp = OtpUtils.generate6Digit();
         user.setOtpEmail(otp);

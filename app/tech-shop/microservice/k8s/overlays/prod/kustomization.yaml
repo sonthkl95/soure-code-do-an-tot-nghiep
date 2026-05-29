@@ -16,31 +16,31 @@ commonAnnotations:
 images:
   - name: ghcr.io/pham-van-khiem-toan-tin/discovery-service
     newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/discovery-service
-    newTag: dev
+    newTag: prod
   - name: ghcr.io/pham-van-khiem-toan-tin/identity-service
     newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/identity-service
-    newTag: dev
+    newTag: prod
   - name: ghcr.io/pham-van-khiem-toan-tin/catalog-service
     newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/catalog-service
-    newTag: dev
+    newTag: prod
   - name: ghcr.io/pham-van-khiem-toan-tin/order-service
     newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/order-service
-    newTag: dev
+    newTag: prod
   - name: ghcr.io/pham-van-khiem-toan-tin/inventory-service
     newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/inventory-service
-    newTag: dev
+    newTag: prod
   - name: ghcr.io/pham-van-khiem-toan-tin/payment-service
     newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/payment-service
-    newTag: dev
+    newTag: prod
   - name: ghcr.io/pham-van-khiem-toan-tin/search-service
     newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/search-service
-    newTag: dev
+    newTag: prod
   - name: ghcr.io/pham-van-khiem-toan-tin/bff-user
     newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/bff-user
-    newTag: dev
+    newTag: prod
   - name: ghcr.io/pham-van-khiem-toan-tin/bff-admin
     newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/bff-admin
-    newTag: dev
+    newTag: prod
   - name: ghcr.io/pham-van-khiem-toan-tin/ecommerce-customer
     newName: asia-southeast1-docker.pkg.dev/gcp-apse1-prj-sh-access-003/techshop/ecommerce-customer
     newTag: prod

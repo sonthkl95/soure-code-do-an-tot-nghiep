@@ -276,7 +276,7 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-bastion-003" {
 # Observability VM (10.60.1.10) running Prometheus, Loki, Tempo, Grafana, Alertmanager, OTel Gateway
 resource "google_compute_instance" "gcp-asia-southeast1-vm-observability-003" {
   name         = "gcp-asia-southeast1-vm-observability-003"
-  machine_type = "e2-medium" # 2 vCPUs, 4GB RAM - optimized for quota compliance
+  machine_type = "e2-standard-2" # 2 vCPUs, 8GB RAM - upgraded for observability stack
   zone         = "asia-southeast1-b"
   project      = data.google_project.gcp-apse1-prj-obs-003.project_id
 
@@ -298,6 +298,8 @@ resource "google_compute_instance" "gcp-asia-southeast1-vm-observability-003" {
     email  = google_service_account.sa-obs.email
     scopes = ["cloud-platform"]
   }
+
+  allow_stopping_for_update = true
 
   metadata                = { enable-oslogin = "TRUE" }
   metadata_startup_script = local.ops_agent_startup_script

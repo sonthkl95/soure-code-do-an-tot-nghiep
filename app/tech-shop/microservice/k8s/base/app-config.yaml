@@ -27,6 +27,8 @@ data:
   APPLICATION_CONFIG_INVENTORY_URL: "http://inventory-service.techshop.svc.cluster.local:8086"
   APPLICATION_CONFIG_PAYMENT_URL:  "http://payment-service.techshop.svc.cluster.local:8090"
   APPLICATION_CONFIG_SEARCH_URL:   "http://search-service.techshop.svc.cluster.local:8087"
+  APPLICATION_CONFIG_BFF_USER_URL: "http://bff-user.techshop.svc.cluster.local:8081"
+  APPLICATION_CONFIG_BFF_ADMIN_URL: "http://bff-admin.techshop.svc.cluster.local:8088"
 
   # ── OpenTelemetry (Java agent đã được nhúng trong Dockerfile) ──
   OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-gateway.observability.svc.cluster.local:4317"

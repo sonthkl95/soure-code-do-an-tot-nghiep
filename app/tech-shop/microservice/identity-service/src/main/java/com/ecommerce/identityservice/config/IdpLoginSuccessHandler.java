@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -24,8 +25,11 @@ import java.util.*;
 @Slf4j
 @Component
 public class IdpLoginSuccessHandler implements AuthenticationSuccessHandler {
-    private static final String ADMIN_INIT_URL = "http://localhost:8088/oauth2/authorization/admin-idp";
-    private static final String CUSTOMER_INIT_URL = "http://localhost:8081/oauth2/authorization/user-idp";
+
+    @Value("${application.config.bff-admin-url:http://localhost:8088}")
+    private String bffAdminUrl;
+    @Value("${application.config.bff-user-url:http://localhost:8081}")
+    private String bffUserUrl;
 
     // Mặc định Spring dùng cái này để lưu request trước khi bị đá sang trang login
     private final RequestCache requestCache = new HttpSessionRequestCache();
@@ -47,12 +51,9 @@ public class IdpLoginSuccessHandler implements AuthenticationSuccessHandler {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
         Set<String> adminRoles = Set.of("SUPER_ADMIN", "ADMIN", "EMPLOYEE");
         if (adminRoles.contains(user.getRole().getCode())) {
-            // Nếu là Admin -> Đẩy sang luồng khởi tạo Admin của BFF
-            // BFF sẽ tạo State -> Redirect lại IdP (Silent) -> Về trang Admin Dashboard
-            redirectStrategy.sendRedirect(request, response, ADMIN_INIT_URL);
+            redirectStrategy.sendRedirect(request, response, bffAdminUrl + "/oauth2/authorization/admin-idp");
+            return;
         }
-        // Tương tự với Customer
-        redirectStrategy.sendRedirect(request, response, CUSTOMER_INIT_URL);
-
+        redirectStrategy.sendRedirect(request, response, bffUserUrl + "/oauth2/authorization/user-idp");
     }
 }

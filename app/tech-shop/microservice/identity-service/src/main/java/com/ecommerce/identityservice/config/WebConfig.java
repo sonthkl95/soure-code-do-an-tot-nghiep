@@ -7,6 +7,7 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -31,14 +32,19 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -49,6 +55,13 @@ import java.util.stream.Collectors;
 public class WebConfig {
     @Autowired
     private IdpLoginSuccessHandler idpLoginSuccessHandler;
+
+    // RSA key persistent — đọc từ Secret (IDP_RSA_PRIVATE_KEY / IDP_RSA_PUBLIC_KEY).
+    // Nếu không có env (local dev) thì fallback sinh key mới (in-memory).
+    @Value("${IDP_RSA_PRIVATE_KEY:}")
+    private String rsaPrivateKeyPem;
+    @Value("${IDP_RSA_PUBLIC_KEY:}")
+    private String rsaPublicKeyPem;
     @Bean
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -100,7 +113,12 @@ public class WebConfig {
                 .cors(Customizer.withDefaults())
                 .formLogin(login -> {
                     login.loginPage("/login")
-                            .successHandler(idpLoginSuccessHandler);
+                            .successHandler(idpLoginSuccessHandler)
+                            // Không lưu exception vào Redis session — tránh SerializationException loop
+                            // khi exception class không nằm trong Jackson allowlist.
+                            .failureHandler(new SimpleUrlAuthenticationFailureHandler("/login?error") {{
+                                setSaveException(false);
+                            }});
                 })
                 .logout(logout -> logout.deleteCookies("IDP_SESSION")
                         .logoutUrl("/logout"))
@@ -141,7 +159,7 @@ public class WebConfig {
     }
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
-        KeyPair keyPair = generateRsaKey();
+        KeyPair keyPair = loadOrGenerateRsaKey();
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
         RSAKey rsaKey = new RSAKey.Builder(publicKey)
@@ -151,6 +169,33 @@ public class WebConfig {
         JWKSet jwkSet = new JWKSet(rsaKey);
         return new ImmutableJWKSet<>(jwkSet);
     }
+
+    private KeyPair loadOrGenerateRsaKey() {
+        if (rsaPrivateKeyPem != null && !rsaPrivateKeyPem.isBlank()
+                && rsaPublicKeyPem != null && !rsaPublicKeyPem.isBlank()) {
+            try {
+                KeyFactory kf = KeyFactory.getInstance("RSA");
+                String privateStripped = rsaPrivateKeyPem
+                        .replace("-----BEGIN PRIVATE KEY-----", "")
+                        .replace("-----END PRIVATE KEY-----", "")
+                        .replaceAll("\\s+", "");
+                String publicStripped = rsaPublicKeyPem
+                        .replace("-----BEGIN PUBLIC KEY-----", "")
+                        .replace("-----END PUBLIC KEY-----", "")
+                        .replaceAll("\\s+", "");
+                RSAPrivateKey privateKey = (RSAPrivateKey) kf.generatePrivate(
+                        new PKCS8EncodedKeySpec(Base64.getDecoder().decode(privateStripped)));
+                RSAPublicKey publicKey = (RSAPublicKey) kf.generatePublic(
+                        new X509EncodedKeySpec(Base64.getDecoder().decode(publicStripped)));
+                return new KeyPair(publicKey, privateKey);
+            } catch (Exception e) {
+                throw new IllegalStateException("Failed to load RSA key from IDP_RSA_PRIVATE_KEY/IDP_RSA_PUBLIC_KEY env", e);
+            }
+        }
+        // Fallback: sinh key mới (local dev only — không persistent)
+        return generateRsaKey();
+    }
+
     private static KeyPair generateRsaKey() {
         KeyPair keyPair;
         try {

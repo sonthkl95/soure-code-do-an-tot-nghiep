@@ -1,12 +1,16 @@
 package com.ecommerce.identityservice.config;
 
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.jackson2.SecurityJackson2Modules;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
@@ -32,7 +36,16 @@ public class SessionConfig implements BeanClassLoaderAware {
      * @return the {@link JsonMapper} to use
      */
     private JsonMapper objectMapper() {
-        return JsonMapper.builder().addModules(SecurityJackson2Modules.getModules(this.loader)).build();
+        JsonMapper mapper = JsonMapper.builder()
+                .addModules(SecurityJackson2Modules.getModules(this.loader))
+                .build();
+        // InternalAuthenticationServiceException không có trong Spring Security Jackson
+        // allowlist mặc định. Khi login thất bại, Spring lưu exception này vào Redis session,
+        // lần load session tiếp theo sẽ throw SerializationException → HTTP 500 loop.
+        // Fix: đăng ký mixin để class được nhận diện trong allowlist.
+        mapper.addMixIn(InternalAuthenticationServiceException.class,
+                InternalAuthenticationServiceExceptionMixin.class);
+        return mapper;
     }
 
     /*
@@ -44,4 +57,14 @@ public class SessionConfig implements BeanClassLoaderAware {
     public void setBeanClassLoader(ClassLoader classLoader) {
         this.loader = classLoader;
     }
+
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+    @JsonAutoDetect(
+            fieldVisibility  = JsonAutoDetect.Visibility.ANY,
+            getterVisibility = JsonAutoDetect.Visibility.NONE,
+            isGetterVisibility = JsonAutoDetect.Visibility.NONE)
+    // Bỏ qua các field kế thừa từ Throwable (cause, stackTrace, suppressed)
+    // để tránh cascade deserialization fail khi cause là class ngoài allowlist.
+    @JsonIgnoreProperties(value = {"cause", "stackTrace", "suppressed", "localizedMessage"}, ignoreUnknown = true)
+    abstract static class InternalAuthenticationServiceExceptionMixin {}
 }

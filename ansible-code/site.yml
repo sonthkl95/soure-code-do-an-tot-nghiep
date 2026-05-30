@@ -1,9 +1,18 @@
 ---
 # =============================================================
-# Master Playbook - chạy toàn bộ stack 1 lệnh:
+# Master Playbook - chạy TOÀN BỘ stack cả dev lẫn prod.
+#
+# Để chạy 1 môi trường riêng lẻ (khuyến nghị):
+#   bash run-dev.sh            # chỉ dev  (--limit + env_prod_enabled=false)
+#   bash run-prod.sh           # chỉ prod (--limit + env_dev_enabled=false)
+#
+# Chạy cả 2 (mặc định khi cả 2 env đang bật):
 #   ansible-galaxy collection install -r requirements.yml
-#   ansible-playbook site.yml
-# Thứ tự: preflight → k8s → data/db → observability → ingress → app → collectors → metrics → ops-agent
+#   ansible-playbook site.yml --ask-vault-pass
+#
+# Cô lập env: hai biến sau kiểm soát Debezium connector + Prometheus scrape:
+#   env_dev_enabled:  true/false  (default: true, xem group_vars/all/env-state.yml)
+#   env_prod_enabled: true/false  (default: true)
 # =============================================================
 
 # Step 0a: Preflight — kiểm tra GAR key, vault, SSH key, kết nối host
@@ -48,5 +57,5 @@
 # Step 7: Deploy K8s metrics pipeline (Prometheus Agent + kube-state-metrics)
 - import_playbook: playbooks/metrics-k8s.yml
 
-# Step 8: Deploy Google Cloud Ops Agent on all instances
-- import_playbook: playbooks/install-ops-agent.yml
+# NOTE: Google Cloud Ops Agent được cài tự động qua metadata_startup_script
+# trong Terraform (compute-engine.tf, db-vm.tf, data-vm.tf) — chạy lúc VM boot.

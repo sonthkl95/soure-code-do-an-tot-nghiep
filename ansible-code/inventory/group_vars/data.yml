@@ -2,6 +2,10 @@
 # =============================================================
 # Biến cho Debezium chạy trên data-vm.
 # 2 MongoDB connector trỏ 2 db-vm (dev + prod) qua peering Obs↔Dev/Prod.
+#
+# Khi chạy riêng 1 môi trường, truyền extra var để override:
+#   ansible-playbook playbooks/data.yml --tags debezium \
+#     -e '{"debezium_mongo_sources":[{"env_name":"dev","env_db_host":"10.10.1.30"}]}'
 # =============================================================
 debezium_mongo_sources:
   - { env_name: "dev",  env_db_host: "10.10.1.30" }

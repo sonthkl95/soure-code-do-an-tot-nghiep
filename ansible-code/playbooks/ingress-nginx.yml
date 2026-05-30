@@ -11,5 +11,6 @@
   hosts: k8s_master
   become: true
   gather_facts: false
+  when: module_ingress_nginx_enabled | default(true)
   roles:
     - ingress-nginx

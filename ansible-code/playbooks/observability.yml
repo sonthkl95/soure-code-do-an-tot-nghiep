@@ -14,36 +14,42 @@
 
 - name: Deploy Prometheus TSDB (Local Metrics Storage)
   hosts: observability
+  when: module_prometheus_enabled | default(true)
   tags: prometheus
   roles:
     - prometheus
 
 - name: Deploy Loki (Log Storage - Cloud-Native)
   hosts: observability
+  when: module_loki_enabled | default(true)
   tags: loki
   roles:
     - loki
 
 - name: Deploy Tempo (Trace Storage - Cloud-Native)
   hosts: observability
+  when: module_tempo_enabled | default(true)
   tags: tempo
   roles:
     - tempo
 
 - name: Deploy OTel Gateway (Kafka consumer -> Tempo + Loki)
   hosts: observability
+  when: module_otel_gateway_enabled | default(true)
   tags: otel-gateway
   roles:
     - otel-gateway
 
 - name: Deploy Alertmanager (Self-hosted Alerting)
   hosts: observability
+  when: module_alertmanager_enabled | default(true)
   tags: alertmanager
   roles:
     - alertmanager
 
 - name: Deploy Grafana (Visualization + auto-provision Data Sources & Dashboards)
   hosts: observability
+  when: module_grafana_enabled | default(true)
   tags: grafana
   become: true
   roles:

@@ -24,6 +24,12 @@ ansible-code/*.retry
 *.vault_pass
 vault_pass.txt
 
+# ── Bastion secrets backup (pull về local từ bastion-secrets.sh) ───────────────
+bastion-secrets/
+gcp_sontx_key
+gcp_sontx_key.pub
+vault_pass
+
 # ── SSH keys ───────────────────────────────────────────────────────────────────
 *.pem
 *.key

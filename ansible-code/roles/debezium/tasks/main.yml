@@ -86,13 +86,26 @@
 # ──────────────────────────────────────────────────────────────────
 # Register 1 MongoDB source connector per environment (dev + prod)
 # Mỗi connector dùng topic prefix riêng (dev.* / prod.*) để cô lập.
+# Chỉ register connector cho env đang bật (env_dev_enabled / env_prod_enabled
+# trong group_vars/all/env-state.yml hoặc -e flag khi chạy ansible-playbook).
 # ──────────────────────────────────────────────────────────────────
+- name: Build active connector list (filter theo env_dev_enabled / env_prod_enabled)
+  set_fact:
+    debezium_active_sources: >-
+      {{ debezium_mongo_sources | default([])
+         | selectattr('env_name', 'in', _active_envs) | list }}
+  vars:
+    _active_envs: >-
+      {{ (['dev']  if (env_dev_enabled  | default(true)) | bool else [])
+       + (['prod'] if (env_prod_enabled | default(true)) | bool else []) }}
+  tags: [connectors]
+
 - name: Render MongoDB connector configs (per env) — copy lên data-vm để debug/audit
   template:
     src: mongo-connector.json.j2
     dest: "/tmp/mongo-{{ item.env_name }}-source.json"
     mode: '0644'
-  loop: "{{ debezium_mongo_sources | default([]) }}"
+  loop: "{{ debezium_active_sources }}"
   loop_control:
     label: "{{ item.env_name }}"
   vars:
@@ -103,7 +116,7 @@
 - name: Slurp rendered connector JSON từ data-vm
   slurp:
     src: "/tmp/mongo-{{ item.env_name }}-source.json"
-  loop: "{{ debezium_mongo_sources | default([]) }}"
+  loop: "{{ debezium_active_sources }}"
   loop_control:
     label: "{{ item.env_name }}"
   register: connector_files

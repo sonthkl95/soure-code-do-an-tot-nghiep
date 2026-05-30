@@ -17,6 +17,7 @@
 - name: Deploy TechShop microservices on Dev cluster
   hosts: k8s_dev_master[0]
   become: true
+  when: module_app_enabled | default(true)
   vars:
     app_env: "dev"
   roles:
@@ -25,6 +26,7 @@
 - name: Deploy TechShop microservices on Prod cluster
   hosts: k8s_prod_master[0]
   become: true
+  when: module_app_enabled | default(true)
   vars:
     app_env: "prod"
   roles:

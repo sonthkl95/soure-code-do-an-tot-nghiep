@@ -1,0 +1,52 @@
+---
+# =============================================================
+# NGUỒN SỰ THẬT DUY NHẤT — bật/tắt environment + từng module
+#
+# CÁCH DÙNG:
+#   1. Sửa file này (ảnh hưởng tất cả lần chạy sau)
+#   2. Override tạm thời khi chạy ansible-playbook:
+#        -e module_loki_enabled=false
+#   3. Dùng run-dev.sh / run-prod.sh để tự động set env flags
+#
+# TẮT 1 MODULE KHI TEST:
+#   ansible-playbook playbooks/observability.yml -e module_grafana_enabled=false
+#   ansible-playbook playbooks/data.yml          -e module_elasticsearch_enabled=false
+#   ansible-playbook playbooks/collectors.yml    -e module_otel_collector_enabled=false
+# =============================================================
+
+# ── Môi trường ───────────────────────────────────────────────
+# Kiểm soát Debezium connector + Prometheus scrape targets
+env_dev_enabled: true
+env_prod_enabled: true
+
+# ── Observability stack (obs-vm: 10.60.1.10) ─────────────────
+module_prometheus_enabled: true
+module_loki_enabled: true
+module_tempo_enabled: true
+module_otel_gateway_enabled: true
+module_alertmanager_enabled: true
+module_grafana_enabled: true
+
+# ── Data stack (data-vm: 10.60.1.20) ────────────────────────
+module_kafka_enabled: true
+module_redis_enabled: true
+module_elasticsearch_enabled: true
+module_debezium_enabled: true
+
+# ── DB per-env (db-dev: 10.10.1.30 / db-prod: 10.20.1.30) ──
+module_mongodb_enabled: true
+module_mysql_enabled: true
+
+# ── K8s infra ────────────────────────────────────────────────
+module_ingress_nginx_enabled: true
+module_prometheus_agent_enabled: true   # Prometheus Agent Mode trên K8s master
+
+# ── Collectors (chạy trên tất cả K8s nodes) ──────────────────
+module_otel_collector_enabled: true     # OTel Collector: traces + logs → Kafka
+module_node_exporter_enabled: true      # Node Exporter: CPU/RAM/Disk → Prometheus
+
+# ── App (microservices TechShop) ─────────────────────────────
+module_app_enabled: true
+
+# NOTE: Google Cloud Ops Agent được cài tự động qua metadata_startup_script
+# trong Terraform — không cần Ansible playbook.

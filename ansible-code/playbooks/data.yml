@@ -17,6 +17,7 @@
 - name: Deploy Kafka (KRaft) on data-vm
   hosts: data
   become: true
+  when: module_kafka_enabled | default(true)
   tags: kafka
   roles:
     - kafka
@@ -24,6 +25,7 @@
 - name: Deploy Redis on data-vm
   hosts: data
   become: true
+  when: module_redis_enabled | default(true)
   tags: redis
   roles:
     - redis
@@ -31,6 +33,7 @@
 - name: Deploy Elasticsearch on data-vm
   hosts: data
   become: true
+  when: module_elasticsearch_enabled | default(true)
   tags: elasticsearch
   roles:
     - elasticsearch
@@ -39,6 +42,7 @@
 - name: Deploy MongoDB on db VMs (Dev + Prod)
   hosts: db
   become: true
+  when: module_mongodb_enabled | default(true)
   tags: mongodb
   roles:
     - mongodb
@@ -46,6 +50,7 @@
 - name: Deploy MySQL/MariaDB on db VMs (Dev + Prod)
   hosts: db
   become: true
+  when: module_mysql_enabled | default(true)
   tags: mysql
   roles:
     - mysql
@@ -54,6 +59,7 @@
 - name: Deploy Debezium (Kafka Connect) on data-vm + register 2 Mongo connector
   hosts: data
   become: true
+  when: module_debezium_enabled | default(true)
   tags: debezium
   roles:
     - debezium

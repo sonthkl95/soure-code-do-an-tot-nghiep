@@ -16,7 +16,7 @@
 - name: Set CALICO_IPV4POOL_CIDR value to kubeadm pod CIDR ({{ k8s_pod_network_cidr }})
   replace:
     path: /tmp/calico.yaml
-    regexp: '#   value: "192.168.0.0/16"'
+    regexp: '#   value: "192\.168\.0\.0/16"'
     replace: '  value: "{{ k8s_pod_network_cidr }}"'
 
 - name: Apply Calico CNI network plugin

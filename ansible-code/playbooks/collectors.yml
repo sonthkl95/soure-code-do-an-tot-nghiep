@@ -11,10 +11,12 @@
 
 - name: Deploy OTel Collector agent on K8s nodes (Trace + Log pipeline)
   hosts: k8s
+  when: module_otel_collector_enabled | default(true)
   roles:
     - otel-collector
 
 - name: Deploy Node Exporter on all VMs (Metrics pipeline)
   hosts: all
+  when: module_node_exporter_enabled | default(true)
   roles:
     - node-exporter

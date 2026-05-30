@@ -31,6 +31,7 @@ scrape_configs:
 {% set dev_hosts   = (groups.get('k8s_dev', [])   + groups.get('db_dev', [])) %}
 {% set prod_hosts  = (groups.get('k8s_prod', [])  + groups.get('db_prod', [])) %}
 {% set infra_hosts = (groups.get('observability', []) + groups.get('data', [])) %}
+{% if env_dev_enabled | default(true) %}
       - labels:
           cluster: dev
         targets:
@@ -39,6 +40,8 @@ scrape_configs:
           - "{{ hostvars[host]['ansible_host'] }}:9100"
 {% endif %}
 {% endfor %}
+{% endif %}
+{% if env_prod_enabled | default(true) %}
       - labels:
           cluster: prod
         targets:
@@ -47,6 +50,7 @@ scrape_configs:
           - "{{ hostvars[host]['ansible_host'] }}:9100"
 {% endif %}
 {% endfor %}
+{% endif %}
       - labels:
           cluster: infra
         targets:
@@ -67,6 +71,7 @@ scrape_configs:
   # db-dev (10.10.1.30:9104) và db-prod (10.20.1.30:9104)
   - job_name: "mysqld-exporter"
     static_configs:
+{% if env_dev_enabled | default(true) %}
       - labels:
           cluster: dev
         targets:
@@ -75,6 +80,8 @@ scrape_configs:
           - "{{ hostvars[host]['ansible_host'] }}:9104"
 {% endif %}
 {% endfor %}
+{% endif %}
+{% if env_prod_enabled | default(true) %}
       - labels:
           cluster: prod
         targets:
@@ -83,6 +90,7 @@ scrape_configs:
           - "{{ hostvars[host]['ansible_host'] }}:9104"
 {% endif %}
 {% endfor %}
+{% endif %}
 
   # ── redis-exporter: redis_up, redis_memory_used_bytes ──────────────────────
   # data-vm (10.60.1.20:9121)

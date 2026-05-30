@@ -11,10 +11,12 @@
 
 - name: Deploy Prometheus Agent vào Dev K8s cluster
   hosts: k8s_dev_master[0]
+  when: module_prometheus_agent_enabled | default(true)
   roles:
     - prometheus-agent
 
 - name: Deploy Prometheus Agent vào Prod K8s cluster
   hosts: k8s_prod_master[0]
+  when: module_prometheus_agent_enabled | default(true)
   roles:
     - prometheus-agent

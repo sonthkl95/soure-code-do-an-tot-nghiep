@@ -11,7 +11,8 @@ ExecStart={{ prometheus_install_dir }}/prometheus \
   --storage.tsdb.path={{ prometheus_data_dir }} \
   --storage.tsdb.retention.time={{ prometheus_retention_time }} \
   --web.listen-address=0.0.0.0:{{ prometheus_port }} \
-  --web.enable-remote-write-receiver
+  --web.enable-remote-write-receiver \
+  --web.enable-lifecycle
 Restart=on-failure
 RestartSec=5
 

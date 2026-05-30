@@ -15,3 +15,7 @@ kafka_topics:
   - name: "log-topic"
     partitions: 3
     replication_factor: 1
+
+# kafka-exporter (Prometheus metrics: consumer lag, topic offsets)
+kafka_exporter_version: "1.7.0"
+kafka_exporter_port: 9308

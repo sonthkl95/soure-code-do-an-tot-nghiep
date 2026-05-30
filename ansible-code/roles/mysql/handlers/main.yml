@@ -3,3 +3,8 @@
   systemd:
     name: mariadb
     state: restarted
+
+- name: restart mysqld_exporter
+  systemd:
+    name: mysqld_exporter
+    state: restarted

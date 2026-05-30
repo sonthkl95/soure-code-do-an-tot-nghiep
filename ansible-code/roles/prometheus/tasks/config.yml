@@ -6,3 +6,19 @@
     owner: prometheus
     group: prometheus
   notify: restart prometheus
+
+- name: Create Prometheus rules directory
+  file:
+    path: "{{ prometheus_install_dir }}/rules"
+    state: directory
+    owner: prometheus
+    group: prometheus
+    mode: "0755"
+
+- name: Deploy alert rules (5 test scenarios)
+  template:
+    src: alert-rules.yml.j2
+    dest: "{{ prometheus_install_dir }}/rules/alert-rules.yml"
+    owner: prometheus
+    group: prometheus
+  notify: reload prometheus

@@ -1,0 +1,15 @@
+[Unit]
+Description=Prometheus redis_exporter
+After=network.target redis-server.service
+
+[Service]
+Type=simple
+User=nobody
+ExecStart=/usr/local/bin/redis_exporter \
+  --redis.addr=redis://{{ redis_bind_ip }}:{{ redis_port }} \
+  --web.listen-address=0.0.0.0:{{ redis_exporter_port }}
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

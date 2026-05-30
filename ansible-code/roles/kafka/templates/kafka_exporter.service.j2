@@ -1,0 +1,15 @@
+[Unit]
+Description=Prometheus kafka_exporter
+After=network.target kafka.service
+
+[Service]
+Type=simple
+User=nobody
+ExecStart=/usr/local/bin/kafka_exporter \
+  --kafka.server=localhost:9092 \
+  --web.listen-address=0.0.0.0:{{ kafka_exporter_port }}
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

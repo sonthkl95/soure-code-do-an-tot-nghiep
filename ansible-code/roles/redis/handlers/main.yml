@@ -3,3 +3,8 @@
   systemd:
     name: redis-server
     state: restarted
+
+- name: restart redis_exporter
+  systemd:
+    name: redis_exporter
+    state: restarted

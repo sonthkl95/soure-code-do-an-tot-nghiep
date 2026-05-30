@@ -63,6 +63,53 @@ scrape_configs:
         action: drop
 {% endif %}
 
+  # ── mysqld-exporter: mysql_up, connections, queries ────────────────────────
+  # db-dev (10.10.1.30:9104) và db-prod (10.20.1.30:9104)
+  - job_name: "mysqld-exporter"
+    static_configs:
+      - labels:
+          cluster: dev
+        targets:
+{% for host in groups.get('db_dev', []) %}
+{% if hostvars[host]['ansible_host'] is defined %}
+          - "{{ hostvars[host]['ansible_host'] }}:9104"
+{% endif %}
+{% endfor %}
+      - labels:
+          cluster: prod
+        targets:
+{% for host in groups.get('db_prod', []) %}
+{% if hostvars[host]['ansible_host'] is defined %}
+          - "{{ hostvars[host]['ansible_host'] }}:9104"
+{% endif %}
+{% endfor %}
+
+  # ── redis-exporter: redis_up, redis_memory_used_bytes ──────────────────────
+  # data-vm (10.60.1.20:9121)
+  - job_name: "redis-exporter"
+    static_configs:
+      - labels:
+          cluster: infra
+        targets:
+{% for host in groups.get('data', []) %}
+{% if hostvars[host]['ansible_host'] is defined %}
+          - "{{ hostvars[host]['ansible_host'] }}:9121"
+{% endif %}
+{% endfor %}
+
+  # ── kafka-exporter: kafka_brokers, kafka_consumer_group_lag ────────────────
+  # data-vm (10.60.1.20:9308)
+  - job_name: "kafka-exporter"
+    static_configs:
+      - labels:
+          cluster: infra
+        targets:
+{% for host in groups.get('data', []) %}
+{% if hostvars[host]['ansible_host'] is defined %}
+          - "{{ hostvars[host]['ansible_host'] }}:9308"
+{% endif %}
+{% endfor %}
+
 # =============================================================
 # Centralized Metrics Receiver
 # Prometheus Server này chạy với --web.enable-remote-write-receiver.

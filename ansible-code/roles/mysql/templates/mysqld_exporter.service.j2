@@ -1,0 +1,15 @@
+[Unit]
+Description=Prometheus mysqld_exporter
+After=network.target mariadb.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/mysqld_exporter \
+  --config.my-cnf=/etc/mysqld_exporter.cnf \
+  --web.listen-address=0.0.0.0:{{ mysql_exporter_port }}
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

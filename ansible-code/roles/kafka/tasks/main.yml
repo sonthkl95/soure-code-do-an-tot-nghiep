@@ -3,3 +3,4 @@
 - import_tasks: config.yml
 - import_tasks: service.yml
 - import_tasks: topics.yml
+- import_tasks: exporter.yml

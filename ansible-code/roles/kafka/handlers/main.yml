@@ -3,3 +3,8 @@
   systemd:
     name: kafka
     state: restarted
+
+- name: restart kafka_exporter
+  systemd:
+    name: kafka_exporter
+    state: restarted

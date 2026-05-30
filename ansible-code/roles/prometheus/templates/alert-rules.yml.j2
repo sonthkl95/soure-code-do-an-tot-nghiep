@@ -1,0 +1,421 @@
+# =============================================================================
+# Prometheus Alert Rules - TechShop E-Commerce Monitoring
+# Phân loại theo 3 lớp: Hạ tầng GCP | Cụm Kubernetes | Ứng dụng
+# =============================================================================
+
+# ╔═════════════════════════════════════════════════════════════════════════╗
+# ║  NHÓM 1 — HẠ TẦNG GCP (Terraform-dựng)                               ║
+# ║  Các VM: db-prod 10.20.1.30 | data-vm 10.60.1.20 | observability VMs  ║
+# ╚═════════════════════════════════════════════════════════════════════════╝
+
+groups:
+
+  # ---------------------------------------------------------------------------
+  # INF-01: Máy chủ GCP ngừng phản hồi (VM down)
+  # Áp dụng cho tất cả VM: k8s-nodes, db-dev/prod, data-vm, observability
+  # ---------------------------------------------------------------------------
+  - name: inf01_vm_down
+    rules:
+      - alert: GCPVMDown
+        expr: |
+          up{job="node-exporter"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          group: infrastructure
+          scenario: INF-01
+        annotations:
+          summary: "🔴 [INF-01] Máy chủ GCP MẤT KẾT NỐI: {{ $labels.instance }} ({{ $labels.cluster }})"
+          description: |
+            Node Exporter tại {{ $labels.instance }} (cluster: {{ $labels.cluster }}) không phản hồi trong 2 phút.
+            → Máy chủ có thể đã bị tắt hoặc mạng nội bộ bị gián đoạn.
+            → Kiểm tra GCP Console: Compute Engine → VM Instances.
+
+  # ---------------------------------------------------------------------------
+  # INF-02: Ổ đĩa Data VM (10.60.1.20) sắp đầy
+  # Data VM chứa: Kafka + MongoDB + Elasticsearch + Redis + Debezium (100GB)
+  # ---------------------------------------------------------------------------
+  - name: inf02_disk_space
+    rules:
+      - alert: DiskSpaceWarning
+        expr: |
+          (node_filesystem_avail_bytes{fstype!="tmpfs", mountpoint="/"}
+          / node_filesystem_size_bytes{fstype!="tmpfs", mountpoint="/"}) * 100 < 20
+        for: 5m
+        labels:
+          severity: warning
+          group: infrastructure
+          scenario: INF-02
+        annotations:
+          summary: "🟡 [INF-02] Ổ đĩa gần đầy ({{ $value | printf \"%.1f\" }}%) - {{ $labels.instance }}"
+          description: |
+            Chỉ còn {{ $value | printf "%.1f" }}% dung lượng trống trên {{ $labels.instance }}.
+            → Kafka không thể ghi message mới, Elasticsearch index bị từ chối, log bị mất.
+
+      - alert: DiskSpaceCritical
+        expr: |
+          (node_filesystem_avail_bytes{fstype!="tmpfs", mountpoint="/"}
+          / node_filesystem_size_bytes{fstype!="tmpfs", mountpoint="/"}) * 100 < 10
+        for: 2m
+        labels:
+          severity: critical
+          group: infrastructure
+          scenario: INF-02
+        annotations:
+          summary: "🔴 [INF-02] KHẨN CẤP: Ổ đĩa {{ $value | printf \"%.1f\" }}% - {{ $labels.instance }}"
+          description: |
+            CHỈ CÒN {{ $value | printf "%.1f" }}% dung lượng trên {{ $labels.instance }}.
+            → NGUY CƠ: Database crash, mất dữ liệu Kafka, MongoDB oplog bị truncate.
+
+  # ---------------------------------------------------------------------------
+  # INF-03: RAM máy chủ cạn kiệt — nguy cơ OOM Killer
+  # DB Prod VM (e2-medium: 4GB RAM) chứa MySQL + MongoDB song song
+  # ---------------------------------------------------------------------------
+  - name: inf03_memory_pressure
+    rules:
+      - alert: HighMemoryUsage
+        expr: |
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+        for: 3m
+        labels:
+          severity: critical
+          group: infrastructure
+          scenario: INF-03
+        annotations:
+          summary: "🔴 [INF-03] RAM cạn kiệt {{ $value | printf \"%.1f\" }}% - {{ $labels.instance }}"
+          description: |
+            {{ $value | printf "%.1f" }}% RAM đang được dùng trên {{ $labels.instance }}.
+            → OOM Killer có thể tắt bất kỳ process nào (MySQL / MongoDB / Kafka).
+            → Toàn bộ dữ liệu chưa flush xuống disk có thể bị mất.
+
+  # ---------------------------------------------------------------------------
+  # INF-04: GCP Load Balancer — toàn bộ backend unhealthy
+  # LB → ingress-nginx NodePort 30080 trên worker-1 (10.x.1.20) + worker-2 (10.x.1.21)
+  # Phát hiện qua: node-exporter probe hoặc blackbox-exporter
+  # ---------------------------------------------------------------------------
+  - name: inf04_lb_backend_down
+    rules:
+      - alert: IngressNodePortDown
+        expr: |
+          kube_deployment_status_replicas_available{
+            deployment=~"ingress-nginx.*"
+          } == 0
+        for: 2m
+        labels:
+          severity: critical
+          group: infrastructure
+          scenario: INF-04
+        annotations:
+          summary: "🔴 [INF-04] GCP Load Balancer: Backend {{ $labels.instance }} không phản hồi"
+          description: |
+            Ingress-nginx NodePort 30080 tại {{ $labels.instance }} không phản hồi.
+            → GCP External HTTP LB sẽ chuyển toàn bộ traffic vào backend còn lại.
+            → Nếu cả 2 worker đều down: Website hoàn toàn không truy cập được từ Internet.
+
+  # ---------------------------------------------------------------------------
+  # INF-05: CPU Observability VM quá tải — rủi ro mù giám sát
+  # Observability VM chạy: Prometheus + Alertmanager + Grafana + Loki + Tempo
+  # ---------------------------------------------------------------------------
+  - name: inf05_observability_vm_cpu
+    rules:
+      - alert: ObservabilityVMHighCPU
+        expr: |
+          100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle",
+            instance=~"10\\.60\\.1\\..+:9100"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          group: infrastructure
+          scenario: INF-05
+        annotations:
+          summary: "🟡 [INF-05] Observability VM quá tải CPU: {{ $value | printf \"%.1f\" }}%"
+          description: |
+            CPU của máy chủ giám sát {{ $labels.instance }} đang ở {{ $value | printf "%.1f" }}%.
+            → Prometheus scrape bị trễ, alert có thể không được gửi đúng giờ.
+            → Grafana dashboard bị chậm, dữ liệu có thể không cập nhật real-time.
+
+# ╔═════════════════════════════════════════════════════════════════════════╗
+# ║  NHÓM 2 — CỤM KUBERNETES                                              ║
+# ║  Dev cluster: 10.10.1.10-21 | Prod cluster: 10.20.1.10-21             ║
+# ╚═════════════════════════════════════════════════════════════════════════╝
+
+  # ---------------------------------------------------------------------------
+  # K8S-01: Kubernetes Worker Node NotReady
+  # Worker-1 (10.x.1.20) hoặc Worker-2 (10.x.1.21) bị loại ra khỏi cluster
+  # ---------------------------------------------------------------------------
+  - name: k8s01_node_not_ready
+    rules:
+      - alert: KubernetesNodeNotReady
+        expr: |
+          kube_node_status_condition{condition="Ready", status="true"} == 0
+        for: 3m
+        labels:
+          severity: critical
+          group: kubernetes
+          scenario: K8S-01
+        annotations:
+          summary: "🔴 [K8S-01] K8s Node KHÔNG SẴN SÀNG: {{ $labels.node }} ({{ $labels.cluster }})"
+          description: |
+            Node {{ $labels.node }} trong cluster {{ $labels.cluster }} ở trạng thái NotReady > 3 phút.
+            → Kubernetes đang cố reschedule các Pod sang node còn lại.
+            → Nếu chỉ còn 1 worker: cluster mất khả năng chịu lỗi (single point of failure).
+
+  # ---------------------------------------------------------------------------
+  # K8S-02: Pod bị CrashLoopBackOff liên tục
+  # Phổ biến khi deploy sai config (sai DB host, sai secret, thiếu env var)
+  # ---------------------------------------------------------------------------
+  - name: k8s02_pod_crashloop
+    rules:
+      - alert: PodCrashLooping
+        expr: |
+          increase(kube_pod_container_status_restarts_total[15m]) > 3
+        for: 5m
+        labels:
+          severity: critical
+          group: kubernetes
+          scenario: K8S-02
+        annotations:
+          summary: "🔴 [K8S-02] Pod {{ $labels.pod }} CrashLoop {{ $value | printf \"%.0f\" }} lần/15 phút"
+          description: |
+            Pod {{ $labels.pod }} (namespace: {{ $labels.namespace }}) đã crash
+            {{ $value | printf "%.0f" }} lần trong 15 phút → CrashLoopBackOff.
+            → Dịch vụ {{ $labels.container }} không ổn định.
+            → Nguyên nhân thường gặp: sai biến môi trường DB_HOST / SECRET / PORT.
+
+  # ---------------------------------------------------------------------------
+  # K8S-03: Ingress-nginx Controller Down — toàn bộ HTTP traffic bị chặn
+  # Ingress là cổng vào duy nhất cho mọi request từ Load Balancer
+  # ---------------------------------------------------------------------------
+  - name: k8s03_ingress_down
+    rules:
+      - alert: IngressNginxDown
+        expr: |
+          kube_deployment_status_replicas_available{
+            deployment=~"ingress-nginx.*"
+          } == 0
+        for: 1m
+        labels:
+          severity: critical
+          group: kubernetes
+          scenario: K8S-03
+        annotations:
+          summary: "🔴 [K8S-03] Ingress-nginx NGỪNG HOẠT ĐỘNG - Cluster {{ $labels.cluster }}"
+          description: |
+            Ingress-nginx controller trong cluster {{ $labels.cluster }} không có replica nào sẵn sàng.
+            → Toàn bộ HTTP/HTTPS traffic từ GCP Load Balancer bị từ chối (502/503).
+            → Website hoàn toàn không truy cập được từ Internet.
+
+  # ---------------------------------------------------------------------------
+  # K8S-04: Deployment thiếu replica (dưới mức kỳ vọng)
+  # Phát hiện khi một service mất replica mà không có cảnh báo rõ ràng
+  # ---------------------------------------------------------------------------
+  - name: k8s04_deployment_under_replicated
+    rules:
+      - alert: DeploymentUnderReplicated
+        expr: |
+          kube_deployment_status_replicas_available
+          < kube_deployment_spec_replicas
+        for: 5m
+        labels:
+          severity: warning
+          group: kubernetes
+          scenario: K8S-04
+        annotations:
+          summary: "🟡 [K8S-04] Deployment {{ $labels.deployment }} thiếu replica ({{ $labels.namespace }})"
+          description: |
+            Deployment {{ $labels.deployment }} chỉ có {{ $value | printf "%.0f" }} replica sẵn sàng
+            (thấp hơn số replica kỳ vọng trong spec).
+            → Khả năng xử lý request bị giảm, có thể gây chậm hoặc timeout dưới tải cao.
+
+  # ---------------------------------------------------------------------------
+  # K8S-05: Kubernetes API Server không phản hồi (Master node down)
+  # Master: k8s-prod-master-1 (10.20.1.10) — kube-apiserver port 6443
+  # ---------------------------------------------------------------------------
+  - name: k8s05_apiserver_down
+    rules:
+      - alert: KubernetesAPIServerDown
+        expr: |
+          up{job="kubernetes-apiservers"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          group: kubernetes
+          scenario: K8S-05
+        annotations:
+          summary: "🔴 [K8S-05] Kubernetes API Server NGỪNG HOẠT ĐỘNG - {{ $labels.cluster }}"
+          description: |
+            kube-apiserver tại {{ $labels.instance }} không phản hồi.
+            → Không thể deploy, scale, hay quản lý Pod nào trong cluster {{ $labels.cluster }}.
+            → Các Pod đang chạy vẫn hoạt động nhưng KHÔNG THỂ tự phục hồi nếu crash.
+
+# ╔═════════════════════════════════════════════════════════════════════════╗
+# ║  NHÓM 3 — ỨNG DỤNG (Microservices + Data Services)                   ║
+# ║  Data VM 10.60.1.20: Kafka + MongoDB + Redis + Elasticsearch          ║
+# ║  DB VM: MySQL (10.10.1.30 dev | 10.20.1.30 prod)                      ║
+# ╚═════════════════════════════════════════════════════════════════════════╝
+
+  # ---------------------------------------------------------------------------
+  # APP-01: Dịch vụ thanh toán ngừng hoạt động
+  # payment-service là dịch vụ quan trọng nhất về doanh thu
+  # ---------------------------------------------------------------------------
+  - name: app01_payment_service_down
+    rules:
+      - alert: PaymentServiceDown
+        expr: |
+          up{job="kubernetes-pods", app=~".*payment.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          group: application
+          scenario: APP-01
+        annotations:
+          summary: "🔴 [APP-01] Dịch vụ thanh toán NGỪNG HOẠT ĐỘNG"
+          description: |
+            payment-service tại {{ $labels.instance }} không phản hồi > 1 phút.
+            → Khách hàng KHÔNG THỂ thanh toán và đặt hàng.
+            → Mỗi phút downtime = 100% đơn hàng trong thời điểm đó bị mất.
+
+      - alert: PaymentHighErrorRate
+        expr: |
+          sum(rate(http_server_requests_seconds_count{job="kubernetes-pods", app=~".*payment.*", status=~"5.."}[5m]))
+          / sum(rate(http_server_requests_seconds_count{job="kubernetes-pods", app=~".*payment.*"}[5m])) * 100 > 5
+        for: 2m
+        labels:
+          severity: critical
+          group: application
+          scenario: APP-01
+        annotations:
+          summary: "🔴 [APP-01] Tỷ lệ lỗi thanh toán: {{ $value | printf \"%.1f\" }}%"
+          description: |
+            {{ $value | printf "%.1f" }}% yêu cầu thanh toán đang thất bại (ngưỡng: 5%).
+            → Doanh thu bị ảnh hưởng trực tiếp dù service vẫn "up".
+
+  # ---------------------------------------------------------------------------
+  # APP-02: Identity Service down — toàn bộ người dùng mất quyền đăng nhập
+  # identity-service là gateway xác thực cho mọi API call
+  # ---------------------------------------------------------------------------
+  - name: app02_identity_service_down
+    rules:
+      - alert: IdentityServiceDown
+        expr: |
+          up{job="kubernetes-pods", app=~".*identity.*"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          group: application
+          scenario: APP-02
+        annotations:
+          summary: "🔴 [APP-02] Identity Service NGỪNG HOẠT ĐỘNG — Toàn bộ login bị từ chối"
+          description: |
+            identity-service tại {{ $labels.instance }} không phản hồi > 1 phút.
+            → 100% người dùng bị đăng xuất. Không ai đăng nhập được vào hệ thống.
+            → Tất cả API yêu cầu xác thực đều trả về HTTP 401/503.
+
+  # ---------------------------------------------------------------------------
+  # APP-03: MySQL Database ngừng hoạt động
+  # DB Prod VM (10.20.1.30): MySQL lưu users, products, orders, payments
+  # ---------------------------------------------------------------------------
+  - name: app03_mysql_down
+    rules:
+      - alert: MySQLDown
+        expr: |
+          mysql_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          group: application
+          scenario: APP-03
+        annotations:
+          summary: "🔴 [APP-03] MySQL NGỪNG HOẠT ĐỘNG - {{ $labels.instance }}"
+          description: |
+            MySQL tại {{ $labels.instance }} không phản hồi > 1 phút.
+            → Toàn bộ website tê liệt: không đăng nhập, không xem sản phẩm, không đặt hàng.
+            → DB Prod: 10.20.1.30 | DB Dev: 10.10.1.30
+
+      - alert: MySQLConnectionPoolHigh
+        expr: |
+          mysql_global_status_threads_connected
+          / mysql_global_variables_max_connections * 100 > 80
+        for: 3m
+        labels:
+          severity: warning
+          group: application
+          scenario: APP-03
+        annotations:
+          summary: "🟡 [APP-03] MySQL connection pool: {{ $value | printf \"%.1f\" }}%"
+          description: |
+            {{ $value | printf "%.1f" }}% connection pool đang dùng (ngưỡng: 80%).
+            → Cảnh báo SỚM trước khi MySQL từ chối kết nối mới → Service Unavailable.
+
+  # ---------------------------------------------------------------------------
+  # APP-04: Kafka Broker ngừng hoạt động — pipeline sự kiện bị đứng
+  # Data VM (10.60.1.20): Kafka là trung tâm truyền sự kiện order→payment→inventory
+  # ---------------------------------------------------------------------------
+  - name: app04_kafka_down
+    rules:
+      - alert: KafkaBrokerDown
+        expr: |
+          up{job=~".*kafka.*"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          group: application
+          scenario: APP-04
+        annotations:
+          summary: "🔴 [APP-04] Kafka Broker NGỪNG HOẠT ĐỘNG - {{ $labels.instance }}"
+          description: |
+            Kafka tại {{ $labels.instance }} (data-vm: 10.60.1.20) không phản hồi.
+            → Luồng sự kiện: Đặt hàng → Thanh toán → Cập nhật kho bị ĐỨNG HOÀN TOÀN.
+            → Debezium CDC cũng dừng → Elasticsearch search-service bị lệch dữ liệu.
+
+      - alert: KafkaConsumerLagHigh
+        expr: |
+          kafka_consumer_group_lag{topic!=""} > 10000
+        for: 5m
+        labels:
+          severity: warning
+          group: application
+          scenario: APP-04
+        annotations:
+          summary: "🟡 [APP-04] Kafka consumer lag cao: {{ $value | printf \"%.0f\" }} messages"
+          description: |
+            Consumer group {{ $labels.consumergroup }} đang bị lag {{ $value | printf "%.0f" }} messages
+            trên topic {{ $labels.topic }}.
+            → Đơn hàng đang xếp hàng chờ xử lý, khách chưa nhận được xác nhận.
+
+  # ---------------------------------------------------------------------------
+  # APP-05: Redis Cache ngừng hoạt động — cache miss cascade
+  # Data VM (10.60.1.20): Redis cache session, product listing, cart
+  # ---------------------------------------------------------------------------
+  - name: app05_redis_down
+    rules:
+      - alert: RedisDown
+        expr: |
+          redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          group: application
+          scenario: APP-05
+        annotations:
+          summary: "🔴 [APP-05] Redis Cache NGỪNG HOẠT ĐỘNG - {{ $labels.instance }}"
+          description: |
+            Redis tại {{ $labels.instance }} (data-vm: 10.60.1.20) không phản hồi > 1 phút.
+            → Toàn bộ request cache-miss → đánh thẳng vào MySQL (10.20.1.30).
+            → Nguy cơ: MySQL quá tải theo dây chuyền (cascade failure), kéo theo DB crash.
+
+      - alert: RedisMemoryHigh
+        expr: |
+          (redis_memory_used_bytes / redis_memory_max_bytes * 100 > 90)
+          and redis_memory_max_bytes > 0
+        for: 3m
+        labels:
+          severity: warning
+          group: application
+          scenario: APP-05
+        annotations:
+          summary: "🟡 [APP-05] Redis memory: {{ $value | printf \"%.1f\" }}% — nguy cơ eviction"
+          description: |
+            Redis đang dùng {{ $value | printf "%.1f" }}% bộ nhớ (ngưỡng: 90%).
+            → Redis sẽ tự xóa key cũ (eviction policy) → Session người dùng bị xóa.
+            → Hàng loạt người dùng bị đăng xuất bất ngờ mà không có thông báo.

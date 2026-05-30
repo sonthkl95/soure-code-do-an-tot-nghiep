@@ -3,3 +3,10 @@
   systemd:
     name: prometheus
     state: restarted
+
+- name: reload prometheus
+  systemd:
+    name: prometheus
+    state: reloaded
+  # Prometheus hỗ trợ SIGHUP để hot-reload rules mà không mất dữ liệu TSDB.
+  # Yêu cầu --web.enable-lifecycle trong prometheus.service.j2 (đã thêm).

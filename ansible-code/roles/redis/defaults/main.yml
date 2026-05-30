@@ -5,3 +5,7 @@ redis_port: 6379
 redis_maxmemory: "512mb"
 redis_maxmemory_policy: "allkeys-lru"
 redis_appendonly: "yes"
+
+# redis-exporter (Prometheus)
+redis_exporter_version: "1.62.0"
+redis_exporter_port: 9121
